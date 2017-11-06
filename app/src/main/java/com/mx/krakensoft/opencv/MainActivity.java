@@ -35,11 +35,26 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.WindowManager;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import org.opencv.core.Size;
+
+import android.app.Activity;
+import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.RectF;
+import android.os.Bundle;
+import android.util.AttributeSet;
+import android.view.View;
+
+
+
+
+import static org.opencv.core.Core.flip;
 
 public class MainActivity extends Activity implements OnTouchListener, CvCameraViewListener2 {
 
@@ -92,7 +107,9 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                 case LoaderCallbackInterface.SUCCESS:
                 {
                     Log.i(TAG, "OpenCV loaded successfully");
+
                     mOpenCvCameraView.enableView();
+
                     mOpenCvCameraView.setOnTouchListener(MainActivity.this);
                     // 640x480
                 } break;
@@ -126,6 +143,8 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
         mOpenCvCameraView = (CustomSufaceView) findViewById(R.id.main_surface_view);
         mOpenCvCameraView.setCvCameraViewListener(this);
+        mOpenCvCameraView.setCameraIndex(1);
+
 
         minTresholdSeekbarText = (TextView) findViewById(R.id.textView3);
 
@@ -150,7 +169,58 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
             }
         });
         minTresholdSeekbar.setProgress(8700);
+
+        RelativeLayout Rl = (RelativeLayout)findViewById(R.id.main_relative_view);//Added by ahinsutime
+        DrawingView ov = new DrawingView(this);//Added by ahinsutime
+        Rl.addView(ov);//Added by ahinsutime
     }
+
+    public class DrawingView extends View{//Added by ahinsutime
+        int x=100, y=100;
+
+        public DrawingView(Context context) {
+            super(context);
+        }
+
+
+        public boolean onUpdatePos(int newX, int newY) {
+            x = newX;
+            y = newY;
+            return false;
+        }
+
+
+        @Override
+        protected void onDraw(Canvas canvas) {
+            Paint paint = new Paint();
+            paint.setColor(Color.RED);
+            //canvas.drawRect(x-100,y-100,x+100,y+100, paint); // 사각형그림
+            //canvas.drawText("글씨", 50, 50, paint); // 글자 출력
+            canvas.drawCircle(x, y,100, paint);
+            canvas.drawText("Cursor", x, y, paint);
+
+
+
+
+        }
+        @Override
+        public boolean onTouchEvent(MotionEvent event) {
+            // 화면에 터치가 발생했을 때 호출되는 콜백 메서드
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN :
+                case MotionEvent.ACTION_MOVE :
+                case MotionEvent.ACTION_UP     :
+                    x = (int)event.getX();
+                    y = (int)event.getY();
+                    invalidate(); // 화면을 다시 그려줘라 => onDraw() 호출해준다
+            }
+            return false;
+        }
+    }
+
+
+
+
 
     @Override
     public void onPause()
@@ -178,20 +248,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         mRgba = new Mat();
         mIntermediateMat = new Mat();
 
-        /*
-        mResolutionList = mOpenCvCameraView.getResolutionList();
-        ListIterator<Size> resolutionItr = mResolutionList.listIterator();
-        while(resolutionItr.hasNext()) {
-            Size element = resolutionItr.next();
-            Log.i(TAG, "Resolution Option ["+Integer.valueOf(element.width).toString() + "x" + Integer.valueOf(element.height).toString()+"]");
-        }
 
-        Size resolution = mResolutionList.get(7);
-        mOpenCvCameraView.setResolution(resolution);
-        resolution = mOpenCvCameraView.getResolution();
-        String caption = "Resolution "+ Integer.valueOf(resolution.width).toString() + "x" + Integer.valueOf(resolution.height).toString();
-        Toast.makeText(this, caption, Toast.LENGTH_SHORT).show();
-        */
         Camera.Size resolution = mOpenCvCameraView.getResolution();
         String caption = "Resolution "+ Integer.valueOf(resolution.width).toString() + "x" + Integer.valueOf(resolution.height).toString();
         Toast.makeText(this, caption, Toast.LENGTH_SHORT).show();
@@ -201,6 +258,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         mOpenCvCameraView.setParameters(cParams);
         Toast.makeText(this, "Focus mode : "+cParams.getFocusMode(), Toast.LENGTH_SHORT).show();
 
+        //mOpenCvCameraView.setCameraIndex(1);
         mRgba = new Mat(height, width, CvType.CV_8UC4);
         mDetector = new ColorBlobDetector();
         mSpectrum = new Mat();
@@ -226,6 +284,8 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
         int x = (int)event.getX() - xOffset;
         int y = (int)event.getY() - yOffset;
+
+
 
         Log.i(TAG, "Touch image coordinates: (" + x + ", " + y + ")");
 
@@ -279,6 +339,9 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         mRgba = inputFrame.rgba();
         mGray = inputFrame.gray();
 
+        flip(mRgba,mRgba,1);//Added by ahinsutime
+        flip(mGray,mGray,1);//Added by ahinsutime
+
         iThreshold = minTresholdSeekbar.getProgress();
 
         //Imgproc.blur(mRgba, mRgba, new Size(5,5));
@@ -327,6 +390,8 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         double a = boundRect.br().y - boundRect.tl().y;
         a = a * 0.7;
         a = boundRect.tl().y + a;
+
+        
 
         Log.d(TAG,
                 " A ["+a+"] br y - tl y = ["+(boundRect.br().y - boundRect.tl().y)+"]");
