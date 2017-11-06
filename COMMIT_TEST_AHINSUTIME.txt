@@ -1,1 +1,1 @@
-JUST FOR TEST
+SET SDK VERSION TO 20 (Android.Hardware.Camera is deprecated in 21. Go to build.gradle(Module:app) and change targetSdkVersion to 20)
