@@ -62,6 +62,14 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
     static {
         System.loadLibrary("opencv_java3");
     }
+
+    private double centerX = 0;//Added by ahinsutime
+    private double centerY = 0;//Added by ahinsutime
+    private List<Point> listPos = new LinkedList<Point>();//Added by ahinsutime
+    public RelativeLayout RL;//Added by ahinsutime
+    public DrawingView DV;//Added by ahinsutime
+    public DrawingHandView DHV;//Added by ahinsutime
+
     private static final String    TAG                 = "HandPose::MainActivity";
     public static final int        JAVA_DETECTOR       = 0;
     public static final int        NATIVE_DETECTOR     = 1;
@@ -69,25 +77,16 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
     private Mat                    mRgba;
     private Mat                    mGray;
     private Mat 					mIntermediateMat;
-    private double centerX = 0;
-    private double centerY = 0;
-
-    public RelativeLayout RL;
-    public DrawingView DV;
 
     private int                    mDetectorType       = JAVA_DETECTOR;
 
     private CustomSufaceView   mOpenCvCameraView;
-
-
     private List<Size> mResolutionList;
 
     private SeekBar minTresholdSeekbar = null;
     private SeekBar maxTresholdSeekbar = null;
     private TextView minTresholdSeekbarText = null;
     private TextView numberOfFingersText = null;
-
-
 
     double iThreshold = 0;
 
@@ -106,39 +105,13 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
     final Handler mHandler = new Handler();
     int numberOfFingers = 0;
 
-
-/*
-    new Thread()
-    {
-        public void run()
-        {
-            Message message = handler.obtainMessage();
-            handler.sendMessage(message);
-        }
-    }.start();
-*/
-
-
-
-
-
-    final Handler handler = new Handler()
-    {
-        public void handleMessage(Message msg)
-        {
-            //UI 변경 작업을 코딩하세요.
-            DV.invalidate();
-        }
-    };
-
     final Runnable mUpdateFingerCountResults = new Runnable() {
         public void run() {
             updateNumberOfFingers();
-            DV.invalidate();
+            DV.invalidate();//Added by ahinsutime
+            DHV.invalidate();//Added by ahinsutime
         }
     };
-
-
 
     private BaseLoaderCallback  mLoaderCallback = new BaseLoaderCallback(this) {
         @Override
@@ -170,10 +143,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         Log.i(TAG, "called onCreate");
 
         super.onCreate(savedInstanceState);
-
-
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
         setContentView(R.layout.main_surface_view);
         if (!OpenCVLoader.initDebug()) {
             Log.e("Test","man");
@@ -185,9 +155,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         mOpenCvCameraView.setCameraIndex(1);
 
         minTresholdSeekbarText = (TextView) findViewById(R.id.textView3);
-
         numberOfFingersText = (TextView) findViewById(R.id.numberOfFingers);
-
         minTresholdSeekbar = (SeekBar)findViewById(R.id.seekBar1);
         minTresholdSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){
             int progressChanged = 0;
@@ -209,12 +177,18 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
         RL = (RelativeLayout)findViewById(R.id.main_relative_view);//Added by ahinsutime
         DV = new DrawingView(this);//Added by ahinsutime
-        DV.setId(17);
+        DV.setId(17);//Added by ahinsutime
         RL.addView(DV);//Added by ahinsutime
+        DV.bringToFront();//Added by ahinsutime
+        DHV = new DrawingHandView(this);//Added by ahinsutime
+        DHV.setId(18);//Added by ahinsutime
+        RL.addView(DHV);//Added by ahinsutime
+        DHV.bringToFront();//Added by ahinsutime
+        //mOpenCvCameraView.setVisibility(mOpenCvCameraView.INVISIBLE);
+        mOpenCvCameraView.setAlpha(0);
         //Log.d(TAG, "DV's id="+DV.getId());
         //Log.d(TAG, "RL's id="+RL.getId());
-        //DV.setId(17);
-        //RL.addView(DV);//Added by ahinsutime
+
     }
 
     @Override
@@ -281,8 +255,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
         int x = (int)event.getX() - xOffset;
         int y = (int)event.getY() - yOffset;
-
-
 
         Log.i(TAG, "Touch image coordinates: (" + x + ", " + y + ")");
 
@@ -365,17 +337,29 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
             }
             return false;
         }
-
-
-        public void onUpdatePos(int newX, int newY) {
-            x = newX;
-            y = newY;
-            Log.d(TAG, "Inside DrawingView.onUpdatePos:" + "newX="+ newX + " " + "newY=" + newY);
-        }
         */
-
     }
 
+    public class DrawingHandView extends View {//Added by ahinsutime
+        int x = 100, y = 100;
+
+        public DrawingHandView(Context context) {
+            super(context);
+        }
+
+        @Override
+        public void onDraw(Canvas canvas) {
+            Log.d(TAG, "Inside DrawingHandView.onDraw");
+            Paint paint = new Paint();
+            paint.setColor(Color.GREEN);
+            for(int i=0;i<listPos.size();i++) {
+                x = (int) listPos.get(i).x;
+                y = (int) listPos.get(i).y;
+                Log.d(TAG, "listPosX="+x+" "+"listPosY="+y);
+                canvas.drawCircle(x, y, 50, paint);
+            }
+        }
+    }
 
     public Mat onCameraFrame(CvCameraViewFrame inputFrame) {
 
@@ -434,8 +418,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         a = a * 0.7;
         a = boundRect.tl().y + a;
 
-
-
         Log.d(TAG,
                 " A ["+a+"] br y - tl y = ["+(boundRect.br().y - boundRect.tl().y)+"]");
 
@@ -483,21 +465,17 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
         Imgproc.drawContours(mRgba, hullPoints, -1, CONTOUR_COLOR_GREEN, 3);
 
-        //double centerX = 0;
-        //double centerY = 0;
-
-        for (int j = 0; j < listPo.size(); j++) {
+        listPos = listPo;//Added by ahinsutime
+        for (int j = 0; j < listPo.size(); j++) {//Added by ahinsutime
 
             centerX = centerX + listPo.get(j).x;
             centerY = centerY + listPo.get(j).y;
         }
-        centerX = centerX / listPo.size();
-        centerY = centerY / listPo.size();
+        centerX = centerX / listPo.size();//Added by ahinsutime
+        centerY = centerY / listPo.size();//Added by ahinsutime
 
-        //DV.onUpdatePos((int)centerX, (int)centerY);
-        Log.d(TAG, "DV's id="+DV.getId());
-        Log.d(TAG, "RL's id="+RL.getId());
-        //DV.invalidate();
+        //Log.d(TAG, "DV's id="+DV.getId());//Added by ahinsutime
+        //Log.d(TAG, "RL's id="+RL.getId());//Added by ahinsutime
 
         int defectsTotal = (int) convexDefect.total();
         Log.d(TAG, "Defect total " + defectsTotal);
