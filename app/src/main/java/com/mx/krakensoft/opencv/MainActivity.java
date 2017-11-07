@@ -30,6 +30,7 @@ import android.graphics.SumPathEffect;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -68,16 +69,25 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
     private Mat                    mRgba;
     private Mat                    mGray;
     private Mat 					mIntermediateMat;
+    private double centerX = 0;
+    private double centerY = 0;
+
+    public RelativeLayout RL;
+    public DrawingView DV;
 
     private int                    mDetectorType       = JAVA_DETECTOR;
 
     private CustomSufaceView   mOpenCvCameraView;
+
+
     private List<Size> mResolutionList;
 
     private SeekBar minTresholdSeekbar = null;
     private SeekBar maxTresholdSeekbar = null;
     private TextView minTresholdSeekbarText = null;
     private TextView numberOfFingersText = null;
+
+
 
     double iThreshold = 0;
 
@@ -89,16 +99,46 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
     private Size                 	SPECTRUM_SIZE;
     private Scalar               	CONTOUR_COLOR;
+    private Scalar               	CONTOUR_COLOR_BLUE;
+    private Scalar               	CONTOUR_COLOR_GREEN;
     private Scalar               	CONTOUR_COLOR_WHITE;
 
     final Handler mHandler = new Handler();
     int numberOfFingers = 0;
 
+
+/*
+    new Thread()
+    {
+        public void run()
+        {
+            Message message = handler.obtainMessage();
+            handler.sendMessage(message);
+        }
+    }.start();
+*/
+
+
+
+
+
+    final Handler handler = new Handler()
+    {
+        public void handleMessage(Message msg)
+        {
+            //UI 변경 작업을 코딩하세요.
+            DV.invalidate();
+        }
+    };
+
     final Runnable mUpdateFingerCountResults = new Runnable() {
         public void run() {
             updateNumberOfFingers();
+            DV.invalidate();
         }
     };
+
+
 
     private BaseLoaderCallback  mLoaderCallback = new BaseLoaderCallback(this) {
         @Override
@@ -109,7 +149,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                     Log.i(TAG, "OpenCV loaded successfully");
 
                     mOpenCvCameraView.enableView();
-
                     mOpenCvCameraView.setOnTouchListener(MainActivity.this);
                     // 640x480
                 } break;
@@ -145,9 +184,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         mOpenCvCameraView.setCvCameraViewListener(this);
         mOpenCvCameraView.setCameraIndex(1);
 
-
         minTresholdSeekbarText = (TextView) findViewById(R.id.textView3);
-
 
         numberOfFingersText = (TextView) findViewById(R.id.numberOfFingers);
 
@@ -170,57 +207,15 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         });
         minTresholdSeekbar.setProgress(8700);
 
-        RelativeLayout Rl = (RelativeLayout)findViewById(R.id.main_relative_view);//Added by ahinsutime
-        DrawingView ov = new DrawingView(this);//Added by ahinsutime
-        Rl.addView(ov);//Added by ahinsutime
+        RL = (RelativeLayout)findViewById(R.id.main_relative_view);//Added by ahinsutime
+        DV = new DrawingView(this);//Added by ahinsutime
+        DV.setId(17);
+        RL.addView(DV);//Added by ahinsutime
+        //Log.d(TAG, "DV's id="+DV.getId());
+        //Log.d(TAG, "RL's id="+RL.getId());
+        //DV.setId(17);
+        //RL.addView(DV);//Added by ahinsutime
     }
-
-    public class DrawingView extends View{//Added by ahinsutime
-        int x=100, y=100;
-
-        public DrawingView(Context context) {
-            super(context);
-        }
-
-
-        public boolean onUpdatePos(int newX, int newY) {
-            x = newX;
-            y = newY;
-            return false;
-        }
-
-
-        @Override
-        protected void onDraw(Canvas canvas) {
-            Paint paint = new Paint();
-            paint.setColor(Color.RED);
-            //canvas.drawRect(x-100,y-100,x+100,y+100, paint); // 사각형그림
-            //canvas.drawText("글씨", 50, 50, paint); // 글자 출력
-            canvas.drawCircle(x, y,100, paint);
-            canvas.drawText("Cursor", x, y, paint);
-
-
-
-
-        }
-        @Override
-        public boolean onTouchEvent(MotionEvent event) {
-            // 화면에 터치가 발생했을 때 호출되는 콜백 메서드
-            switch (event.getAction()) {
-                case MotionEvent.ACTION_DOWN :
-                case MotionEvent.ACTION_MOVE :
-                case MotionEvent.ACTION_UP     :
-                    x = (int)event.getX();
-                    y = (int)event.getY();
-                    invalidate(); // 화면을 다시 그려줘라 => onDraw() 호출해준다
-            }
-            return false;
-        }
-    }
-
-
-
-
 
     @Override
     public void onPause()
@@ -267,6 +262,8 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         SPECTRUM_SIZE = new Size(200, 64);
         CONTOUR_COLOR = new Scalar(255,0,0,255);
         CONTOUR_COLOR_WHITE = new Scalar(255,255,255,255);
+        CONTOUR_COLOR_BLUE = new Scalar(0,0,255,255);
+        CONTOUR_COLOR_GREEN = new Scalar(0,255,0,255);
 
     }
 
@@ -335,7 +332,53 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         return new Scalar(pointMatRgba.get(0, 0));
     }
 
+    public class DrawingView extends View{//Added by ahinsutime
+        int x=100, y=100;
+
+        public DrawingView(Context context) {
+            super(context);
+        }
+
+        @Override
+        public void onDraw(Canvas canvas) {
+            Log.d(TAG, "Inside DrawingView.onDraw");
+            Paint paint = new Paint();
+            paint.setColor(Color.BLUE);
+            //canvas.drawRect(x-100,y-100,x+100,y+100, paint); // 사각형그림
+            //canvas.drawText("글씨", 50, 50, paint); // 글자 출력
+            x = (int) centerX;
+            y = (int) centerY;
+            canvas.drawCircle(x, y,100, paint);
+            canvas.drawText("Cursor", x, y, paint);
+        }
+        /*
+        @Override
+        public boolean onTouchEvent(MotionEvent event) {
+            // 화면에 터치가 발생했을 때 호출되는 콜백 메서드
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN :
+                case MotionEvent.ACTION_MOVE :
+                case MotionEvent.ACTION_UP     :
+                    x = (int)event.getX();
+                    y = (int)event.getY();
+                    invalidate(); // 화면을 다시 그려줘라 => onDraw() 호출해준다
+            }
+            return false;
+        }
+
+
+        public void onUpdatePos(int newX, int newY) {
+            x = newX;
+            y = newY;
+            Log.d(TAG, "Inside DrawingView.onUpdatePos:" + "newX="+ newX + " " + "newY=" + newY);
+        }
+        */
+
+    }
+
+
     public Mat onCameraFrame(CvCameraViewFrame inputFrame) {
+
         mRgba = inputFrame.rgba();
         mGray = inputFrame.gray();
 
@@ -391,13 +434,12 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         a = a * 0.7;
         a = boundRect.tl().y + a;
 
-        
+
 
         Log.d(TAG,
                 " A ["+a+"] br y - tl y = ["+(boundRect.br().y - boundRect.tl().y)+"]");
 
-        //Core.rectangle( mRgba, boundRect.tl(), boundRect.br(), CONTOUR_COLOR, 2, 8, 0 );
-        Imgproc.rectangle( mRgba, boundRect.tl(), new Point(boundRect.br().x, a), CONTOUR_COLOR, 2, 8, 0 );
+        Imgproc.rectangle( mRgba, boundRect.tl(), new Point(boundRect.br().x, a), CONTOUR_COLOR_BLUE, 2, 8, 0 );
 
         MatOfPoint2f pointMat = new MatOfPoint2f();
         Imgproc.approxPolyDP(new MatOfPoint2f(contours.get(boundPos).toArray()), pointMat, 3, true);
@@ -439,7 +481,23 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         Log.d(TAG, "hull: " + hull.toList());
         Log.d(TAG, "defects: " + convexDefect.toList());
 
-        Imgproc.drawContours(mRgba, hullPoints, -1, CONTOUR_COLOR, 3);
+        Imgproc.drawContours(mRgba, hullPoints, -1, CONTOUR_COLOR_GREEN, 3);
+
+        //double centerX = 0;
+        //double centerY = 0;
+
+        for (int j = 0; j < listPo.size(); j++) {
+
+            centerX = centerX + listPo.get(j).x;
+            centerY = centerY + listPo.get(j).y;
+        }
+        centerX = centerX / listPo.size();
+        centerY = centerY / listPo.size();
+
+        //DV.onUpdatePos((int)centerX, (int)centerY);
+        Log.d(TAG, "DV's id="+DV.getId());
+        Log.d(TAG, "RL's id="+RL.getId());
+        //DV.invalidate();
 
         int defectsTotal = (int) convexDefect.total();
         Log.d(TAG, "Defect total " + defectsTotal);
