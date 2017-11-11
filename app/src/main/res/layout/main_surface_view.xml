@@ -8,14 +8,14 @@
         android:id="@+id/main_relative_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1" >
+        android:layout_weight="1">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="top"
-            android:orientation="vertical" >
+            android:orientation="vertical">
 
             <!--  <org.opencv.android.JavaCameraView-->
             <com.mx.krakensoft.opencv.CustomSufaceView
@@ -31,7 +31,7 @@
             android:layout_height="match_parent"
             android:layout_alignParentLeft="false"
             android:layout_alignParentTop="false"
-            android:layout_centerVertical="false" >
+            android:layout_centerVertical="false">
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -40,11 +40,11 @@
                 android:gravity="bottom"
                 android:orientation="vertical"
                 android:paddingBottom="10dp"
-                android:paddingLeft="10dp" >
+                android:paddingLeft="10dp">
 
                 <LinearLayout
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" >
+                    android:layout_height="wrap_content">
 
                     <TextView
                         android:id="@+id/textView1"
@@ -82,6 +82,96 @@
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:textSize="115dp" />
 
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentStart="true"
+            android:background="#000000">
+
+            <Button
+                android:id="@+id/button6"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/button3"
+                android:layout_toEndOf="@+id/button2"
+                android:text="6" />
+
+            <Button
+                android:id="@+id/button3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@+id/button2"
+                android:layout_alignBottom="@+id/button2"
+                android:layout_toEndOf="@+id/button2"
+                android:text="3" />
+
+            <Button
+                android:id="@+id/button2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@+id/button1"
+                android:layout_alignBottom="@+id/button1"
+                android:layout_toEndOf="@+id/button1"
+                android:text="2" />
+
+            <Button
+                android:id="@+id/button1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentStart="true"
+                android:layout_marginBottom="72dp"
+                android:layout_marginStart="40dp"
+                android:text="1" />
+
+
+
+            <Button
+                android:id="@+id/button5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@+id/button6"
+                android:layout_alignBottom="@+id/button6"
+                android:layout_toEndOf="@+id/button7"
+                android:text="5" />
+
+            <Button
+                android:id="@+id/button8"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@+id/button7"
+                android:layout_alignBottom="@+id/button7"
+                android:layout_toEndOf="@+id/button7"
+                android:text="8" />
+
+            <Button
+                android:id="@+id/button9"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/button6"
+                android:layout_toEndOf="@+id/button5"
+                android:text="9" />
+
+            <Button
+                android:id="@+id/button7"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="7"
+                android:layout_above="@+id/button5"
+                android:layout_alignStart="@+id/button4" />
+
+
+            <Button
+                android:id="@+id/button4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@+id/button6"
+                android:layout_alignBottom="@+id/button6"
+                android:layout_alignStart="@+id/button1"
+                android:text="4" />
         </RelativeLayout>
 
     </RelativeLayout>

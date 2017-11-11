@@ -1,7 +1,11 @@
 package com.mx.krakensoft.opencv;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.opencv.android.BaseLoaderCallback;
@@ -23,6 +27,7 @@ import org.opencv.core.RotatedRect;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.imgproc.Moments;
+
 import com.mx.krakensoft.opencv.imageProcessing.ColorBlobDetector;
 
 import android.app.Activity;
@@ -31,15 +36,19 @@ import android.hardware.Camera;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
+import android.view.ViewTreeObserver;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import org.opencv.core.Size;
 
 import android.app.Activity;
@@ -53,8 +62,6 @@ import android.util.AttributeSet;
 import android.view.View;
 
 
-
-
 import static org.opencv.core.Core.flip;
 
 public class MainActivity extends Activity implements OnTouchListener, CvCameraViewListener2 {
@@ -63,6 +70,17 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         System.loadLibrary("opencv_java3");
     }
 
+    /*simplified keyboard buttons */
+    private Button keyButton1;
+    private Button keyButton2;
+    private Button keyButton3;
+    private Button keyButton4;
+    private Button keyButton5;
+    private Button keyButton6;
+    private Button keyButton7;
+    private Button keyButton8;
+    private Button keyButton9;
+    private Map<String, ButtonCoordinates> buttons;
     private double centerX = 0;//Added by ahinsutime
     private double centerY = 0;//Added by ahinsutime
     private List<Point> listPos = new LinkedList<Point>();//Added by ahinsutime
@@ -70,17 +88,18 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
     public DrawingView DV;//Added by ahinsutime
     public DrawingHandView DHV;//Added by ahinsutime
 
-    private static final String    TAG                 = "HandPose::MainActivity";
-    public static final int        JAVA_DETECTOR       = 0;
-    public static final int        NATIVE_DETECTOR     = 1;
+    private static final String TAG = "HandPose::MainActivity";
+    public static final int JAVA_DETECTOR = 0;
+    public static final int NATIVE_DETECTOR = 1;
 
-    private Mat                    mRgba;
-    private Mat                    mGray;
-    private Mat 					mIntermediateMat;
+    private Mat mRgba;
+    private Mat mGray;
+    private Mat mIntermediateMat;
+    private boolean flag = false;
 
-    private int                    mDetectorType       = JAVA_DETECTOR;
+    private int mDetectorType = JAVA_DETECTOR;
 
-    private CustomSufaceView   mOpenCvCameraView;
+    private CustomSufaceView mOpenCvCameraView;
     private List<Size> mResolutionList;
 
     private SeekBar minTresholdSeekbar = null;
@@ -90,17 +109,17 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
     double iThreshold = 0;
 
-    private Scalar               	mBlobColorHsv;
-    private Scalar               	mBlobColorRgba;
-    private ColorBlobDetector    	mDetector;
-    private Mat                  	mSpectrum;
-    private boolean				mIsColorSelected = false;
+    private Scalar mBlobColorHsv;
+    private Scalar mBlobColorRgba;
+    private ColorBlobDetector mDetector;
+    private Mat mSpectrum;
+    private boolean mIsColorSelected = false;
 
-    private Size                 	SPECTRUM_SIZE;
-    private Scalar               	CONTOUR_COLOR;
-    private Scalar               	CONTOUR_COLOR_BLUE;
-    private Scalar               	CONTOUR_COLOR_GREEN;
-    private Scalar               	CONTOUR_COLOR_WHITE;
+    private Size SPECTRUM_SIZE;
+    private Scalar CONTOUR_COLOR;
+    private Scalar CONTOUR_COLOR_BLUE;
+    private Scalar CONTOUR_COLOR_GREEN;
+    private Scalar CONTOUR_COLOR_WHITE;
 
     final Handler mHandler = new Handler();
     int numberOfFingers = 0;
@@ -113,22 +132,22 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         }
     };
 
-    private BaseLoaderCallback  mLoaderCallback = new BaseLoaderCallback(this) {
+    private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
         @Override
         public void onManagerConnected(int status) {
             switch (status) {
-                case LoaderCallbackInterface.SUCCESS:
-                {
+                case LoaderCallbackInterface.SUCCESS: {
                     Log.i(TAG, "OpenCV loaded successfully");
 
                     mOpenCvCameraView.enableView();
                     mOpenCvCameraView.setOnTouchListener(MainActivity.this);
                     // 640x480
-                } break;
-                default:
-                {
+                }
+                break;
+                default: {
                     super.onManagerConnected(status);
-                } break;
+                }
+                break;
             }
         }
     };
@@ -137,17 +156,19 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         Log.i(TAG, "Instantiated new " + this.getClass());
     }
 
-    /** Called when the activity is first created. */
+    /**
+     * Called when the activity is first created.
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Log.i(TAG, "called onCreate");
-
         super.onCreate(savedInstanceState);
+
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.main_surface_view);
         if (!OpenCVLoader.initDebug()) {
-            Log.e("Test","man");
-        }else{
+            Log.e("Test", "man");
+        } else {
         }
 
         mOpenCvCameraView = (CustomSufaceView) findViewById(R.id.main_surface_view);
@@ -156,11 +177,11 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
         minTresholdSeekbarText = (TextView) findViewById(R.id.textView3);
         numberOfFingersText = (TextView) findViewById(R.id.numberOfFingers);
-        minTresholdSeekbar = (SeekBar)findViewById(R.id.seekBar1);
-        minTresholdSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){
+        minTresholdSeekbar = (SeekBar) findViewById(R.id.seekBar1);
+        minTresholdSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             int progressChanged = 0;
 
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser){
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 progressChanged = progress;
                 minTresholdSeekbarText.setText(String.valueOf(progressChanged));
             }
@@ -175,7 +196,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         });
         minTresholdSeekbar.setProgress(8700);
 
-        RL = (RelativeLayout)findViewById(R.id.main_relative_view);//Added by ahinsutime
+        RL = (RelativeLayout) findViewById(R.id.main_relative_view);//Added by ahinsutime
         DV = new DrawingView(this);//Added by ahinsutime
         DV.setId(17);//Added by ahinsutime
         RL.addView(DV);//Added by ahinsutime
@@ -188,21 +209,197 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         mOpenCvCameraView.setAlpha(0);
         //Log.d(TAG, "DV's id="+DV.getId());
         //Log.d(TAG, "RL's id="+RL.getId());
+        keyButton1 = (Button) findViewById(R.id.button1);
+        keyButton2 = (Button) findViewById(R.id.button2);
+        keyButton3 = (Button) findViewById(R.id.button3);
+        keyButton4 = (Button) findViewById(R.id.button4);
+        keyButton5 = (Button) findViewById(R.id.button5);
+        keyButton6 = (Button) findViewById(R.id.button6);
+        keyButton7 = (Button) findViewById(R.id.button7);
+        keyButton8 = (Button) findViewById(R.id.button8);
+        keyButton9 = (Button) findViewById(R.id.button9);
+        buttons = new HashMap<>();
+        if (!flag) {
+            keyButton1.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    addButtonCoordinates(keyButton1);
+                }
+            });
+            keyButton2.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    addButtonCoordinates(keyButton2);
+                }
+            });
+            keyButton3.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    addButtonCoordinates(keyButton3);
+                }
+            });
+            keyButton4.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    addButtonCoordinates(keyButton4);
+                }
+            });
+            keyButton5.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    addButtonCoordinates(keyButton5);
+                }
+            });
+            keyButton6.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    addButtonCoordinates(keyButton6);
+                }
+            });
+            keyButton7.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    addButtonCoordinates(keyButton7);
+                }
+            });
+            keyButton8.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    addButtonCoordinates(keyButton8);
+                }
+            });
+            keyButton9.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    addButtonCoordinates(keyButton9);
+                }
+            });
+            flag = true;
+        }
+        keyButton1.setOnTouchListener(new OnTouchListener() {
+            public boolean onTouch(View v, MotionEvent event) {
+                return true;
+            }
+        });
+        keyButton2.setOnTouchListener(new OnTouchListener() {
+            public boolean onTouch(View v, MotionEvent event) {
+                return true;
+            }
+        });
+        keyButton3.setOnTouchListener(new OnTouchListener() {
+            public boolean onTouch(View v, MotionEvent event) {
+                return true;
+            }
+        });
+        keyButton4.setOnTouchListener(new OnTouchListener() {
+            public boolean onTouch(View v, MotionEvent event) {
+                return true;
+            }
+        });
 
+        keyButton5.setOnTouchListener(new OnTouchListener() {
+            public boolean onTouch(View v, MotionEvent event) {
+                return true;
+            }
+        });
+        keyButton6.setOnTouchListener(new OnTouchListener() {
+            public boolean onTouch(View v, MotionEvent event) {
+                return true;
+            }
+        });
+        keyButton7.setOnTouchListener(new OnTouchListener() {
+            public boolean onTouch(View v, MotionEvent event) {
+                return true;
+            }
+        });
+        keyButton8.setOnTouchListener(new OnTouchListener() {
+            public boolean onTouch(View v, MotionEvent event) {
+                return true;
+            }
+        });
+        keyButton9.setOnTouchListener(new OnTouchListener() {
+            public boolean onTouch(View v, MotionEvent event) {
+                return true;
+            }
+        });
+
+    }
+    public void addButtonCoordinates (Button b) {
+        Point point1 = getPointOfView(b);
+        double xMax = point1.x + b.getWidth();
+        double yMax = point1.y + b.getHeight();
+        ButtonCoordinates coo = new ButtonCoordinates();
+        coo.setxMin(point1.x);
+        coo.setyMin(point1.y);
+        coo.setxMax(xMax);
+        coo.setyMax(yMax);
+        buttons.put(String.valueOf(b.getText()), coo);
+        }
+
+    public void touchEventDispatch(float xVal, float yVal) {
+        // Obtain MotionEvent object
+        long downTime = SystemClock.uptimeMillis();
+        long eventTime = SystemClock.uptimeMillis() + 100;
+        float x = 0.0f;
+        float y = 0.0f;
+// List of meta states found here: developer.android.com/reference/android/view/KeyEvent.html#getMetaState()
+        int metaState = 0;
+        MotionEvent motionEvent = MotionEvent.obtain(
+                downTime,
+                eventTime,
+                MotionEvent.ACTION_UP,
+                x,
+                y,
+                metaState
+        );
+        String buttonName = "";
+        for (Map.Entry<String, ButtonCoordinates> entry : buttons.entrySet())
+        {
+            ButtonCoordinates b = entry.getValue();
+            // find if any of keybuttons were pressed
+          if (xVal > b.getxMin() && xVal< b.getxMax() && yVal > b.getyMin() && yVal < b.getyMax() ) {
+              buttonName = entry.getKey();
+              break;
+          }
+        }
+        Button temp= null;
+        if (buttonName!="") {
+            switch (buttonName) {
+                case "1":  temp = keyButton1;
+                    break;
+                case "2":  temp = keyButton2;
+                    break;
+                case "3":  temp = keyButton3;
+                    break;
+                case "4":  temp = keyButton4;
+                    break;
+                case "5":  temp = keyButton5;
+                    break;
+                case "6":  temp = keyButton6;
+                    break;
+                case "7":  temp = keyButton7;
+                    break;
+                case "8":  temp = keyButton8;
+                    break;
+                case "9":  temp = keyButton9;
+                    break;
+            }
+            if(temp!=null) {
+                temp.dispatchTouchEvent(motionEvent);
+            }
+        }
     }
 
     @Override
-    public void onPause()
-    {
+    public void onPause() {
         super.onPause();
-        if (mOpenCvCameraView != null){
+        if (mOpenCvCameraView != null) {
             mOpenCvCameraView.disableView();
         }
     }
 
     @Override
-    public void onResume()
-    {
+    public void onResume() {
         super.onResume();
         OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_3_1_0, this, mLoaderCallback);
     }
@@ -219,13 +416,13 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
 
         Camera.Size resolution = mOpenCvCameraView.getResolution();
-        String caption = "Resolution "+ Integer.valueOf(resolution.width).toString() + "x" + Integer.valueOf(resolution.height).toString();
+        String caption = "Resolution " + Integer.valueOf(resolution.width).toString() + "x" + Integer.valueOf(resolution.height).toString();
         Toast.makeText(this, caption, Toast.LENGTH_SHORT).show();
 
         Camera.Parameters cParams = mOpenCvCameraView.getParameters();
         cParams.setFocusMode(Camera.Parameters.FOCUS_MODE_INFINITY);
         mOpenCvCameraView.setParameters(cParams);
-        Toast.makeText(this, "Focus mode : "+cParams.getFocusMode(), Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Focus mode : " + cParams.getFocusMode(), Toast.LENGTH_SHORT).show();
 
         //mOpenCvCameraView.setCameraIndex(1);
         mRgba = new Mat(height, width, CvType.CV_8UC4);
@@ -234,10 +431,10 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         mBlobColorRgba = new Scalar(255);
         mBlobColorHsv = new Scalar(255);
         SPECTRUM_SIZE = new Size(200, 64);
-        CONTOUR_COLOR = new Scalar(255,0,0,255);
-        CONTOUR_COLOR_WHITE = new Scalar(255,255,255,255);
-        CONTOUR_COLOR_BLUE = new Scalar(0,0,255,255);
-        CONTOUR_COLOR_GREEN = new Scalar(0,255,0,255);
+        CONTOUR_COLOR = new Scalar(255, 0, 0, 255);
+        CONTOUR_COLOR_WHITE = new Scalar(255, 255, 255, 255);
+        CONTOUR_COLOR_BLUE = new Scalar(0, 0, 255, 255);
+        CONTOUR_COLOR_GREEN = new Scalar(0, 255, 0, 255);
 
     }
 
@@ -253,20 +450,23 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         int xOffset = (mOpenCvCameraView.getWidth() - cols) / 2;
         int yOffset = (mOpenCvCameraView.getHeight() - rows) / 2;
 
-        int x = (int)event.getX() - xOffset;
-        int y = (int)event.getY() - yOffset;
-
+        int x = (int) event.getX() - xOffset;
+        int y = (int) event.getY() - yOffset;
         Log.i(TAG, "Touch image coordinates: (" + x + ", " + y + ")");
+        //    Log.i(TAG, "Touch image coordinates RAW: (" + event.getX() + ", " + event.getY() + ")");
+
+       /* given (x, y) that was touched, click on according button */
+        touchEventDispatch(event.getX(), event.getY());
 
         if ((x < 0) || (y < 0) || (x > cols) || (y > rows)) return false;
 
         Rect touchedRect = new Rect();
 
-        touchedRect.x = (x>5) ? x-5 : 0;
-        touchedRect.y = (y>5) ? y-5 : 0;
+        touchedRect.x = (x > 5) ? x - 5 : 0;
+        touchedRect.y = (y > 5) ? y - 5 : 0;
 
-        touchedRect.width = (x+5 < cols) ? x + 5 - touchedRect.x : cols - touchedRect.x;
-        touchedRect.height = (y+5 < rows) ? y + 5 - touchedRect.y : rows - touchedRect.y;
+        touchedRect.width = (x + 5 < cols) ? x + 5 - touchedRect.x : cols - touchedRect.x;
+        touchedRect.height = (y + 5 < rows) ? y + 5 - touchedRect.y : rows - touchedRect.y;
 
         Mat touchedRegionRgba = mRgba.submat(touchedRect);
 
@@ -275,7 +475,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
         // Calculate average color of touched region
         mBlobColorHsv = Core.sumElems(touchedRegionHsv);
-        int pointCount = touchedRect.width*touchedRect.height;
+        int pointCount = touchedRect.width * touchedRect.height;
         for (int i = 0; i < mBlobColorHsv.val.length; i++)
             mBlobColorHsv.val[i] /= pointCount;
 
@@ -304,8 +504,8 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         return new Scalar(pointMatRgba.get(0, 0));
     }
 
-    public class DrawingView extends View{//Added by ahinsutime
-        int x=100, y=100;
+    public class DrawingView extends View {//Added by ahinsutime
+        int x = 100, y = 100;
 
         public DrawingView(Context context) {
             super(context);
@@ -320,7 +520,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
             //canvas.drawText("글씨", 50, 50, paint); // 글자 출력
             x = (int) centerX;
             y = (int) centerY;
-            canvas.drawCircle(x, y,100, paint);
+            canvas.drawCircle(x, y, 100, paint);
             canvas.drawText("Cursor", x, y, paint);
         }
         /*
@@ -352,10 +552,10 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
             Log.d(TAG, "Inside DrawingHandView.onDraw");
             Paint paint = new Paint();
             paint.setColor(Color.GREEN);
-            for(int i=0;i<listPos.size();i++) {
+            for (int i = 0; i < listPos.size(); i++) {
                 x = (int) listPos.get(i).x;
                 y = (int) listPos.get(i).y;
-                Log.d(TAG, "listPosX="+x+" "+"listPosY="+y);
+                Log.d(TAG, "listPosX=" + x + " " + "listPosY=" + y);
                 canvas.drawCircle(x, y, 50, paint);
             }
         }
@@ -366,8 +566,8 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         mRgba = inputFrame.rgba();
         mGray = inputFrame.gray();
 
-        flip(mRgba,mRgba,1);//Added by ahinsutime
-        flip(mGray,mGray,1);//Added by ahinsutime
+        flip(mRgba, mRgba, 1);//Added by ahinsutime
+        flip(mGray, mGray, 1);//Added by ahinsutime
 
         iThreshold = minTresholdSeekbar.getProgress();
 
@@ -386,7 +586,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
             return mRgba;
         }
 
-        RotatedRect rect = Imgproc.minAreaRect(new MatOfPoint2f(contours.get(0)	.toArray()));
+        RotatedRect rect = Imgproc.minAreaRect(new MatOfPoint2f(contours.get(0).toArray()));
 
         double boundWidth = rect.size.width;
         double boundHeight = rect.size.height;
@@ -403,15 +603,15 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
         Rect boundRect = Imgproc.boundingRect(new MatOfPoint(contours.get(boundPos).toArray()));
 
-        Imgproc.rectangle( mRgba, boundRect.tl(), boundRect.br(), CONTOUR_COLOR_WHITE, 2, 8, 0 );
+        Imgproc.rectangle(mRgba, boundRect.tl(), boundRect.br(), CONTOUR_COLOR_WHITE, 2, 8, 0);
 
 
         Log.d(TAG,
-                " Row start ["+
-                        (int) boundRect.tl().y + "] row end ["+
-                        (int) boundRect.br().y+"] Col start ["+
-                        (int) boundRect.tl().x+"] Col end ["+
-                        (int) boundRect.br().x+"]");
+                " Row start [" +
+                        (int) boundRect.tl().y + "] row end [" +
+                        (int) boundRect.br().y + "] Col start [" +
+                        (int) boundRect.tl().x + "] Col end [" +
+                        (int) boundRect.br().x + "]");
 
         int rectHeightThresh = 0;
         double a = boundRect.br().y - boundRect.tl().y;
@@ -419,9 +619,9 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         a = boundRect.tl().y + a;
 
         Log.d(TAG,
-                " A ["+a+"] br y - tl y = ["+(boundRect.br().y - boundRect.tl().y)+"]");
+                " A [" + a + "] br y - tl y = [" + (boundRect.br().y - boundRect.tl().y) + "]");
 
-        Imgproc.rectangle( mRgba, boundRect.tl(), new Point(boundRect.br().x, a), CONTOUR_COLOR_BLUE, 2, 8, 0 );
+        Imgproc.rectangle(mRgba, boundRect.tl(), new Point(boundRect.br().x, a), CONTOUR_COLOR_BLUE, 2, 8, 0);
 
         MatOfPoint2f pointMat = new MatOfPoint2f();
         Imgproc.approxPolyDP(new MatOfPoint2f(contours.get(boundPos).toArray()), pointMat, 3, true);
@@ -431,9 +631,9 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         MatOfInt4 convexDefect = new MatOfInt4();
         Imgproc.convexHull(new MatOfPoint(contours.get(boundPos).toArray()), hull);
 
-        if(hull.toArray().length < 3) return mRgba;
+        if (hull.toArray().length < 3) return mRgba;
 
-        Imgproc.convexityDefects(new MatOfPoint(contours.get(boundPos)	.toArray()), hull, convexDefect);
+        Imgproc.convexityDefects(new MatOfPoint(contours.get(boundPos).toArray()), hull, convexDefect);
 
         List<MatOfPoint> hullPoints = new LinkedList<MatOfPoint>();
         List<Point> listPo = new LinkedList<Point>();
@@ -447,13 +647,13 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
         List<MatOfPoint> defectPoints = new LinkedList<MatOfPoint>();
         List<Point> listPoDefect = new LinkedList<Point>();
-        for (int j = 0; j < convexDefect.toList().size(); j = j+4) {
-            Point farPoint = contours.get(boundPos).toList().get(convexDefect.toList().get(j+2));
-            Integer depth = convexDefect.toList().get(j+3);
-            if(depth > iThreshold && farPoint.y < a){
-                listPoDefect.add(contours.get(boundPos).toList().get(convexDefect.toList().get(j+2)));
+        for (int j = 0; j < convexDefect.toList().size(); j = j + 4) {
+            Point farPoint = contours.get(boundPos).toList().get(convexDefect.toList().get(j + 2));
+            Integer depth = convexDefect.toList().get(j + 3);
+            if (depth > iThreshold && farPoint.y < a) {
+                listPoDefect.add(contours.get(boundPos).toList().get(convexDefect.toList().get(j + 2)));
             }
-            Log.d(TAG, "defects ["+j+"] " + convexDefect.toList().get(j+3));
+            Log.d(TAG, "defects [" + j + "] " + convexDefect.toList().get(j + 3));
         }
 
         MatOfPoint e2 = new MatOfPoint();
@@ -481,18 +681,25 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         Log.d(TAG, "Defect total " + defectsTotal);
 
         this.numberOfFingers = listPoDefect.size();
-        if(this.numberOfFingers > 5) this.numberOfFingers = 5;
+        if (this.numberOfFingers > 5) this.numberOfFingers = 5;
 
         mHandler.post(mUpdateFingerCountResults);
 
-        for(Point p : listPoDefect){
-            Imgproc.circle(mRgba, p, 6, new Scalar(255,0,255));
+        for (Point p : listPoDefect) {
+            Imgproc.circle(mRgba, p, 6, new Scalar(255, 0, 255));
         }
 
         return mRgba;
     }
 
-    public void updateNumberOfFingers(){
+    public void updateNumberOfFingers() {
         numberOfFingersText.setText(String.valueOf(this.numberOfFingers));
+    }
+
+
+    private Point getPointOfView(View view) {
+        int[] location = new int[2];
+        view.getLocationInWindow(location);
+        return new Point(location[0], location[1]);
     }
 }
