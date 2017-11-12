@@ -89,7 +89,7 @@
             android:layout_height="match_parent"
             android:layout_alignParentBottom="true"
             android:layout_alignParentStart="true"
-            android:background="#000000">
+            >
 
             <Button
                 android:id="@+id/button6"

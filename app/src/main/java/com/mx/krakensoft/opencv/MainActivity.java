@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase.CvCameraViewFrame;
 import org.opencv.android.CameraBridgeViewBase.CvCameraViewListener2;
@@ -63,6 +64,7 @@ import android.view.View;
 
 
 import static org.opencv.core.Core.flip;
+import static org.opencv.core.Core.sqrt;
 
 public class MainActivity extends Activity implements OnTouchListener, CvCameraViewListener2 {
 
@@ -101,6 +103,9 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
     private CustomSufaceView mOpenCvCameraView;
     private List<Size> mResolutionList;
+
+    private int XOffset = 0;
+    private int YOffset = 0;
 
     private SeekBar minTresholdSeekbar = null;
     private SeekBar maxTresholdSeekbar = null;
@@ -205,10 +210,10 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         DHV.setId(18);//Added by ahinsutime
         RL.addView(DHV);//Added by ahinsutime
         DHV.bringToFront();//Added by ahinsutime
-        //mOpenCvCameraView.setVisibility(mOpenCvCameraView.INVISIBLE);
-        mOpenCvCameraView.setAlpha(0);
-        //Log.d(TAG, "DV's id="+DV.getId());
-        //Log.d(TAG, "RL's id="+RL.getId());
+
+        mOpenCvCameraView.bringToFront();
+        mOpenCvCameraView.setAlpha((float) 10);
+
         keyButton1 = (Button) findViewById(R.id.button1);
         keyButton2 = (Button) findViewById(R.id.button2);
         keyButton3 = (Button) findViewById(R.id.button3);
@@ -450,6 +455,9 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         int xOffset = (mOpenCvCameraView.getWidth() - cols) / 2;
         int yOffset = (mOpenCvCameraView.getHeight() - rows) / 2;
 
+        XOffset = xOffset;
+        YOffset = yOffset;
+
         int x = (int) event.getX() - xOffset;
         int y = (int) event.getY() - yOffset;
         Log.i(TAG, "Touch image coordinates: (" + x + ", " + y + ")");
@@ -505,7 +513,11 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
     }
 
     public class DrawingView extends View {//Added by ahinsutime
-        int x = 100, y = 100;
+        int x = 0, y = 0;
+        int tempX = 0, tempY = 0;
+        double tempDistance = 0;
+        double optimalDistance = 4000;
+        int DefaultCursorRadius = 100;
 
         public DrawingView(Context context) {
             super(context);
@@ -515,13 +527,47 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         public void onDraw(Canvas canvas) {
             Log.d(TAG, "Inside DrawingView.onDraw");
             Paint paint = new Paint();
+            Paint far = new Paint();
+            Paint near = new Paint();
+
             paint.setColor(Color.BLUE);
+            far.setColor(Color.YELLOW);
+            near.setColor(Color.RED);
             //canvas.drawRect(x-100,y-100,x+100,y+100, paint); // 사각형그림
             //canvas.drawText("글씨", 50, 50, paint); // 글자 출력
-            x = (int) centerX;
-            y = (int) centerY;
-            canvas.drawCircle(x, y, 100, paint);
-            canvas.drawText("Cursor", x, y, paint);
+
+            float DistancesFromCenter = 0;
+            for (int i = 0; i < listPos.size(); i++) {
+                tempX = (int) (listPos.get(i).x + XOffset - centerX);
+                tempY = (int) (listPos.get(i).y + YOffset - centerY);
+                tempDistance  += (int) Math.sqrt(tempX*tempX+tempY*tempY);
+
+            }
+            Log.d(TAG, "optimalDistance=" + optimalDistance + " " + "tempDistance=" + tempDistance);
+
+
+            if(optimalDistance<=tempDistance){//When hand is near
+
+                x = (int) (centerX + XOffset);
+                y = (int) (centerY + YOffset);
+               double tempRadius = (1-(tempDistance - optimalDistance)/optimalDistance) * DefaultCursorRadius;
+                //float tempRadius = 50;
+                Log.d(TAG, "(near)tempRadius=" + tempRadius);
+                canvas.drawCircle(x, y, DefaultCursorRadius, near);
+                canvas.drawCircle(x, y, (int) Math.abs(tempRadius), paint);
+            }
+            else{//When hand is far
+                x = (int) (centerX + XOffset);
+                y = (int) (centerY + YOffset);
+                double tempRadius = ((optimalDistance - tempDistance)/optimalDistance) * DefaultCursorRadius + DefaultCursorRadius;
+                //float tempRadius = 150;
+                Log.d(TAG, "(far)tempRadius=" + tempRadius);
+                canvas.drawCircle(x, y, (int) Math.abs(tempRadius), far);
+                canvas.drawCircle(x, y, DefaultCursorRadius, paint);
+            }
+            tempDistance = 0;
+
+
         }
         /*
         @Override
@@ -541,7 +587,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
     }
 
     public class DrawingHandView extends View {//Added by ahinsutime
-        int x = 100, y = 100;
+        int x = 0, y = 0;
 
         public DrawingHandView(Context context) {
             super(context);
@@ -553,9 +599,10 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
             Paint paint = new Paint();
             paint.setColor(Color.GREEN);
             for (int i = 0; i < listPos.size(); i++) {
-                x = (int) listPos.get(i).x;
-                y = (int) listPos.get(i).y;
+                x = (int) (listPos.get(i).x + XOffset);
+                y = (int) (listPos.get(i).y + YOffset);
                 Log.d(TAG, "listPosX=" + x + " " + "listPosY=" + y);
+                Log.d(TAG, "XOffset=" + XOffset + " " + "YOffset=" + YOffset);
                 canvas.drawCircle(x, y, 50, paint);
             }
         }
