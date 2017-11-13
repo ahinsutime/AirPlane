@@ -135,14 +135,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
     boolean pressed = false;
 
-    long downTime = SystemClock.uptimeMillis();
-    long eventTime = SystemClock.uptimeMillis() + 100;
-    float tx = (float)centerX;
-    float ty = (float)centerY;
-    int metaState = 0;
-
     MotionEvent motionEvent;
-
 
     final Runnable mUpdateFingerCountResults = new Runnable() {
         public void run() {
@@ -152,12 +145,27 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
             BL.invalidate();//Added by ahinsutime
             //BL.dispatchTouchEvent()
 
-
-
-
-
             //keyButton1.dispatchTouchEvent(motionEvent);
             if(pressed) {
+                BL.dispatchTouchEvent(motionEvent);
+                Log.d(TAG, "Simulated Touch Pressed="+pressed);
+            }
+            else{
+                Log.d(TAG, "Simulated Touch Released="+pressed);
+                long downTime = SystemClock.uptimeMillis();
+                long eventTime = SystemClock.uptimeMillis() + 100;
+                float tx = (float)centerX + XOffset;
+                float ty = (float)centerY + YOffset;
+                int metaState = 0;
+
+                motionEvent = MotionEvent.obtain(
+                        downTime,
+                        eventTime,
+                        MotionEvent.ACTION_UP,
+                        tx,
+                        ty,
+                        metaState
+                );
                 BL.dispatchTouchEvent(motionEvent);
             }
 
@@ -900,8 +908,8 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
         long downTime = SystemClock.uptimeMillis();
         long eventTime = SystemClock.uptimeMillis() + 100;
-        float tx = (float)centerX;
-        float ty = (float)centerY;
+        float tx = (float)centerX + XOffset;
+        float ty = (float)centerY + YOffset;
         int metaState = 0;
 
 
@@ -912,9 +920,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
             OptimalDistArea = horizontal*vertical;
         }
 
-
-
-        if(numberOfFingers<5 && vertical<horizontal && pressed==false) {
+        if(numberOfFingers<5 && vertical<horizontal && pressed==false) {//For when start touching
 
             motionEvent = MotionEvent.obtain(
                     downTime,
@@ -926,7 +932,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
             );
             pressed = true;
         }
-        else if(numberOfFingers<5 && vertical<horizontal && pressed==true){
+        else if(numberOfFingers<5 && vertical<horizontal && pressed==true){//For dragging
             motionEvent = MotionEvent.obtain(
                     downTime,
                     eventTime,
@@ -938,6 +944,10 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
             pressed = true;
         }
         else{
+            pressed = false;
+        }
+        /*
+        else if(numberOfFingers<5 && vertical>horizontal || pressed==true || pressed==false){//For releasing button
             motionEvent = MotionEvent.obtain(
                     downTime,
                     eventTime,
@@ -948,6 +958,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
             );
             pressed = false;
         }
+        */
 
 
 
