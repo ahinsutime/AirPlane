@@ -133,12 +133,35 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
     int numberOfFingers = 0;
 
+    boolean pressed = false;
+
+    long downTime = SystemClock.uptimeMillis();
+    long eventTime = SystemClock.uptimeMillis() + 100;
+    float tx = (float)centerX;
+    float ty = (float)centerY;
+    int metaState = 0;
+
+    MotionEvent motionEvent;
+
+
     final Runnable mUpdateFingerCountResults = new Runnable() {
         public void run() {
             updateNumberOfFingers();
             DV.invalidate();//Added by ahinsutime
             DHV.invalidate();//Added by ahinsutime
             BL.invalidate();//Added by ahinsutime
+            //BL.dispatchTouchEvent()
+
+
+
+
+
+            //keyButton1.dispatchTouchEvent(motionEvent);
+            if(pressed) {
+                BL.dispatchTouchEvent(motionEvent);
+            }
+
+            keyButton1.invalidate();
             keyButton1.invalidate();
             keyButton2.invalidate();
             keyButton3.invalidate();
@@ -307,7 +330,8 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                     case MotionEvent.ACTION_MOVE :
                         keyButton1.setTextColor(Color.BLUE);
                         break;
-                    case MotionEvent.ACTION_UP   :
+                    //case MotionEvent.ACTION_UP   :
+                    default:
                         keyButton1.setTextColor(Color.BLACK);
                         break;
                 }
@@ -323,7 +347,8 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                     case MotionEvent.ACTION_MOVE :
                         keyButton2.setTextColor(Color.BLUE);
                         break;
-                    case MotionEvent.ACTION_UP   :
+                    //case MotionEvent.ACTION_UP   :
+                    default:
                         keyButton2.setTextColor(Color.BLACK);
                         break;
                 }
@@ -339,7 +364,8 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                     case MotionEvent.ACTION_MOVE :
                         keyButton3.setTextColor(Color.BLUE);
                         break;
-                    case MotionEvent.ACTION_UP   :
+                    //case MotionEvent.ACTION_UP   :
+                    default:
                         keyButton3.setTextColor(Color.BLACK);
                         break;
                 }
@@ -355,7 +381,8 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                     case MotionEvent.ACTION_MOVE :
                         keyButton4.setTextColor(Color.BLUE);
                         break;
-                    case MotionEvent.ACTION_UP   :
+                    //case MotionEvent.ACTION_UP   :
+                    default:
                         keyButton4.setTextColor(Color.BLACK);
                         break;
                 }
@@ -372,7 +399,8 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                     case MotionEvent.ACTION_MOVE :
                         keyButton5.setTextColor(Color.BLUE);
                         break;
-                    case MotionEvent.ACTION_UP   :
+                    //case MotionEvent.ACTION_UP   :
+                    default:
                         keyButton5.setTextColor(Color.BLACK);
                         break;
                 }
@@ -388,7 +416,8 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                     case MotionEvent.ACTION_MOVE :
                         keyButton6.setTextColor(Color.BLUE);
                         break;
-                    case MotionEvent.ACTION_UP   :
+                    //case MotionEvent.ACTION_UP   :
+                    default:
                         keyButton6.setTextColor(Color.BLACK);
                         break;
                 }
@@ -404,7 +433,8 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                     case MotionEvent.ACTION_MOVE :
                         keyButton7.setTextColor(Color.BLUE);
                         break;
-                    case MotionEvent.ACTION_UP   :
+                    //case MotionEvent.ACTION_UP   :
+                    default:
                         keyButton7.setTextColor(Color.BLACK);
                         break;
                 }
@@ -420,7 +450,8 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                     case MotionEvent.ACTION_MOVE :
                         keyButton8.setTextColor(Color.BLUE);
                         break;
-                    case MotionEvent.ACTION_UP   :
+                    //case MotionEvent.ACTION_UP   :
+                    default:
                         keyButton8.setTextColor(Color.BLACK);
                         break;
                 }
@@ -436,7 +467,8 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                     case MotionEvent.ACTION_MOVE :
                         keyButton9.setTextColor(Color.BLUE);
                         break;
-                    case MotionEvent.ACTION_UP   :
+                    //case MotionEvent.ACTION_UP   :
+                    default:
                         keyButton9.setTextColor(Color.BLACK);
                         break;
                 }
@@ -880,9 +912,11 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
             OptimalDistArea = horizontal*vertical;
         }
 
-        if(numberOfFingers<5 && vertical<horizontal) {
 
-            MotionEvent motionEvent = MotionEvent.obtain(
+
+        if(numberOfFingers<5 && vertical<horizontal && pressed==false) {
+
+            motionEvent = MotionEvent.obtain(
                     downTime,
                     eventTime,
                     MotionEvent.ACTION_DOWN,
@@ -890,15 +924,31 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                     ty,
                     metaState
             );
-            //dispatchTouchEvent(motionEvent);
-            //RL.dispatchTouchEvent(motionEvent);
-            //BL.dispatchTouchEvent(motionEvent);
-            Log.d(TAG, "BLID="+BL.getId());
-            //RL.dispatchTouchEvent(motionEvent);
-            //Log.d(TAG, "RLID="+RL.getId());
-           // BL.dispatchTouchEvent(motionEvent);
-            Log.d(TAG, "Simulated TouchEvent is Generated");
+            pressed = true;
         }
+        else if(numberOfFingers<5 && vertical<horizontal && pressed==true){
+            motionEvent = MotionEvent.obtain(
+                    downTime,
+                    eventTime,
+                    MotionEvent.ACTION_MOVE,
+                    tx,
+                    ty,
+                    metaState
+            );
+            pressed = true;
+        }
+        else{
+            motionEvent = MotionEvent.obtain(
+                    downTime,
+                    eventTime,
+                    MotionEvent.ACTION_UP,
+                    tx,
+                    ty,
+                    metaState
+            );
+            pressed = false;
+        }
+
 
 
         /*
