@@ -85,10 +85,12 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
     private Map<String, ButtonCoordinates> buttons;
     private double centerX = 0;//Added by ahinsutime
     private double centerY = 0;//Added by ahinsutime
+    private double OptimalDistArea = 0; //Added by ahinsutime
     private List<Point> listPos = new LinkedList<Point>();//Added by ahinsutime
     public RelativeLayout RL;//Added by ahinsutime
     public DrawingView DV;//Added by ahinsutime
     public DrawingHandView DHV;//Added by ahinsutime
+    public RelativeLayout BL;//Added by ahinsutime
 
     private static final String TAG = "HandPose::MainActivity";
     public static final int JAVA_DETECTOR = 0;
@@ -122,11 +124,13 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
     private Size SPECTRUM_SIZE;
     private Scalar CONTOUR_COLOR;
-    private Scalar CONTOUR_COLOR_BLUE;
-    private Scalar CONTOUR_COLOR_GREEN;
+    private Scalar CONTOUR_COLOR_BLUE;//Added by ahinsutime
+    private Scalar CONTOUR_COLOR_GREEN;//Added by ahinsutime
     private Scalar CONTOUR_COLOR_WHITE;
+    private Scalar CONTOUR_COLOR_BLACK;//Added by ahinsutime
 
     final Handler mHandler = new Handler();
+
     int numberOfFingers = 0;
 
     final Runnable mUpdateFingerCountResults = new Runnable() {
@@ -134,6 +138,16 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
             updateNumberOfFingers();
             DV.invalidate();//Added by ahinsutime
             DHV.invalidate();//Added by ahinsutime
+            BL.invalidate();//Added by ahinsutime
+            keyButton1.invalidate();
+            keyButton2.invalidate();
+            keyButton3.invalidate();
+            keyButton4.invalidate();
+            keyButton5.invalidate();
+            keyButton6.invalidate();
+            keyButton7.invalidate();
+            keyButton8.invalidate();
+            keyButton9.invalidate();
         }
     };
 
@@ -201,6 +215,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         });
         minTresholdSeekbar.setProgress(8700);
 
+
         RL = (RelativeLayout) findViewById(R.id.main_relative_view);//Added by ahinsutime
         DV = new DrawingView(this);//Added by ahinsutime
         DV.setId(17);//Added by ahinsutime
@@ -210,9 +225,11 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         DHV.setId(18);//Added by ahinsutime
         RL.addView(DHV);//Added by ahinsutime
         DHV.bringToFront();//Added by ahinsutime
+        BL = (RelativeLayout) findViewById(R.id.buttons);
 
-        mOpenCvCameraView.bringToFront();
-        mOpenCvCameraView.setAlpha((float) 10);
+
+        //mOpenCvCameraView.bringToFront();
+        mOpenCvCameraView.setAlpha((float) 50);//Added by ahinsutime
 
         keyButton1 = (Button) findViewById(R.id.button1);
         keyButton2 = (Button) findViewById(R.id.button2);
@@ -283,48 +300,147 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         }
         keyButton1.setOnTouchListener(new OnTouchListener() {
             public boolean onTouch(View v, MotionEvent event) {
-                return true;
+                switch(event.getAction()) {//Added by ahinsutime
+                    case MotionEvent.ACTION_DOWN :
+                        keyButton1.setTextColor(Color.BLUE);
+                        break;
+                    case MotionEvent.ACTION_MOVE :
+                        keyButton1.setTextColor(Color.BLUE);
+                        break;
+                    case MotionEvent.ACTION_UP   :
+                        keyButton1.setTextColor(Color.BLACK);
+                        break;
+                }
+                return false;
             }
         });
         keyButton2.setOnTouchListener(new OnTouchListener() {
             public boolean onTouch(View v, MotionEvent event) {
-                return true;
+                switch(event.getAction()) {//Added by ahinsutime
+                    case MotionEvent.ACTION_DOWN :
+                        keyButton2.setTextColor(Color.BLUE);
+                        break;
+                    case MotionEvent.ACTION_MOVE :
+                        keyButton2.setTextColor(Color.BLUE);
+                        break;
+                    case MotionEvent.ACTION_UP   :
+                        keyButton2.setTextColor(Color.BLACK);
+                        break;
+                }
+                return false;
             }
         });
         keyButton3.setOnTouchListener(new OnTouchListener() {
             public boolean onTouch(View v, MotionEvent event) {
-                return true;
+                switch(event.getAction()) {//Added by ahinsutime
+                    case MotionEvent.ACTION_DOWN :
+                        keyButton3.setTextColor(Color.BLUE);
+                        break;
+                    case MotionEvent.ACTION_MOVE :
+                        keyButton3.setTextColor(Color.BLUE);
+                        break;
+                    case MotionEvent.ACTION_UP   :
+                        keyButton3.setTextColor(Color.BLACK);
+                        break;
+                }
+                return false;
             }
         });
         keyButton4.setOnTouchListener(new OnTouchListener() {
             public boolean onTouch(View v, MotionEvent event) {
-                return true;
+                switch(event.getAction()) {//Added by ahinsutime
+                    case MotionEvent.ACTION_DOWN :
+                        keyButton4.setTextColor(Color.BLUE);
+                        break;
+                    case MotionEvent.ACTION_MOVE :
+                        keyButton4.setTextColor(Color.BLUE);
+                        break;
+                    case MotionEvent.ACTION_UP   :
+                        keyButton4.setTextColor(Color.BLACK);
+                        break;
+                }
+                return false;
             }
         });
 
         keyButton5.setOnTouchListener(new OnTouchListener() {
             public boolean onTouch(View v, MotionEvent event) {
-                return true;
+                switch(event.getAction()) {//Added by ahinsutime
+                    case MotionEvent.ACTION_DOWN :
+                        keyButton5.setTextColor(Color.BLUE);
+                        break;
+                    case MotionEvent.ACTION_MOVE :
+                        keyButton5.setTextColor(Color.BLUE);
+                        break;
+                    case MotionEvent.ACTION_UP   :
+                        keyButton5.setTextColor(Color.BLACK);
+                        break;
+                }
+                return false;
             }
         });
         keyButton6.setOnTouchListener(new OnTouchListener() {
             public boolean onTouch(View v, MotionEvent event) {
-                return true;
+                switch(event.getAction()) {//Added by ahinsutime
+                    case MotionEvent.ACTION_DOWN :
+                        keyButton6.setTextColor(Color.BLUE);
+                        break;
+                    case MotionEvent.ACTION_MOVE :
+                        keyButton6.setTextColor(Color.BLUE);
+                        break;
+                    case MotionEvent.ACTION_UP   :
+                        keyButton6.setTextColor(Color.BLACK);
+                        break;
+                }
+                return false;
             }
         });
         keyButton7.setOnTouchListener(new OnTouchListener() {
             public boolean onTouch(View v, MotionEvent event) {
-                return true;
+                switch(event.getAction()) {//Added by ahinsutime
+                    case MotionEvent.ACTION_DOWN :
+                        keyButton7.setTextColor(Color.BLUE);
+                        break;
+                    case MotionEvent.ACTION_MOVE :
+                        keyButton7.setTextColor(Color.BLUE);
+                        break;
+                    case MotionEvent.ACTION_UP   :
+                        keyButton7.setTextColor(Color.BLACK);
+                        break;
+                }
+                return false;
             }
         });
         keyButton8.setOnTouchListener(new OnTouchListener() {
             public boolean onTouch(View v, MotionEvent event) {
-                return true;
+                switch(event.getAction()) {//Added by ahinsutime
+                    case MotionEvent.ACTION_DOWN :
+                        keyButton8.setTextColor(Color.BLUE);
+                        break;
+                    case MotionEvent.ACTION_MOVE :
+                        keyButton8.setTextColor(Color.BLUE);
+                        break;
+                    case MotionEvent.ACTION_UP   :
+                        keyButton8.setTextColor(Color.BLACK);
+                        break;
+                }
+                return false;
             }
         });
         keyButton9.setOnTouchListener(new OnTouchListener() {
             public boolean onTouch(View v, MotionEvent event) {
-                return true;
+                switch(event.getAction()) {//Added by ahinsutime
+                    case MotionEvent.ACTION_DOWN :
+                        keyButton9.setTextColor(Color.BLUE);
+                        break;
+                    case MotionEvent.ACTION_MOVE :
+                        keyButton9.setTextColor(Color.BLUE);
+                        break;
+                    case MotionEvent.ACTION_UP   :
+                        keyButton9.setTextColor(Color.BLACK);
+                        break;
+                }
+                return false;
             }
         });
 
@@ -341,6 +457,8 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         buttons.put(String.valueOf(b.getText()), coo);
         }
 
+
+        /*
     public void touchEventDispatch(float xVal, float yVal) {
         // Obtain MotionEvent object
         long downTime = SystemClock.uptimeMillis();
@@ -371,30 +489,41 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         if (buttonName!="") {
             switch (buttonName) {
                 case "1":  temp = keyButton1;
+                    Log.d(TAG, "keyButton1 is touched");
+                    temp.setTextColor(Color.BLUE);
                     break;
                 case "2":  temp = keyButton2;
+                    temp.setTextColor(Color.BLUE);
                     break;
                 case "3":  temp = keyButton3;
+                    temp.setTextColor(Color.BLUE);
                     break;
                 case "4":  temp = keyButton4;
+                    temp.setTextColor(Color.BLUE);
                     break;
                 case "5":  temp = keyButton5;
+                    temp.setTextColor(Color.BLUE);
                     break;
                 case "6":  temp = keyButton6;
+                    temp.setTextColor(Color.BLUE);
                     break;
                 case "7":  temp = keyButton7;
+                    temp.setTextColor(Color.BLUE);
                     break;
                 case "8":  temp = keyButton8;
+                    temp.setTextColor(Color.BLUE);
                     break;
                 case "9":  temp = keyButton9;
+                    temp.setTextColor(Color.BLUE);
                     break;
             }
             if(temp!=null) {
                 temp.dispatchTouchEvent(motionEvent);
+
             }
         }
     }
-
+*/
     @Override
     public void onPause() {
         super.onPause();
@@ -440,6 +569,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         CONTOUR_COLOR_WHITE = new Scalar(255, 255, 255, 255);
         CONTOUR_COLOR_BLUE = new Scalar(0, 0, 255, 255);
         CONTOUR_COLOR_GREEN = new Scalar(0, 255, 0, 255);
+        CONTOUR_COLOR_BLACK = new Scalar(0, 0, 0, 255);
 
     }
 
@@ -464,7 +594,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         //    Log.i(TAG, "Touch image coordinates RAW: (" + event.getX() + ", " + event.getY() + ")");
 
        /* given (x, y) that was touched, click on according button */
-        touchEventDispatch(event.getX(), event.getY());
+        //touchEventDispatch(event.getX(), event.getY());
 
         if ((x < 0) || (y < 0) || (x > cols) || (y > rows)) return false;
 
@@ -650,7 +780,8 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
         Rect boundRect = Imgproc.boundingRect(new MatOfPoint(contours.get(boundPos).toArray()));
 
-        Imgproc.rectangle(mRgba, boundRect.tl(), boundRect.br(), CONTOUR_COLOR_WHITE, 2, 8, 0);
+        //Imgproc.rectangle(mRgba, boundRect.tl(), boundRect.br(), CONTOUR_COLOR_WHITE, 2, 8, 0);
+        Imgproc.rectangle(mRgba, boundRect.tl(), boundRect.br(), CONTOUR_COLOR_BLACK, 2, 8, 0);
 
 
         Log.d(TAG,
@@ -721,8 +852,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         centerX = centerX / listPo.size();//Added by ahinsutime
         centerY = centerY / listPo.size();//Added by ahinsutime
 
-        //Log.d(TAG, "DV's id="+DV.getId());//Added by ahinsutime
-        //Log.d(TAG, "RL's id="+RL.getId());//Added by ahinsutime
 
         int defectsTotal = (int) convexDefect.total();
         Log.d(TAG, "Defect total " + defectsTotal);
@@ -731,10 +860,80 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         if (this.numberOfFingers > 5) this.numberOfFingers = 5;
 
         mHandler.post(mUpdateFingerCountResults);
+        //mHandler.postDelayed(mUpdateFingerCountResults,500);
 
         for (Point p : listPoDefect) {
             Imgproc.circle(mRgba, p, 6, new Scalar(255, 0, 255));
         }
+
+        long downTime = SystemClock.uptimeMillis();
+        long eventTime = SystemClock.uptimeMillis() + 100;
+        float tx = (float)centerX;
+        float ty = (float)centerY;
+        int metaState = 0;
+
+
+        double horizontal = boundRect.br().x-boundRect.tl().x;
+        double vertical = boundRect.br().y-boundRect.tl().y;
+
+        if(numberOfFingers>=5) {
+            OptimalDistArea = horizontal*vertical;
+        }
+
+        if(numberOfFingers<5 && vertical<horizontal) {
+
+            MotionEvent motionEvent = MotionEvent.obtain(
+                    downTime,
+                    eventTime,
+                    MotionEvent.ACTION_DOWN,
+                    tx,
+                    ty,
+                    metaState
+            );
+            //dispatchTouchEvent(motionEvent);
+            //RL.dispatchTouchEvent(motionEvent);
+            //BL.dispatchTouchEvent(motionEvent);
+            Log.d(TAG, "BLID="+BL.getId());
+            //RL.dispatchTouchEvent(motionEvent);
+            //Log.d(TAG, "RLID="+RL.getId());
+           // BL.dispatchTouchEvent(motionEvent);
+            Log.d(TAG, "Simulated TouchEvent is Generated");
+        }
+
+
+        /*
+        if(numberOfFingers<3) {
+            MotionEvent motionEvent = MotionEvent.obtain(
+                    downTime,
+                    eventTime,
+                    MotionEvent.ACTION_UP,
+                    tx,
+                    ty,
+                    metaState
+            );
+            RL.dispatchTouchEvent(motionEvent);
+            Log.d(TAG, "TouchEvent generated");
+        }
+        */
+        /*
+        if(numberOfFingers<3) {
+
+            MotionEvent motionEvent = MotionEvent.obtain(
+                    downTime,
+                    eventTime,
+                    MotionEvent.ACTION_UP,
+                    tx,
+                    ty,
+                    metaState
+            );
+
+            RelativeLayout Buttons = (RelativeLayout)findViewById(R.id.buttons);
+            Buttons.dispatchTouchEvent(motionEvent);
+            Log.d(TAG, "TouchEvent generated");
+        }
+        */
+
+
 
         return mRgba;
     }
