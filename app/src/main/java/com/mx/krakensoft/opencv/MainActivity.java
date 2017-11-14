@@ -91,6 +91,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
     public DrawingView DV;//Added by ahinsutime
     public DrawingHandView DHV;//Added by ahinsutime
     public RelativeLayout BL;//Added by ahinsutime
+    public DrawingClickView DCV;//Added by ahinsutime
 
     private static final String TAG = "HandPose::MainActivity";
     public static final int JAVA_DETECTOR = 0;
@@ -147,10 +148,14 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
             //keyButton1.dispatchTouchEvent(motionEvent);
             if(pressed) {
+                DCV.setVisibility(1);
+                DCV.invalidate();
                 BL.dispatchTouchEvent(motionEvent);
                 Log.d(TAG, "Simulated Touch Pressed="+pressed);
             }
             else{
+                DCV.setVisibility(0);
+                DCV.invalidate();
                 Log.d(TAG, "Simulated Touch Released="+pressed);
                 long downTime = SystemClock.uptimeMillis();
                 long eventTime = SystemClock.uptimeMillis() + 100;
@@ -257,6 +262,9 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         RL.addView(DHV);//Added by ahinsutime
         DHV.bringToFront();//Added by ahinsutime
         BL = (RelativeLayout) findViewById(R.id.buttons);
+        DCV = new DrawingClickView(this);//Added by ahinsutime
+        RL.addView(DCV);
+        DCV.bringToFront();
 
 
         //mOpenCvCameraView.bringToFront();
@@ -771,12 +779,64 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
             for (int i = 0; i < listPos.size(); i++) {
                 x = (int) (listPos.get(i).x + XOffset);
                 y = (int) (listPos.get(i).y + YOffset);
-                Log.d(TAG, "listPosX=" + x + " " + "listPosY=" + y);
-                Log.d(TAG, "XOffset=" + XOffset + " " + "YOffset=" + YOffset);
-                canvas.drawCircle(x, y, 50, paint);
             }
         }
     }
+
+    public class DrawingClickView extends View {//Added by ahinsutime
+        int x = 0, y = 0;
+        int tempX = 0, tempY = 0;
+        double tempDistance = 0;
+        double optimalDistance = 4000;
+        int DefaultCursorRadius = 100;
+
+    public DrawingClickView(Context context) {
+        super(context);
+    }
+
+    @Override
+    public void onDraw(Canvas canvas) {
+        if(pressed) {
+            Log.d(TAG, "Inside DrawingView.onDraw");
+            Paint paint = new Paint();
+            Paint far = new Paint();
+            Paint near = new Paint();
+
+            paint.setColor(Color.WHITE);
+            far.setColor(Color.YELLOW);
+            near.setColor(Color.RED);
+
+            float DistancesFromCenter = 0;
+            for (int i = 0; i < listPos.size(); i++) {
+                tempX = (int) (listPos.get(i).x + XOffset - centerX);
+                tempY = (int) (listPos.get(i).y + YOffset - centerY);
+                tempDistance += (int) Math.sqrt(tempX * tempX + tempY * tempY);
+
+            }
+            Log.d(TAG, "optimalDistance=" + optimalDistance + " " + "tempDistance=" + tempDistance);
+
+            if (optimalDistance <= tempDistance) {//When hand is near
+
+                x = (int) (centerX + XOffset);
+                y = (int) (centerY + YOffset);
+                double tempRadius = (1 - (tempDistance - optimalDistance) / optimalDistance) * DefaultCursorRadius;
+                //float tempRadius = 50;
+                Log.d(TAG, "(near)tempRadius=" + tempRadius);
+                canvas.drawCircle(x, y, DefaultCursorRadius, near);
+                canvas.drawCircle(x, y, (int) Math.abs(tempRadius), paint);
+            } else {//When hand is far
+                x = (int) (centerX + XOffset);
+                y = (int) (centerY + YOffset);
+                double tempRadius = ((optimalDistance - tempDistance) / optimalDistance) * DefaultCursorRadius + DefaultCursorRadius;
+                //float tempRadius = 150;
+                Log.d(TAG, "(far)tempRadius=" + tempRadius);
+                canvas.drawCircle(x, y, (int) Math.abs(tempRadius), far);
+                canvas.drawCircle(x, y, DefaultCursorRadius, paint);
+            }
+            tempDistance = 0;
+        }
+    }
+}
 
     public Mat onCameraFrame(CvCameraViewFrame inputFrame) {
 
