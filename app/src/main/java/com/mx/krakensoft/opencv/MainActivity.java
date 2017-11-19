@@ -92,6 +92,8 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
 
     int DefaultCursorRadius = 50;
+    int ncols;
+    int nrows;
     private double OptimalDistArea = 0; //Added by ahinsutime
     private List<Point> listPos = new LinkedList<Point>();//Added by ahinsutime
     private List<MatOfPoint> contoursDraw;
@@ -115,8 +117,8 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
     private CustomSufaceView mOpenCvCameraView;
     private List<Size> mResolutionList;
 
-    private int XOffset = 0;
-    private int YOffset = 0;
+    private double XOffset = 0;
+    private double YOffset = 0;
 
     private SeekBar minTresholdSeekbar = null;
     private SeekBar maxTresholdSeekbar = null;
@@ -161,14 +163,14 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                 BL.dispatchTouchEvent(motionEvent);
                 Log.d(TAG, "Simulated Touch Pressed="+pressed);
             }
-            else{
+            else {
                 DCV.setVisibility(0);
                 DCV.invalidate();
-                Log.d(TAG, "Simulated Touch Released="+pressed);
+                Log.d(TAG, "Simulated Touch Released=" + pressed);
                 long downTime = SystemClock.uptimeMillis();
                 long eventTime = SystemClock.uptimeMillis() + 100;
-                float tx = (float)centerX + XOffset;
-                float ty = (float)centerY + YOffset;
+                float tx = (float) centerX + (float) XOffset;
+                float ty = (float) centerY + (float) YOffset;
                 int metaState = 0;
 
                 motionEvent = MotionEvent.obtain(
@@ -181,29 +183,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                 );
                 BL.dispatchTouchEvent(motionEvent);
             }
-
-            /*
-            double flickerDist = Math.sqrt((PrevCenterX-centerX)*(PrevCenterX-centerX)+(PrevCenterY-centerY)*(PrevCenterY-centerY));
-            if(flickerDist>100){
-                centerX = PrevCenterX;
-                centerY= PrevCenterY;
-                long downTime = SystemClock.uptimeMillis();
-                long eventTime = SystemClock.uptimeMillis() + 100;
-                float tx = (float)PrevCenterX + XOffset;
-                float ty = (float)PrevCenterY + YOffset;
-                int metaState = 0;
-
-                motionEvent = MotionEvent.obtain(
-                        downTime,
-                        eventTime,
-                        MotionEvent.ACTION_UP,
-                        tx,
-                        ty,
-                        metaState
-                );
-                mOpenCvCameraView.dispatchTouchEvent(motionEvent);
-            }
-            */
 
             keyButton1.invalidate();
             keyButton1.invalidate();
@@ -593,17 +572,38 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
     public boolean onTouch(View v, MotionEvent event) {
         int cols = mRgba.cols();
         int rows = mRgba.rows();
+        ncols = cols;
+        nrows = rows;
+
+        //Needed to be changed xOffset and yOffset are location dependent dynamic values
+
+        DisplayMetrics dm = getApplicationContext().getResources().getDisplayMetrics();
+        int width = dm.widthPixels;
+        int height = dm.heightPixels;
 
         int xOffset = (mOpenCvCameraView.getWidth() - cols) / 2;
         int yOffset = (mOpenCvCameraView.getHeight() - rows) / 2;
 
-        XOffset = xOffset;
-        YOffset = yOffset;
+        int touchedX = (int) Math.floor(event.getX() * cols/width);
+        int touchedY = (int) Math.floor(event.getY() * rows/height);
+
+
+
+        XOffset =  cols/ (double) width;
+        YOffset = rows / (double) height;
+
+        Log.i(TAG, "XOffset="+XOffset+" YOffset="+YOffset);
 
         int x = (int) event.getX() - xOffset;
         int y = (int) event.getY() - yOffset;
+
+        x = touchedX;
+        y = touchedY;
+
         Log.i(TAG, "Touch image coordinates: (" + x + ", " + y + ")");
         Log.i(TAG, "Touch image coordinates RAW: (" + event.getX() + ", " + event.getY() + ")");
+        //Needed to be changed
+
 
        /* given (x, y) that was touched, click on according button */
         //touchEventDispatch(event.getX(), event.getY());
@@ -692,10 +692,11 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
             if(optimalDistance<=tempDistance){//When hand is near
 
-                x = (int) (centerX + XOffset);
-                y = (int) (centerY + YOffset);
-                //x = (int) (centerX);
-                //y = (int) (centerY);
+                //x = (int) (centerX + XOffset);
+                //y = (int) (centerY + YOffset);
+                x = (int) (centerX / XOffset);
+                y = (int) (centerY / YOffset);
+                Log.i(TAG, "Updated x="+x+" Updated y="+y+" centerX="+centerX+" centerY="+centerY);
                double tempRadius = (1-(tempDistance - optimalDistance)/optimalDistance) * DefaultCursorRadius;
                 //float tempRadius = 50;
                 Log.d(TAG, "(near)tempRadius=" + tempRadius);
@@ -703,10 +704,12 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                 canvas.drawCircle(x, y, (int) Math.abs(tempRadius), paint);
             }
             else{//When hand is far
-                x = (int) (centerX + XOffset);
-                y = (int) (centerY + YOffset);
-                //x = (int) (centerX);
-                //y = (int) (centerY);
+                //x = (int) (centerX + XOffset);
+                //y = (int) (centerY + YOffset);
+                x = (int) (centerX / XOffset);
+                y = (int) (centerY / YOffset);
+                Log.i(TAG, "Updated x="+x+" Updated y="+y+" centerX="+centerX+" centerY="+centerY);
+
                 double tempRadius = ((optimalDistance - tempDistance)/optimalDistance) * DefaultCursorRadius + DefaultCursorRadius;
                 //float tempRadius = 150;
                 Log.d(TAG, "(far)tempRadius=" + tempRadius);
@@ -731,15 +734,16 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
             Log.d(TAG, "Inside DrawingHandView.onDraw");
             Paint paint = new Paint();
             paint.setColor(Color.GREEN);
+
             /*
-            for (int i = 0; i < listPos.size(); i++) {
-                x = (int) (listPos.get(i).x + XOffset);
-                y = (int) (listPos.get(i).y + YOffset);
+            for (int i = 0; i < nrows; i++) {
+                for (int j = 0; j < ncols; j++) {
+                    if (i%100==0 && j%100==0) {
+                        canvas.drawCircle(j, i, 5, paint);
+                    }
+                }
             }
             */
-            //for (int i=0; i<contoursDraw.size();i++){
-            //    x = (int) contoursDraw.get(i).get
-           // }
         }
     }
 
@@ -780,10 +784,11 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
             if (optimalDistance <= tempDistance) {//When hand is near
 
-                x = (int) (centerX + XOffset);
-                y = (int) (centerY + YOffset);
-                //x = (int) (centerX);
-                //y = (int) (centerY);
+                //x = (int) (centerX + XOffset);
+                //y = (int) (centerY + YOffset);
+                x = (int) (centerX / XOffset);
+                y = (int) (centerY / YOffset);
+                Log.i(TAG, "Updated x="+x+" Updated y="+y+" centerX="+centerX+" centerY="+centerY);
                 double tempRadius = (1 - (tempDistance - optimalDistance) / optimalDistance) * DefaultCursorRadius;
                 //float tempRadius = 50;
                 Log.d(TAG, "(near)tempRadius=" + tempRadius);
@@ -791,10 +796,11 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                 canvas.drawCircle(x, y, DefaultCursorRadius, near);
                 canvas.drawCircle(x, y, (int) Math.abs(tempRadius), paint);
             } else {//When hand is far
-                x = (int) (centerX + XOffset);
-                y = (int) (centerY + YOffset);
-                //x = (int) (centerX );
-                //y = (int) (centerY );
+                //x = (int) (centerX + XOffset);
+                //y = (int) (centerY + YOffset);
+                x = (int) (centerX / (double) XOffset);
+                y = (int) (centerY / (double) YOffset);
+                Log.i(TAG, "Updated x="+x+" Updated y="+y+" centerX="+centerX+" centerY="+centerY);
                 double tempRadius = ((optimalDistance - tempDistance) / optimalDistance) * DefaultCursorRadius + DefaultCursorRadius;
                 //float tempRadius = 150;
                 Log.d(TAG, "(far)tempRadius=" + tempRadius);
@@ -930,7 +936,8 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
         listPos = listPo;//Added by ahinsutime
 
-
+        centerX = 0;
+        centerY = 0;
         for (int j = 0; j < listPos.size(); j++) {//Added by ahinsutime
 
             centerX = centerX + listPos.get(j).x;
@@ -941,14 +948,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
         PrevCenterX = centerX;
         PrevCenterY = centerY;
-        //centerX = boundRect.tl().x + (boundRect.br().x-boundRect.tl().x)/2;
-        //centerY = boundRect.tl().y + (boundRect.br().y-boundRect.tl().y)/2;
-        Log.i(TAG, "CenterX="+centerX);
-        Log.i(TAG, "CenterY="+centerY);
-        //Log.i(TAG, "PrevCenterX="+PrevCenterX);
-        //Log.i(TAG, "PrevCenterY="+PrevCenterY);
-
-
 
         int defectsTotal = (int) convexDefect.total();
         Log.d(TAG, "Defect total " + defectsTotal);
@@ -965,10 +964,11 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
         long downTime = SystemClock.uptimeMillis();
         long eventTime = SystemClock.uptimeMillis() + 100;
-        float tx = (float)centerX + XOffset;
-        float ty = (float)centerY + YOffset;
+        //float tx = (float)centerX + XOffset;
+        //float ty = (float)centerY + YOffset;
+        float tx = (float) (centerX / XOffset);
+        float ty = (float) (centerY / YOffset);
         int metaState = 0;
-
 
         double horizontal = boundRect.br().x-boundRect.tl().x;
         double vertical = boundRect.br().y-boundRect.tl().y;
