@@ -145,6 +145,8 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
     int numberOfFingers = 0;
 
     boolean pressed = false;
+    boolean flicker = false;
+    double flickerDist = 0;
 
     MotionEvent motionEvent;
 
@@ -155,6 +157,49 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
             DHV.invalidate();//Added by ahinsutime
             BL.invalidate();//Added by ahinsutime
             //BL.dispatchTouchEvent()
+
+            flickerDist = Math.sqrt((PrevCenterX-centerX)*(PrevCenterX-centerX) +(PrevCenterY-centerY) *(PrevCenterY-centerY));
+
+            if( ((((int) PrevCenterX))==0) && ((((int) PrevCenterY))==0)){//Initial setting
+                //centerX = (PrevCenterX+centerX)/2;
+                //centerY = (PrevCenterY+centerY)/2;
+                //centerX = centerX + (centerX-PrevCenterX)/3;
+                //centerY = centerY + (PrevCenterY+centerY)/3;
+                PrevCenterX = centerX;
+                PrevCenterY = centerY;
+            }
+            else if(flickerDist<50 && flickerDist>=0){//For micro control
+                centerX = PrevCenterX + (centerX-PrevCenterX)/5;
+                centerY = PrevCenterY + (centerY-PrevCenterY)/5;
+                PrevCenterX = centerX;
+                PrevCenterY = centerY;
+            }
+            else if(flickerDist<100 && flickerDist>=50){//For micro control
+                centerX = PrevCenterX + (centerX-PrevCenterX)/4;
+                centerY = PrevCenterY + (centerY-PrevCenterY)/4;
+                PrevCenterX = centerX;
+                PrevCenterY = centerY;
+            }
+            else if(flickerDist<200 && flickerDist>=100){//For micro control
+                centerX = PrevCenterX + (centerX-PrevCenterX)/3;
+                centerY = PrevCenterY + (centerY-PrevCenterY)/3;
+                PrevCenterX = centerX;
+                PrevCenterY = centerY;
+            }
+            else if(flickerDist<500 && flickerDist>=200){//For micro control
+                centerX = PrevCenterX + (centerX-PrevCenterX)/2;
+                centerY = PrevCenterY + (centerY-PrevCenterY)/2;
+                PrevCenterX = centerX;
+                PrevCenterY = centerY;
+            }
+            else{//Large flickering
+                //PrevCenterX = centerX;
+                //PrevCenterY = centerY;
+                centerX = PrevCenterX + (centerX-PrevCenterX)/4;
+                centerY = PrevCenterY + (centerY-PrevCenterY)/4;
+                PrevCenterX = centerX;
+                PrevCenterY = centerY;
+            }
 
             //keyButton1.dispatchTouchEvent(motionEvent);
             if(pressed) {
@@ -692,8 +737,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
             if(optimalDistance<=tempDistance){//When hand is near
 
-                //x = (int) (centerX + XOffset);
-                //y = (int) (centerY + YOffset);
                 x = (int) (centerX / XOffset);
                 y = (int) (centerY / YOffset);
                 Log.i(TAG, "Updated x="+x+" Updated y="+y+" centerX="+centerX+" centerY="+centerY);
@@ -704,8 +747,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                 canvas.drawCircle(x, y, (int) Math.abs(tempRadius), paint);
             }
             else{//When hand is far
-                //x = (int) (centerX + XOffset);
-                //y = (int) (centerY + YOffset);
                 x = (int) (centerX / XOffset);
                 y = (int) (centerY / YOffset);
                 Log.i(TAG, "Updated x="+x+" Updated y="+y+" centerX="+centerX+" centerY="+centerY);
@@ -784,25 +825,19 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
             if (optimalDistance <= tempDistance) {//When hand is near
 
-                //x = (int) (centerX + XOffset);
-                //y = (int) (centerY + YOffset);
                 x = (int) (centerX / XOffset);
                 y = (int) (centerY / YOffset);
                 Log.i(TAG, "Updated x="+x+" Updated y="+y+" centerX="+centerX+" centerY="+centerY);
                 double tempRadius = (1 - (tempDistance - optimalDistance) / optimalDistance) * DefaultCursorRadius;
-                //float tempRadius = 50;
                 Log.d(TAG, "(near)tempRadius=" + tempRadius);
 
                 canvas.drawCircle(x, y, DefaultCursorRadius, near);
                 canvas.drawCircle(x, y, (int) Math.abs(tempRadius), paint);
             } else {//When hand is far
-                //x = (int) (centerX + XOffset);
-                //y = (int) (centerY + YOffset);
                 x = (int) (centerX / (double) XOffset);
                 y = (int) (centerY / (double) YOffset);
                 Log.i(TAG, "Updated x="+x+" Updated y="+y+" centerX="+centerX+" centerY="+centerY);
                 double tempRadius = ((optimalDistance - tempDistance) / optimalDistance) * DefaultCursorRadius + DefaultCursorRadius;
-                //float tempRadius = 150;
                 Log.d(TAG, "(far)tempRadius=" + tempRadius);
                 canvas.drawCircle(x, y, (int) Math.abs(tempRadius), far);
                 canvas.drawCircle(x, y, DefaultCursorRadius, paint);
@@ -855,8 +890,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         Rect boundRect = Imgproc.boundingRect(new MatOfPoint(contours.get(boundPos).toArray()));
 
         //Imgproc.rectangle(mRgba, boundRect.tl(), boundRect.br(), CONTOUR_COLOR_WHITE, 2, 8, 0);
-        Imgproc.rectangle(mRgba, boundRect.tl(), boundRect.br(), CONTOUR_COLOR_BLACK, 2, 8, 0);
-
 
         Log.d(TAG,
                 " Row start [" +
@@ -936,6 +969,8 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
         listPos = listPo;//Added by ahinsutime
 
+        //PrevCenterX = centerX;
+        //PrevCenterY = centerY;
         centerX = 0;
         centerY = 0;
         for (int j = 0; j < listPos.size(); j++) {//Added by ahinsutime
@@ -946,8 +981,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         centerX = centerX / listPos.size();//Added by ahinsutime
         centerY = centerY / listPos.size();//Added by ahinsutime
 
-        PrevCenterX = centerX;
-        PrevCenterY = centerY;
+
 
         int defectsTotal = (int) convexDefect.total();
         Log.d(TAG, "Defect total " + defectsTotal);
@@ -957,10 +991,29 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
         mHandler.post(mUpdateFingerCountResults);
         //mHandler.postDelayed(mUpdateFingerCountResults,500);
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////Use this!!
+
 
         for (Point p : listPoDefect) {
-            Imgproc.circle(mRgba, p, 6, new Scalar(255, 0, 255));
+            Imgproc.circle(mRgba, p, 6, new Scalar(0, 0, 255));
         }
+
+        int maxY = 0;
+        for (int i=0; i<listPoDefect.size(); i++){
+            if(maxY<=listPoDefect.get(i).y){
+                maxY = (int) listPoDefect.get(i).y;
+            }
+        }
+        boundRect.br().y = maxY;
+
+
+        Point br = boundRect.br();
+
+        br.x = boundRect.br().x;
+        br.y = maxY;
+        //Imgproc.rectangle(mRgba, boundRect.tl(), boundRect.br(), CONTOUR_COLOR_BLACK, 2, 8, 0);
+        Imgproc.rectangle(mRgba, boundRect.tl(), br, CONTOUR_COLOR_BLACK, 2, 8, 0);
+        Log.i(TAG, "br.y="+br.y+" maxY="+maxY);
 
         long downTime = SystemClock.uptimeMillis();
         long eventTime = SystemClock.uptimeMillis() + 100;
