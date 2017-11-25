@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 
@@ -63,6 +65,7 @@ import android.graphics.RectF;
 import android.os.Bundle;
 import android.util.AttributeSet;
 import android.view.View;
+import android.os.SystemClock;
 
 
 import static org.opencv.core.Core.flip;
@@ -102,6 +105,8 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
     public DrawingHandView DHV;//Added by ahinsutime
     public RelativeLayout BL;//Added by ahinsutime
     public DrawingClickView DCV;//Added by ahinsutime
+
+    // public DrawingLoadingView DLV;
 
     private static final String TAG = "HandPose::MainActivity";
     public static final int JAVA_DETECTOR = 0;
@@ -146,78 +151,136 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
     boolean pressed = false;
     boolean flicker = false;
+    boolean tracking = false;
     double flickerDist = 0;
+    double optimalArea = 4000;
+    double currentArea = 100000;
+    Point InitialP1 = new Point(0,0);
+    Point InitialP2 = new Point(1,1);
+    long mPauseTime=0;
+    long mTimeNow=0;
+    boolean Detecting=true;
+
+    Rect PrevBoundRect = new Rect(InitialP1, InitialP2);
 
     MotionEvent motionEvent;
 
+
+
+    /*
+            if(Detecting=true){
+                DLV.setVisibility(DLV.VISIBLE);
+                DHV.setVisibility(DHV.VISIBLE);//Added by ahinsutime
+                DV.setVisibility(DV.GONE);
+                BL.setVisibility(BL.GONE);
+                mPauseTime = SystemClock.elapsedRealtime();
+                DLV.invalidate();
+                if(mPauseTime>2000){
+                    long downTime = SystemClock.uptimeMillis();
+                    long eventTime = SystemClock.uptimeMillis() + 100;
+
+                    int metaState = 0;
+
+                    DisplayMetrics dm = getApplicationContext().getResources().getDisplayMetrics();
+                    int width = dm.widthPixels;
+                    int height = dm.heightPixels;
+
+                    float tx=width/2;
+                    float ty=height/2;
+                    motionEvent = MotionEvent.obtain(
+                            downTime,
+                            eventTime,
+                            MotionEvent.ACTION_UP,
+                            tx,
+                            ty,
+                            metaState
+                    );
+                    mOpenCvCameraView.dispatchTouchEvent(motionEvent);
+                    Detecting=false;
+                    mPauseTime=0;
+                    DLV.setVisibility(DLV.GONE);
+                }
+
+            }
+            */
+
     final Runnable mUpdateFingerCountResults = new Runnable() {
         public void run() {
-            updateNumberOfFingers();
-            DV.invalidate();//Added by ahinsutime
-            DHV.invalidate();//Added by ahinsutime
-            BL.invalidate();//Added by ahinsutime
-            //BL.dispatchTouchEvent()
 
-            flickerDist = Math.sqrt((PrevCenterX-centerX)*(PrevCenterX-centerX) +(PrevCenterY-centerY) *(PrevCenterY-centerY));
+            DisplayMetrics dm = getApplicationContext().getResources().getDisplayMetrics();
+            int width = dm.widthPixels;
+            int height = dm.heightPixels;
+            if(tracking==false){
 
-            if( ((((int) PrevCenterX))==0) && ((((int) PrevCenterY))==0)){//Initial setting
-                //centerX = (PrevCenterX+centerX)/2;
-                //centerY = (PrevCenterY+centerY)/2;
-                //centerX = centerX + (centerX-PrevCenterX)/3;
-                //centerY = centerY + (PrevCenterY+centerY)/3;
-                PrevCenterX = centerX;
-                PrevCenterY = centerY;
-            }
-            else if(flickerDist<50 && flickerDist>=0){//For micro control
-                centerX = PrevCenterX + (centerX-PrevCenterX)/5;
-                centerY = PrevCenterY + (centerY-PrevCenterY)/5;
-                PrevCenterX = centerX;
-                PrevCenterY = centerY;
-            }
-            else if(flickerDist<100 && flickerDist>=50){//For micro control
-                centerX = PrevCenterX + (centerX-PrevCenterX)/4;
-                centerY = PrevCenterY + (centerY-PrevCenterY)/4;
-                PrevCenterX = centerX;
-                PrevCenterY = centerY;
-            }
-            else if(flickerDist<200 && flickerDist>=100){//For micro control
-                centerX = PrevCenterX + (centerX-PrevCenterX)/3;
-                centerY = PrevCenterY + (centerY-PrevCenterY)/3;
-                PrevCenterX = centerX;
-                PrevCenterY = centerY;
-            }
-            else if(flickerDist<500 && flickerDist>=200){//For micro control
-                centerX = PrevCenterX + (centerX-PrevCenterX)/2;
-                centerY = PrevCenterY + (centerY-PrevCenterY)/2;
-                PrevCenterX = centerX;
-                PrevCenterY = centerY;
-            }
-            else{//Large flickering
-                //PrevCenterX = centerX;
-                //PrevCenterY = centerY;
-                centerX = PrevCenterX + (centerX-PrevCenterX)/4;
-                centerY = PrevCenterY + (centerY-PrevCenterY)/4;
-                PrevCenterX = centerX;
-                PrevCenterY = centerY;
-            }
+                DHV.setVisibility(DHV.VISIBLE);//Added by ahinsutime
+                DV.setVisibility(DV.GONE);
+                BL.setVisibility(BL.GONE);
+                DV.invalidate();//Added by ahinsutime
+                DHV.invalidate();//Added by ahinsutime
+                BL.invalidate();//Added by ahinsutime
+                keyButton1.setVisibility(keyButton1.GONE);
+                keyButton2.setVisibility(keyButton2.GONE);
+                keyButton3.setVisibility(keyButton3.GONE);
+                keyButton4.setVisibility(keyButton4.GONE);
+                keyButton5.setVisibility(keyButton5.GONE);
+                keyButton6.setVisibility(keyButton6.GONE);
+                keyButton7.setVisibility(keyButton7.GONE);
+                keyButton8.setVisibility(keyButton8.GONE);
+                keyButton9.setVisibility(keyButton9.GONE);
+                keyButton1.invalidate();
+                keyButton2.invalidate();
+                keyButton3.invalidate();
+                keyButton4.invalidate();
+                keyButton5.invalidate();
+                keyButton6.invalidate();
+                keyButton7.invalidate();
+                keyButton8.invalidate();
+                keyButton9.invalidate();
 
-            //keyButton1.dispatchTouchEvent(motionEvent);
-            if(pressed) {
-                DCV.setVisibility(1);
-                DCV.invalidate();
-                BL.dispatchTouchEvent(motionEvent);
-                Log.d(TAG, "Simulated Touch Pressed="+pressed);
-            }
-            else {
-                DCV.setVisibility(0);
-                DCV.invalidate();
-                Log.d(TAG, "Simulated Touch Released=" + pressed);
+                TimerTask adTast = new TimerTask() {
+
+                    public void run() {
+                        long downTime = SystemClock.uptimeMillis();
+                        long eventTime = SystemClock.uptimeMillis() + 100;
+
+                        int metaState = 0;
+
+                        DisplayMetrics dm = getApplicationContext().getResources().getDisplayMetrics();
+                        int width = dm.widthPixels;
+                        int height = dm.heightPixels;
+
+                        float tx=width/2;
+                        float ty=height/2;
+                        motionEvent = MotionEvent.obtain(
+                                downTime,
+                                eventTime,
+                                MotionEvent.ACTION_UP,
+                                tx,
+                                ty,
+                                metaState
+                        );
+                        mOpenCvCameraView.dispatchTouchEvent(motionEvent);
+
+                        double horizontal = PrevBoundRect.br().x-PrevBoundRect.tl().x;
+                        double vertical = PrevBoundRect.br().y-PrevBoundRect.tl().y;
+                         if(currentArea<((width/2.2)*(height/2.2)) &&  currentArea>(width/20*height/20) && horizontal<=width/2.5){
+                              tracking = true;
+                           }
+                         else{
+                             tracking = false;
+                         }
+                    }
+                };
+
+                /*
                 long downTime = SystemClock.uptimeMillis();
                 long eventTime = SystemClock.uptimeMillis() + 100;
-                float tx = (float) centerX + (float) XOffset;
-                float ty = (float) centerY + (float) YOffset;
                 int metaState = 0;
-
+                DisplayMetrics dm = getApplicationContext().getResources().getDisplayMetrics();
+                int width = dm.widthPixels;
+                int height = dm.heightPixels;
+                float tx=width/2;
+                float ty=height/2;
                 motionEvent = MotionEvent.obtain(
                         downTime,
                         eventTime,
@@ -226,19 +289,103 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                         ty,
                         metaState
                 );
-                BL.dispatchTouchEvent(motionEvent);
+
+                mOpenCvCameraView.dispatchTouchEvent(motionEvent);
+                */
+
+                //timer
+                //make touch event
+                //check optimal plane area
+                //Make new buttons
+
+                Timer timer = new Timer();
+                timer.schedule(adTast, 2000);
+            }
+            else {
+
+                DV.setVisibility(DV.VISIBLE);
+                BL.setVisibility(BL.VISIBLE);
+                DHV.setVisibility(BL.GONE);;//Added by ahinsutime
+                keyButton1.setVisibility(keyButton1.VISIBLE);
+                keyButton2.setVisibility(keyButton2.VISIBLE);
+                keyButton3.setVisibility(keyButton3.VISIBLE);
+                keyButton4.setVisibility(keyButton4.VISIBLE);
+                keyButton5.setVisibility(keyButton5.VISIBLE);
+                keyButton6.setVisibility(keyButton6.VISIBLE);
+                keyButton7.setVisibility(keyButton7.VISIBLE);
+                keyButton8.setVisibility(keyButton8.VISIBLE);
+                keyButton9.setVisibility(keyButton9.VISIBLE);
+                keyButton1.invalidate();
+                keyButton2.invalidate();
+                keyButton3.invalidate();
+                keyButton4.invalidate();
+                keyButton5.invalidate();
+                keyButton6.invalidate();
+                keyButton7.invalidate();
+                keyButton8.invalidate();
+                keyButton9.invalidate();
+                updateNumberOfFingers();
+                DV.invalidate();//Added by ahinsutime
+                DHV.invalidate();//Added by ahinsutime
+                BL.invalidate();//Added by ahinsutime
+
+
+                flickerDist = Math.sqrt((PrevCenterX - centerX) * (PrevCenterX - centerX) + (PrevCenterY - centerY) * (PrevCenterY - centerY));
+
+                if (((((int) PrevCenterX)) == 0) && ((((int) PrevCenterY)) == 0)) {//Initial setting
+                } else if (flickerDist < 50 && flickerDist >= 0) {//For micro control
+                    centerX = PrevCenterX + (centerX - PrevCenterX) / 5;
+                    centerY = PrevCenterY + (centerY - PrevCenterY) / 5;
+                    PrevCenterX = centerX;
+                    PrevCenterY = centerY;
+                } else if (flickerDist < 100 && flickerDist >= 50) {//For micro control
+                    centerX = PrevCenterX + (centerX - PrevCenterX) / 4;
+                    centerY = PrevCenterY + (centerY - PrevCenterY) / 4;
+                    PrevCenterX = centerX;
+                    PrevCenterY = centerY;
+                } else if (flickerDist < 200 && flickerDist >= 100) {//For micro control
+                    centerX = PrevCenterX + (centerX - PrevCenterX) / 3;
+                    centerY = PrevCenterY + (centerY - PrevCenterY) / 3;
+                    PrevCenterX = centerX;
+                    PrevCenterY = centerY;
+                } else if (flickerDist < 500 && flickerDist >= 200) {//For micro control
+                    centerX = PrevCenterX + (centerX - PrevCenterX) / 2;
+                    centerY = PrevCenterY + (centerY - PrevCenterY) / 2;
+                } else {//Large flickering
+                    centerX = PrevCenterX + (centerX - PrevCenterX) / 4;
+                    centerY = PrevCenterY + (centerY - PrevCenterY) / 4;
+                }
+                PrevCenterX = centerX;
+                PrevCenterY = centerY;
+
+                //keyButton1.dispatchTouchEvent(motionEvent);
+                if (pressed) {
+                    DCV.setVisibility(1);
+                    DCV.invalidate();
+                    BL.dispatchTouchEvent(motionEvent);
+                    Log.d(TAG, "Simulated Touch Pressed=" + pressed);
+                } else {
+                    DCV.setVisibility(0);
+                    DCV.invalidate();
+                    Log.d(TAG, "Simulated Touch Released=" + pressed);
+                    long downTime = SystemClock.uptimeMillis();
+                    long eventTime = SystemClock.uptimeMillis() + 100;
+                    float tx = (float) centerX + (float) XOffset;
+                    float ty = (float) centerY + (float) YOffset;
+                    int metaState = 0;
+
+                    motionEvent = MotionEvent.obtain(
+                            downTime,
+                            eventTime,
+                            MotionEvent.ACTION_UP,
+                            tx,
+                            ty,
+                            metaState
+                    );
+                    BL.dispatchTouchEvent(motionEvent);
+                }
             }
 
-            keyButton1.invalidate();
-            keyButton1.invalidate();
-            keyButton2.invalidate();
-            keyButton3.invalidate();
-            keyButton4.invalidate();
-            keyButton5.invalidate();
-            keyButton6.invalidate();
-            keyButton7.invalidate();
-            keyButton8.invalidate();
-            keyButton9.invalidate();
         }
     };
 
@@ -321,6 +468,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         RL.addView(DCV);
         DCV.bringToFront();
 
+        mHandler.post(mUpdateFingerCountResults);
 
         //mOpenCvCameraView.bringToFront();
         mOpenCvCameraView.setAlpha((float) 50);//Added by ahinsutime
@@ -334,6 +482,15 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         keyButton7 = (Button) findViewById(R.id.button7);
         keyButton8 = (Button) findViewById(R.id.button8);
         keyButton9 = (Button) findViewById(R.id.button9);
+        keyButton1.setVisibility(keyButton1.GONE);
+        keyButton2.setVisibility(keyButton2.GONE);
+        keyButton3.setVisibility(keyButton3.GONE);
+        keyButton4.setVisibility(keyButton4.GONE);
+        keyButton5.setVisibility(keyButton5.GONE);
+        keyButton6.setVisibility(keyButton6.GONE);
+        keyButton7.setVisibility(keyButton7.GONE);
+        keyButton8.setVisibility(keyButton8.GONE);
+        keyButton9.setVisibility(keyButton9.GONE);
         buttons = new HashMap<>();
         if (!flag) {
             keyButton1.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -546,7 +703,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                 return false;
             }
         });
-
     }
     public void addButtonCoordinates (Button b) {
         Point point1 = getPointOfView(b);
@@ -703,7 +859,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         int x = 0, y = 0;
         int tempX = 0, tempY = 0;
         double tempDistance = 0;
-        double optimalDistance = 4000;
+
 
         public DrawingView(Context context) {
             super(context);
@@ -732,15 +888,14 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                 tempDistance  += (int) Math.sqrt(tempX*tempX+tempY*tempY);
 
             }
-            Log.d(TAG, "optimalDistance=" + optimalDistance + " " + "tempDistance=" + tempDistance);
 
 
-            if(optimalDistance<=tempDistance){//When hand is near
+            if(optimalArea<=tempDistance){//When hand is near
 
                 x = (int) (centerX / XOffset);
                 y = (int) (centerY / YOffset);
                 Log.i(TAG, "Updated x="+x+" Updated y="+y+" centerX="+centerX+" centerY="+centerY);
-               double tempRadius = (1-(tempDistance - optimalDistance)/optimalDistance) * DefaultCursorRadius;
+               double tempRadius = (1-(tempDistance - optimalArea)/optimalArea) * DefaultCursorRadius;
                 //float tempRadius = 50;
                 Log.d(TAG, "(near)tempRadius=" + tempRadius);
                 canvas.drawCircle(x, y, DefaultCursorRadius, near);
@@ -751,7 +906,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                 y = (int) (centerY / YOffset);
                 Log.i(TAG, "Updated x="+x+" Updated y="+y+" centerX="+centerX+" centerY="+centerY);
 
-                double tempRadius = ((optimalDistance - tempDistance)/optimalDistance) * DefaultCursorRadius + DefaultCursorRadius;
+                double tempRadius = ((optimalArea - tempDistance)/optimalArea) * DefaultCursorRadius + DefaultCursorRadius;
                 //float tempRadius = 150;
                 Log.d(TAG, "(far)tempRadius=" + tempRadius);
                 canvas.drawCircle(x, y, (int) Math.abs(tempRadius), far);
@@ -774,8 +929,23 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         public void onDraw(Canvas canvas) {
             Log.d(TAG, "Inside DrawingHandView.onDraw");
             Paint paint = new Paint();
-            paint.setColor(Color.GREEN);
+            Paint textPaint = new Paint();
 
+            paint.setColor(Color.GREEN);
+            textPaint.setColor(Color.GREEN);
+            textPaint.setTextSize(60);
+
+            paint.setStyle(Paint.Style.STROKE);
+            paint.setStrokeWidth(10);
+            DisplayMetrics dm = getApplicationContext().getResources().getDisplayMetrics();
+            //int width = dm.widthPixels;
+            //int height = dm.heightPixels;
+            int width = canvas.getWidth();
+            int height = canvas.getHeight();
+            int rectSize = height/4;
+            android.graphics.Rect InitialRect = new android.graphics.Rect(width/2-rectSize,height/2-rectSize, width/2+rectSize,height/2+rectSize);
+            canvas.drawRect(InitialRect, paint);
+            canvas.drawText("Show your hand in this square", width/5, height/5, textPaint);
             /*
             for (int i = 0; i < nrows; i++) {
                 for (int j = 0; j < ncols; j++) {
@@ -847,6 +1017,30 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
     }
 }
 
+
+
+    public class DrawingLoadingView extends View {//Added by ahinsutime
+
+
+        public DrawingLoadingView(Context context) {
+            super(context);
+        }
+
+        @Override
+        public void onDraw(Canvas canvas) {
+            Paint paint = new Paint();
+
+            paint.setColor(Color.BLUE);
+            paint.setAlpha(50);
+
+            DisplayMetrics dm = getApplicationContext().getResources().getDisplayMetrics();
+            int width = dm.widthPixels;
+            int height = dm.heightPixels;
+//*(mPauseTime/2000)
+            canvas.drawCircle(width/2, height/2, height/2 ,paint);
+        }
+    }
+
     public Mat onCameraFrame(CvCameraViewFrame inputFrame) {
 
         mRgba = inputFrame.rgba();
@@ -889,14 +1083,29 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
         Rect boundRect = Imgproc.boundingRect(new MatOfPoint(contours.get(boundPos).toArray()));
 
+
+
         //Imgproc.rectangle(mRgba, boundRect.tl(), boundRect.br(), CONTOUR_COLOR_WHITE, 2, 8, 0);
 
         Log.d(TAG,
-                " Row start [" +
+                " (Before)Row start [" +
                         (int) boundRect.tl().y + "] row end [" +
                         (int) boundRect.br().y + "] Col start [" +
                         (int) boundRect.tl().x + "] Col end [" +
                         (int) boundRect.br().x + "]");
+
+        Log.d(TAG,
+                " (After)Row start [" +
+                        (int) boundRect.tl().y + "] row end [" +
+                        (int) boundRect.br().y + "] Col start [" +
+                        (int) boundRect.tl().x + "] Col end [" +
+                        (int) boundRect.br().x + "]");
+
+
+
+
+
+
 
         int rectHeightThresh = 0;
         double a = boundRect.br().y - boundRect.tl().y;
@@ -932,7 +1141,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
             Point data = iterator.next();
 
             //data.getClass().
-            if (data.y > (mRgba.size().height - 100)) {
+            if (data.y > (mRgba.size().height - 200)) {
                 iterator.remove();
             }
         }
@@ -964,8 +1173,9 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
         Log.d(TAG, "hull: " + hull.toList());
         Log.d(TAG, "defects: " + convexDefect.toList());
-
-        Imgproc.drawContours(mRgba, hullPoints, -1, CONTOUR_COLOR_GREEN, 3);
+        if(tracking==true) {
+            Imgproc.drawContours(mRgba, hullPoints, -1, CONTOUR_COLOR_GREEN, 3);
+        }
 
         listPos = listPo;//Added by ahinsutime
 
@@ -999,21 +1209,93 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         }
 
         int maxY = 0;
+        int AX =0;
+        /*
         for (int i=0; i<listPoDefect.size(); i++){
             if(maxY<=listPoDefect.get(i).y){
                 maxY = (int) listPoDefect.get(i).y;
+                AX=(int) listPoDefect.get(i).x;
             }
         }
+        */
+
+        for (int i=0; i<listPo.size(); i++){
+            if(maxY<=listPo.get(i).y){
+                maxY = (int) listPo.get(i).y;
+            }
+        }
+        //Point tempPoint = new Point(AX, maxY);
+        //boundRect.br() = tempPoint;
+        /*
         boundRect.br().y = maxY;
 
-
         Point br = boundRect.br();
-
         br.x = boundRect.br().x;
         br.y = maxY;
+        */
+
+        double tlDelX, tlDelY, brDelX, brDelY, tlDel, brDel;
+        double temptlX=0, temptlY=0, tempbrX=0, tempbrY=0;
+        tlDelX = boundRect.tl().x-PrevBoundRect.tl().x;
+        tlDelY = boundRect.tl().y-PrevBoundRect.tl().y;
+        tlDel = Math.sqrt(tlDelX*tlDelX+tlDelY*tlDelY);
+
+        brDelX = boundRect.br().x-PrevBoundRect.br().x;
+        brDelY = maxY-PrevBoundRect.br().y;
+        brDel = Math.sqrt(brDelX*brDelX+brDelY*brDelY);
+
+
+        if (PrevBoundRect.tl()==InitialP1 || PrevBoundRect.br()==InitialP2){
+
+        }
+        else if(Math.abs(tlDel)>200){
+            temptlX=PrevBoundRect.tl().x+tlDelX/5;
+            temptlY=PrevBoundRect.tl().y+tlDelY/5;
+        }
+        else if(Math.abs(tlDel)<=200 && Math.abs(tlDel)>100){
+            temptlX=PrevBoundRect.tl().x+tlDelX/4;
+            temptlY=PrevBoundRect.tl().y+tlDelY/4;
+        }
+        else if(Math.abs(tlDel)<=100 && Math.abs(tlDel)>50){
+            temptlX=PrevBoundRect.tl().x+tlDelX/3;
+            temptlY=PrevBoundRect.tl().y+tlDelY/3;
+        }
+        else{
+            temptlX=PrevBoundRect.tl().x+tlDelX/2;
+            temptlY=PrevBoundRect.tl().y+tlDelY/2;
+        }
+
+
+        if (PrevBoundRect.tl()==InitialP1 || PrevBoundRect.br()==InitialP2){
+        }
+        else if(Math.abs(brDel)>200){
+            tempbrX=PrevBoundRect.br().x+brDelX/5;
+            tempbrY=PrevBoundRect.br().y+brDelY/5;
+        }
+        else if(Math.abs(brDel)<=200 && Math.abs(brDel)>100){
+            tempbrX=PrevBoundRect.br().x+brDelX/4;
+            tempbrY=PrevBoundRect.br().y+brDelY/4;
+        }
+        else if(Math.abs(brDel)<=100 && Math.abs(brDel)>50){
+            tempbrX=PrevBoundRect.br().x+brDelX/3;
+            tempbrY=PrevBoundRect.br().y+brDelY/3;
+        }
+        else{
+
+            tempbrX=PrevBoundRect.br().x+brDelX/2;
+            tempbrY=PrevBoundRect.br().y+brDelY/2;
+        }
+
+
+        Rect tempRect = new Rect(new Point(temptlX, temptlY), new Point(tempbrX, tempbrY));
+        boundRect = tempRect;
+        if(tracking==true) {
+            Imgproc.rectangle(mRgba, boundRect.tl(), boundRect.br(), CONTOUR_COLOR_BLACK, 2, 8, 0);
+        }
+
         //Imgproc.rectangle(mRgba, boundRect.tl(), boundRect.br(), CONTOUR_COLOR_BLACK, 2, 8, 0);
-        Imgproc.rectangle(mRgba, boundRect.tl(), br, CONTOUR_COLOR_BLACK, 2, 8, 0);
-        Log.i(TAG, "br.y="+br.y+" maxY="+maxY);
+        PrevBoundRect = boundRect;
+
 
         long downTime = SystemClock.uptimeMillis();
         long eventTime = SystemClock.uptimeMillis() + 100;
@@ -1026,11 +1308,29 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         double horizontal = boundRect.br().x-boundRect.tl().x;
         double vertical = boundRect.br().y-boundRect.tl().y;
 
-        if(numberOfFingers>=5) {
-            OptimalDistArea = horizontal*vertical;
+        currentArea = horizontal*vertical;
+
+        DisplayMetrics dm = getApplicationContext().getResources().getDisplayMetrics();
+        int width = dm.widthPixels;
+        int height = dm.heightPixels;
+        if(currentArea>((width/2.2)*(height/2.2)) ||  currentArea<(width/20*height/20) || horizontal>=width/2.5){
+            tracking = false;
         }
 
-        if(numberOfFingers<5 && vertical<horizontal && pressed==false) {//For when start touching
+/*
+        if(currentArea<((width/2.2)*(height/2.2)) &&  currentArea>(width/20*height/20) && horizontal<=width/2.5 && flickerDist<300){
+            tracking = true;
+        }
+        else{
+            tracking = false;
+        }
+*/
+
+        if(numberOfFingers>=5 && horizontal*vertical<mRgba.rows()/2*mRgba.cols()/2) {
+            optimalArea = horizontal*vertical;
+        }
+
+        if(numberOfFingers<5 && vertical*3<horizontal && pressed==false) {//For when start touching
 
             motionEvent = MotionEvent.obtain(
                     downTime,
@@ -1042,7 +1342,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
             );
             pressed = true;
         }
-        else if(numberOfFingers<5 && vertical<horizontal && pressed==true){//For dragging
+        else if(numberOfFingers<5 && vertical*2.5<horizontal && pressed==true){//For dragging
             motionEvent = MotionEvent.obtain(
                     downTime,
                     eventTime,
