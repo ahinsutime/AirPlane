@@ -261,9 +261,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                         );
                         mOpenCvCameraView.dispatchTouchEvent(motionEvent);
 
-                        double horizontal = PrevBoundRect.br().x-PrevBoundRect.tl().x;
-                        double vertical = PrevBoundRect.br().y-PrevBoundRect.tl().y;
-                         if(currentArea<((width/2.2)*(height/2.2)) &&  currentArea>(width/20*height/20) && horizontal<=width/2.5){
+                         if(currentArea<((width/2)*(height/2)) &&  currentArea>(width/20*height/20)){
                               tracking = true;
                            }
                          else{
@@ -945,7 +943,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
             int rectSize = height/4;
             android.graphics.Rect InitialRect = new android.graphics.Rect(width/2-rectSize,height/2-rectSize, width/2+rectSize,height/2+rectSize);
             canvas.drawRect(InitialRect, paint);
-            canvas.drawText("Show your hand in this square", width/5, height/5, textPaint);
+            canvas.drawText("Show your hand in this square for 2 seconds.", width/5, height/5, textPaint);
             /*
             for (int i = 0; i < nrows; i++) {
                 for (int j = 0; j < ncols; j++) {
@@ -1313,7 +1311,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         DisplayMetrics dm = getApplicationContext().getResources().getDisplayMetrics();
         int width = dm.widthPixels;
         int height = dm.heightPixels;
-        if(currentArea>((width/2.2)*(height/2.2)) ||  currentArea<(width/20*height/20) || horizontal>=width/2.5){
+        if(currentArea>((width/2)*(height/2)) ||  currentArea<(width/20*height/20) || horizontal>=width/2.5){
             tracking = false;
         }
 
