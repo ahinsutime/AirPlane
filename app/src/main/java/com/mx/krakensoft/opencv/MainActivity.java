@@ -37,12 +37,10 @@ import com.mx.krakensoft.opencv.imageProcessing.ColorBlobDetector;
 import android.app.Activity;
 import android.graphics.SumPathEffect;
 import android.hardware.Camera;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
-import android.text.InputType;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -50,12 +48,9 @@ import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
-import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -76,10 +71,6 @@ import android.os.SystemClock;
 import static org.opencv.core.Core.flip;
 import static org.opencv.core.Core.sqrt;
 
-import com.mx.krakensoft.opencv.R;
-import com.mx.krakensoft.opencv.patternview.PatternView;
-
-//import com.*;
 public class MainActivity extends Activity implements OnTouchListener, CvCameraViewListener2 {
 
     static {
@@ -96,16 +87,13 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
     private Button keyButton7;
     private Button keyButton8;
     private Button keyButton9;
-    private RelativeLayout globalLayout;
     private Map<String, ButtonCoordinates> buttons;
-    private EditText customEdit;
-    private PatternView patternView;
     private double centerX = 0;//Added by ahinsutime
     private double centerY = 0;//Added by ahinsutime
     private double PrevCenterX = 0;//Added by ahinsutime
     private double PrevCenterY = 0;//Added by ahinsutime
-    private Spinner spinner;
-    private boolean globalLayBoolean = false;
+
+
     int DefaultCursorRadius = 50;
     int ncols;
     int nrows;
@@ -116,8 +104,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
     public DrawingView DV;//Added by ahinsutime
     public DrawingHandView DHV;//Added by ahinsutime
     public RelativeLayout BL;//Added by ahinsutime
-    public RelativeLayout BL2;
-    public RelativeLayout BL3;
     public DrawingClickView DCV;//Added by ahinsutime
 
     // public DrawingLoadingView DLV;
@@ -283,9 +269,8 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                 updateNumberOfFingers();
                 DV.invalidate();//Added by ahinsutime
                 DHV.invalidate();//Added by ahinsutime
-             //   BL.invalidate();//Added by ahinsutime
-                if (globalLayBoolean)
-                    globalLayout.invalidate();
+                BL.invalidate();//Added by ahinsutime
+
 
                 flickerDist = Math.sqrt((PrevCenterX - centerX) * (PrevCenterX - centerX) + (PrevCenterY - centerY) * (PrevCenterY - centerY));
 
@@ -315,38 +300,34 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                 PrevCenterX = centerX;
                 PrevCenterY = centerY;
 
-            //keyButton1.dispatchTouchEvent(motionEvent);
-            if(pressed) {
-                DCV.setVisibility(1);
-                DCV.invalidate();
-                if (globalLayBoolean)
-                    globalLayout.dispatchTouchEvent(motionEvent);
-                //  BL.dispatchTouchEvent(motionEvent);
-                Log.d(TAG, "Simulated Touch Pressed="+pressed);
-            }
-            else {
-                DCV.setVisibility(0);
-                DCV.invalidate();
-                Log.d(TAG, "Simulated Touch Released=" + pressed);
-                long downTime = SystemClock.uptimeMillis();
-                long eventTime = SystemClock.uptimeMillis() + 100;
-                float tx = (float) centerX + (float) XOffset;
-                float ty = (float) centerY + (float) YOffset;
-                int metaState = 0;
+                //keyButton1.dispatchTouchEvent(motionEvent);
+                if (pressed) {
+                    DCV.setVisibility(1);
+                    DCV.invalidate();
+                    BL.dispatchTouchEvent(motionEvent);
+                    Log.d(TAG, "Simulated Touch Pressed=" + pressed);
+                } else {
+                    DCV.setVisibility(0);
+                    DCV.invalidate();
+                    Log.d(TAG, "Simulated Touch Released=" + pressed);
+                    long downTime = SystemClock.uptimeMillis();
+                    long eventTime = SystemClock.uptimeMillis() + 100;
+                    float tx = (float) centerX + (float) XOffset;
+                    float ty = (float) centerY + (float) YOffset;
+                    int metaState = 0;
 
-                motionEvent = MotionEvent.obtain(
-                        downTime,
-                        eventTime,
-                        MotionEvent.ACTION_UP,
-                        tx,
-                        ty,
-                        metaState
-                );
-                if (globalLayBoolean)
-                    globalLayout.dispatchTouchEvent(motionEvent);
-              //  BL.dispatchTouchEvent(motionEvent);
+                    motionEvent = MotionEvent.obtain(
+                            downTime,
+                            eventTime,
+                            MotionEvent.ACTION_UP,
+                            tx,
+                            ty,
+                            metaState
+                    );
+                    BL.dispatchTouchEvent(motionEvent);
+                }
             }
-
+        }
     };
 
     private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
@@ -423,53 +404,16 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         DHV.setId(18);//Added by ahinsutime
         RL.addView(DHV);//Added by ahinsutime
         DHV.bringToFront();//Added by ahinsutime
-        BL = (RelativeLayout) findViewById(R.id.buttons_keyboard);
-        BL2 = (RelativeLayout) findViewById(R.id.buttons_discrete);
-        BL3 = (RelativeLayout) findViewById(R.id.buttons_shape);
+        BL = (RelativeLayout) findViewById(R.id.buttons);
         DCV = new DrawingClickView(this);//Added by ahinsutime
         RL.addView(DCV);
         DCV.bringToFront();
 
         //mHandler.post(mUpdateFingerCountResults);
-        /*spinner for selecting user design */
-        spinner = (Spinner) findViewById(R.id.spinner);
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-                if (globalLayBoolean)
-                    globalLayout.setVisibility(View.INVISIBLE);
-                switch (String.valueOf(parentView.getItemIdAtPosition(position))) {
-                    case "0":
-                        globalLayout = BL;
-                        globalLayout.setVisibility(View.VISIBLE);
-                        globalLayBoolean = true;
-                        break;
-                    case "1":
-                        globalLayout = BL2;
-                        globalLayout.setVisibility(View.VISIBLE);
-                        globalLayBoolean = true;
-                        break;
-                    case "2":
-                        globalLayout = BL3;
-                        globalLayout.setVisibility(View.VISIBLE);
-                        globalLayBoolean = true;
-                        break;
-                }
-
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parentView) {
-                // your code here
-            }
-
-        });
 
         //mOpenCvCameraView.bringToFront();
         mOpenCvCameraView.setAlpha((float) 50);//Added by ahinsutime
-        customEdit = (EditText) findViewById(R.id.customEdit);
-        disableSoftInputFromAppearing(customEdit);
-        customEdit.setText("");
+
         keyButton1 = (Button) findViewById(R.id.button1);
         keyButton2 = (Button) findViewById(R.id.button2);
         keyButton3 = (Button) findViewById(R.id.button3);
@@ -488,8 +432,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         keyButton7.setVisibility(keyButton7.GONE);
         keyButton8.setVisibility(keyButton8.GONE);
         keyButton9.setVisibility(keyButton9.GONE);
-                patternView = (PatternView) findViewById(R.id.patternView);
-                buttons = new HashMap<>();
+        buttons = new HashMap<>();
         if (!flag) {
             keyButton1.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                 @Override
@@ -552,11 +495,9 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                 switch (event.getAction()) {//Added by ahinsutime
                     case MotionEvent.ACTION_DOWN:
                         keyButton1.setTextColor(Color.BLUE);
-                        customEdit.append("1");
-                        customEdit.setSelection(customEdit.getText().length());
                         break;
                     case MotionEvent.ACTION_MOVE:
-                        customEdit.setSelection(customEdit.getText().length());
+                        keyButton1.setTextColor(Color.BLUE);
                         break;
                     //case MotionEvent.ACTION_UP   :
                     default:
@@ -571,8 +512,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                 switch (event.getAction()) {//Added by ahinsutime
                     case MotionEvent.ACTION_DOWN:
                         keyButton2.setTextColor(Color.BLUE);
-                        customEdit.append("2");
-                        customEdit.setSelection(customEdit.getText().length());
                         break;
                     case MotionEvent.ACTION_MOVE:
                         keyButton2.setTextColor(Color.BLUE);
@@ -590,8 +529,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                 switch (event.getAction()) {//Added by ahinsutime
                     case MotionEvent.ACTION_DOWN:
                         keyButton3.setTextColor(Color.BLUE);
-                        customEdit.append("3");
-                        customEdit.setSelection(customEdit.getText().length());
                         break;
                     case MotionEvent.ACTION_MOVE:
                         keyButton3.setTextColor(Color.BLUE);
@@ -609,8 +546,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                 switch (event.getAction()) {//Added by ahinsutime
                     case MotionEvent.ACTION_DOWN:
                         keyButton4.setTextColor(Color.BLUE);
-                        customEdit.append("4");
-                        customEdit.setSelection(customEdit.getText().length());
                         break;
                     case MotionEvent.ACTION_MOVE:
                         keyButton4.setTextColor(Color.BLUE);
@@ -629,8 +564,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                 switch (event.getAction()) {//Added by ahinsutime
                     case MotionEvent.ACTION_DOWN:
                         keyButton5.setTextColor(Color.BLUE);
-                        customEdit.append("5");
-                        customEdit.setSelection(customEdit.getText().length());
                         break;
                     case MotionEvent.ACTION_MOVE:
                         keyButton5.setTextColor(Color.BLUE);
@@ -648,8 +581,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                 switch (event.getAction()) {//Added by ahinsutime
                     case MotionEvent.ACTION_DOWN:
                         keyButton6.setTextColor(Color.BLUE);
-                        customEdit.append("6");
-                        customEdit.setSelection(customEdit.getText().length());
                         break;
                     case MotionEvent.ACTION_MOVE:
                         keyButton6.setTextColor(Color.BLUE);
@@ -667,8 +598,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                 switch (event.getAction()) {//Added by ahinsutime
                     case MotionEvent.ACTION_DOWN:
                         keyButton7.setTextColor(Color.BLUE);
-                        customEdit.append("7");
-                        customEdit.setSelection(customEdit.getText().length());
                         break;
                     case MotionEvent.ACTION_MOVE:
                         keyButton7.setTextColor(Color.BLUE);
@@ -686,8 +615,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                 switch (event.getAction()) {//Added by ahinsutime
                     case MotionEvent.ACTION_DOWN:
                         keyButton8.setTextColor(Color.BLUE);
-                        customEdit.append("8");
-                        customEdit.setSelection(customEdit.getText().length());
                         break;
                     case MotionEvent.ACTION_MOVE:
                         keyButton8.setTextColor(Color.BLUE);
@@ -705,8 +632,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                 switch (event.getAction()) {//Added by ahinsutime
                     case MotionEvent.ACTION_DOWN:
                         keyButton9.setTextColor(Color.BLUE);
-                        customEdit.append("9");
-                        customEdit.setSelection(customEdit.getText().length());
                         break;
                     case MotionEvent.ACTION_MOVE:
                         keyButton9.setTextColor(Color.BLUE);
@@ -719,7 +644,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                 return false;
             }
         });
-
     }
 
     public void addButtonCoordinates(Button b) {
@@ -876,8 +800,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
     public class DrawingView extends View {//Added by ahinsutime
         int x = 0, y = 0;
         int tempX = 0, tempY = 0;
-        double tempDistance = 0;
-        double optimalDistance = 4000;
 
         public DrawingView(Context context) {
             super(context);
@@ -904,7 +826,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
                 x = (int) (centerX / XOffset);
                 y = (int) (centerY / YOffset);
-               double tempRadius = (1-(currentDist - optimalDist)/(optimalDist)) * DefaultCursorRadius;
+                double tempRadius = (1 - (currentDist - optimalDist) / (optimalDist)) * DefaultCursorRadius;
 
                 //Log.d(TAG, "(near)tempRadius=" + tempRadius);
                 Log.d(TAG, "optimalDist=" + optimalDist+" currentDist="+currentDist);
@@ -963,54 +885,54 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         int x = 0, y = 0;
         int tempX = 0, tempY = 0;
 
-    public DrawingClickView(Context context) {
-        super(context);
-    }
+        public DrawingClickView(Context context) {
+            super(context);
+        }
 
-    @Override
-    public void onDraw(Canvas canvas) {
-        if(pressed) {
-            Log.d(TAG, "Inside DrawingView.onDraw");
-            Paint paint = new Paint();
-            Paint far = new Paint();
-            Paint near = new Paint();
+        @Override
+        public void onDraw(Canvas canvas) {
+            if (pressed) {
+                Log.d(TAG, "Inside DrawingView.onDraw");
+                Paint paint = new Paint();
+                Paint far = new Paint();
+                Paint near = new Paint();
 
-            paint.setColor(Color.WHITE);
-            far.setColor(Color.YELLOW);
-            near.setColor(Color.RED);
+                paint.setColor(Color.WHITE);
+                far.setColor(Color.YELLOW);
+                near.setColor(Color.RED);
 
-            //paint.setAlpha(50);
-            far.setAlpha(50);
-            near.setAlpha(50);
+                //paint.setAlpha(50);
+                far.setAlpha(50);
+                near.setAlpha(50);
 
 
-            double optimalDist = optimalArea/10000;
-            double currentDist = currentArea/10000;
+                double optimalDist = optimalArea / 10000;
+                double currentDist = currentArea / 10000;
 
-            if (optimalDist <= currentDist) {//When hand is near
+                if (optimalDist <= currentDist) {//When hand is near
 
-                x = (int) (centerX / XOffset);
-                y = (int) (centerY / YOffset);
+                    x = (int) (centerX / XOffset);
+                    y = (int) (centerY / YOffset);
 
-                double tempRadius = (1 - (currentDist - optimalDist) / (optimalDist)) * DefaultCursorRadius;
+                    double tempRadius = (1 - (currentDist - optimalDist) / (optimalDist)) * DefaultCursorRadius;
 
-                canvas.drawCircle(x, y, DefaultCursorRadius, near);
-                canvas.drawCircle(x, y, (int) Math.abs(tempRadius), paint);
+                    canvas.drawCircle(x, y, DefaultCursorRadius, near);
+                    canvas.drawCircle(x, y, (int) Math.abs(tempRadius), paint);
 
-            } else {//When hand is far
-                x = (int) (centerX / (double) XOffset);
-                y = (int) (centerY / (double) YOffset);
+                } else {//When hand is far
+                    x = (int) (centerX / (double) XOffset);
+                    y = (int) (centerY / (double) YOffset);
 
-                double tempRadius = ((optimalDist - currentDist) / (optimalDist)) * DefaultCursorRadius + DefaultCursorRadius;
-                //double tempRadius = DefaultCursorRadius;
+                    double tempRadius = ((optimalDist - currentDist) / (optimalDist)) * DefaultCursorRadius + DefaultCursorRadius;
+                    //double tempRadius = DefaultCursorRadius;
 
-                canvas.drawCircle(x, y, (int) Math.abs(tempRadius), far);
-                canvas.drawCircle(x, y, DefaultCursorRadius, paint);
+                    canvas.drawCircle(x, y, (int) Math.abs(tempRadius), far);
+                    canvas.drawCircle(x, y, DefaultCursorRadius, paint);
+                }
+
             }
-
         }
     }
-}
 
     public class DrawingLoadingView extends View {//Added by ahinsutime
 
@@ -1088,7 +1010,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
         //Imgproc.rectangle(mRgba, boundRect.tl(), boundRect.br(), CONTOUR_COLOR_WHITE, 2, 8, 0);
 
-
         Log.d(TAG,
                 " (Before)Row start [" +
                         (int) boundRect.tl().y + "] row end [" +
@@ -1096,6 +1017,12 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                         (int) boundRect.tl().x + "] Col end [" +
                         (int) boundRect.br().x + "]");
 
+        Log.d(TAG,
+                " (After)Row start [" +
+                        (int) boundRect.tl().y + "] row end [" +
+                        (int) boundRect.br().y + "] Col start [" +
+                        (int) boundRect.tl().x + "] Col end [" +
+                        (int) boundRect.br().x + "]");
 
 
         int rectHeightThresh = 0;
@@ -1219,7 +1146,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         //boundRect.br() = tempPoint;
         /*
         boundRect.br().y = maxY;
-
         Point br = boundRect.br();
         br.x = boundRect.br().x;
         br.y = maxY;
@@ -1362,15 +1288,5 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         int[] location = new int[2];
         view.getLocationInWindow(location);
         return new Point(location[0], location[1]);
-    }
-
-    public static void disableSoftInputFromAppearing(EditText editText) {
-        if (Build.VERSION.SDK_INT >= 11) {
-            editText.setRawInputType(InputType.TYPE_CLASS_TEXT);
-            editText.setTextIsSelectable(true);
-        } else {
-            editText.setRawInputType(InputType.TYPE_NULL);
-            editText.setFocusable(true);
-        }
     }
 }
