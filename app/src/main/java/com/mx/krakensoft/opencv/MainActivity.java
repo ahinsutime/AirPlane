@@ -225,7 +225,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                         mOpenCvCameraView.dispatchTouchEvent(motionEvent);
 
 
-                        if (currentArea < ((width / 2) * (height / 2)) && currentArea > (width / 20 * height / 20)) {
+                        if (currentArea < ((width / 2) * (height / 2) / 10000) && currentArea > (width / 20 * height / 20) /10000) {
                             tracking = true;
                             optimalArea = currentArea;
                         } else {
@@ -823,8 +823,8 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
             innerMapping.setStrokeWidth(10);
             outerMapping.setStrokeWidth(10);
 
-            double optimalDist = optimalArea/10000;
-            double currentDist = currentArea/10000;
+            double optimalDist = optimalArea;
+            double currentDist = currentArea;
 
             int width = canvas.getWidth();
             int height = canvas.getHeight();
@@ -1154,19 +1154,15 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         double horizontal = boundRect.br().x-boundRect.tl().x;
         double vertical = boundRect.br().y-boundRect.tl().y;
 
-        currentArea = horizontal*vertical;
+        currentArea = horizontal*vertical / 10000;
 
         DisplayMetrics dm = getApplicationContext().getResources().getDisplayMetrics();
         int width = dm.widthPixels;
         int height = dm.heightPixels;
-        if(currentArea>((width/2)*(height/2)) ||  currentArea<(width/20*height/20) || horizontal>=width/2 || horizontal<=20 || vertical <= 20){
+        if(currentArea>((width/2)*(height/2)/10000) ||  currentArea<(width/20*height/20 /10000) || horizontal>=width/2 || horizontal<=20 || vertical <= 20){
             tracking = false;
             optimalArea = 4000;
             currentArea = 4000;
-        }
-
-        if(numberOfFingers>=5 && horizontal*vertical<mRgba.rows()/2*mRgba.cols()/2) {
-            //optimalArea = horizontal*vertical;
         }
 
         if(numberOfFingers<5 && vertical*1.8<horizontal && pressed==false) {//For when start touching
