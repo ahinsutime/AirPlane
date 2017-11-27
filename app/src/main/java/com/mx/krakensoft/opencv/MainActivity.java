@@ -823,25 +823,19 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
             innerMapping.setStrokeWidth(10);
             outerMapping.setStrokeWidth(10);
 
-
             double optimalDist = optimalArea/10000;
             double currentDist = currentArea/10000;
-
 
             int width = canvas.getWidth();
             int height = canvas.getHeight();
             float mapX =width * 2/4;
             float mapY = height * 2/4;
 
-
             canvas.drawRect(width/2-mapX/2,height/2-mapY/2,width/2+mapX/2,height/2+mapY/2, innerMapping);
             canvas.drawRect(10,10,width-10,height-10, outerMapping);
 
-
             x = (int) (centerX / XOffset);
             y = (int) (centerY / YOffset);
-
-
 
             if (y>height/2) {
                 y = height/2 + (int) (Math.abs(y - height / 2) * height / mapY);
@@ -1066,9 +1060,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         }
         centerX = centerX / listPos.size();//Added by ahinsutime
         centerY = centerY / listPos.size();//Added by ahinsutime
-
-
-
+        
         int defectsTotal = (int) convexDefect.total();
         Log.d(TAG, "Defect total " + defectsTotal);
 
@@ -1086,29 +1078,12 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
         int maxY = 0;
         int AX =0;
-        /*
-        for (int i=0; i<listPoDefect.size(); i++){
-            if(maxY<=listPoDefect.get(i).y){
-                maxY = (int) listPoDefect.get(i).y;
-                AX=(int) listPoDefect.get(i).x;
-            }
-        }
-        */
 
         for (int i=0; i<listPo.size(); i++){
             if(maxY<=listPo.get(i).y){
                 maxY = (int) listPo.get(i).y;
             }
         }
-        //Point tempPoint = new Point(AX, maxY);
-        //boundRect.br() = tempPoint;
-        /*
-        boundRect.br().y = maxY;
-
-        Point br = boundRect.br();
-        br.x = boundRect.br().x;
-        br.y = maxY;
-        */
 
         double tlDelX, tlDelY, brDelX, brDelY, tlDel, brDel;
         double temptlX=0, temptlY=0, tempbrX=0, tempbrY=0;
@@ -1175,10 +1150,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
         long downTime = SystemClock.uptimeMillis();
         long eventTime = SystemClock.uptimeMillis() + 100;
-        //float tx = (float)centerX + XOffset;
-        //float ty = (float)centerY + YOffset;
-        //float tx = (float) (centerX / XOffset);
-        //float ty = (float) (centerY / YOffset);
         float tx = (float) mappedX;
         float ty = (float) mappedY;
         int metaState = 0;
