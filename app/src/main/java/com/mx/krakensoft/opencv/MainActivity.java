@@ -107,8 +107,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
     private boolean globalLayBoolean = false;
 
     int DefaultCursorRadius = 50;
-    int ncols;
-    int nrows;
 
     private List<Point> listPos = new LinkedList<Point>();//Added by ahinsutime
     private List<MatOfPoint> contoursDraw;
@@ -118,9 +116,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
     public RelativeLayout BL;//Added by ahinsutime
     public RelativeLayout BL2;
     public RelativeLayout BL3;
-    public DrawingClickView DCV;//Added by ahinsutime
 
-    // public DrawingLoadingView DLV;
 
     private static final String TAG = "HandPose::MainActivity";
     public static final int JAVA_DETECTOR = 0;
@@ -174,12 +170,8 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
     long mPauseTime=0;
     long mTimeNow=0;
     boolean Detecting=true;
-
     Rect PrevBoundRect = new Rect(InitialP1, InitialP2);
-
     MotionEvent motionEvent;
-
-
 
 
     final Runnable mUpdateFingerCountResults = new Runnable() {
@@ -219,11 +211,11 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                 keyButton8.invalidate();
                 keyButton9.invalidate();
                 patternView.invalidate();
+
                 TimerTask adTast = new TimerTask() {
                     public void run() {
                         long downTime = SystemClock.uptimeMillis();
                         long eventTime = SystemClock.uptimeMillis() + 100;
-
                         int metaState = 0;
 
                         DisplayMetrics dm = getApplicationContext().getResources().getDisplayMetrics();
@@ -242,7 +234,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                         );
                         mOpenCvCameraView.dispatchTouchEvent(motionEvent);
 
-
                         if (currentArea < ((width / 2) * (height / 2) / 10000) && currentArea > (width / 20 * height / 20) /10000) {
                             tracking = true;
                             optimalArea = currentArea;
@@ -251,7 +242,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                             optimalArea = 4000;
                             currentArea = 4000;
                         }
-
                     }
 
                 };
@@ -418,11 +408,9 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
         RL = (RelativeLayout) findViewById(R.id.main_relative_view);//Added by ahinsutime
         DV = new DrawingView(this);//Added by ahinsutime
-        DV.setId(17);//Added by ahinsutime
         RL.addView(DV);//Added by ahinsutime
         DV.bringToFront();//Added by ahinsutime
         DHV = new DrawingHandView(this);//Added by ahinsutime
-        DHV.setId(18);//Added by ahinsutime
         RL.addView(DHV);//Added by ahinsutime
         DHV.bringToFront();//Added by ahinsutime
         BL = (RelativeLayout) findViewById(R.id.buttons_keyboard);
@@ -465,7 +453,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         });
 
         //mOpenCvCameraView.bringToFront();
-        mOpenCvCameraView.setAlpha((float) 50);//Added by ahinsutime
+        mOpenCvCameraView.setAlpha(1);//Added by ahinsutime
         customEdit = (EditText) findViewById(R.id.customEdit);
         disableSoftInputFromAppearing(customEdit);
         customEdit.setText("");
@@ -781,7 +769,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         CONTOUR_COLOR_BLUE = new Scalar(0, 0, 255, 255);
         CONTOUR_COLOR_GREEN = new Scalar(0, 255, 0, 255);
         CONTOUR_COLOR_BLACK = new Scalar(0, 0, 0, 255);
-
     }
 
     public void onCameraViewStopped() {
@@ -792,10 +779,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
     public boolean onTouch(View v, MotionEvent event) {
         int cols = mRgba.cols();
         int rows = mRgba.rows();
-        ncols = cols;
-        nrows = rows;
-
-        //Needed to be changed xOffset and yOffset are location dependent dynamic values
 
         DisplayMetrics dm = getApplicationContext().getResources().getDisplayMetrics();
         int width = dm.widthPixels;
@@ -806,8 +789,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
         int touchedX = (int) Math.floor(event.getX() * cols/width);
         int touchedY = (int) Math.floor(event.getY() * rows/height);
-
-
 
         XOffset =  cols/ (double) width;
         YOffset = rows / (double) height;
@@ -823,7 +804,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         Log.i(TAG, "Touch image coordinates: (" + x + ", " + y + ")");
         Log.i(TAG, "Touch image coordinates RAW: (" + event.getX() + ", " + event.getY() + ")");
         //Needed to be changed
-
 
        /* given (x, y) that was touched, click on according button */
         //touchEventDispatch(event.getX(), event.getY());
@@ -876,7 +856,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
     public class DrawingView extends View {//Added by ahinsutime
         int x = 0, y = 0;
-        int tempX = 0, tempY = 0;
 
         public DrawingView(Context context) {
             super(context);
@@ -939,7 +918,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
             mappedX = x;
             mappedY = y;
 
-
             if(optimalDist<=currentDist){//When hand is near
 
                 double tempRadius = (1 - (currentDist - optimalDist) / (optimalDist)) * DefaultCursorRadius;
@@ -987,9 +965,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
             paint.setStyle(Paint.Style.STROKE);
             paint.setStrokeWidth(10);
-            DisplayMetrics dm = getApplicationContext().getResources().getDisplayMetrics();
-            //int width = dm.widthPixels;
-            //int height = dm.heightPixels;
+
             int width = canvas.getWidth();
             int height = canvas.getHeight();
             int rectSize = height/4;
@@ -997,81 +973,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
             canvas.drawRect(InitialRect, paint);
             canvas.drawText("Show your hand in this square for 2 seconds.", width/5, height/5, textPaint);
 
-        }
-    }
-
-    public class DrawingClickView extends View {//Added by ahinsutime
-        int x = 0, y = 0;
-        int tempX = 0, tempY = 0;
-
-        public DrawingClickView(Context context) {
-            super(context);
-        }
-
-        @Override
-        public void onDraw(Canvas canvas) {
-            if (pressed) {
-                Log.d(TAG, "Inside DrawingView.onDraw");
-                Paint paint = new Paint();
-                Paint far = new Paint();
-                Paint near = new Paint();
-
-                paint.setColor(Color.WHITE);
-                far.setColor(Color.YELLOW);
-                near.setColor(Color.RED);
-
-                //paint.setAlpha(50);
-                far.setAlpha(50);
-                near.setAlpha(50);
-
-
-                double optimalDist = optimalArea / 10000;
-                double currentDist = currentArea / 10000;
-
-                if (optimalDist <= currentDist) {//When hand is near
-
-                    x = (int) (centerX / XOffset);
-                    y = (int) (centerY / YOffset);
-
-                    double tempRadius = (1 - (currentDist - optimalDist) / (optimalDist)) * DefaultCursorRadius;
-
-                    canvas.drawCircle(x, y, DefaultCursorRadius, near);
-                    canvas.drawCircle(x, y, (int) Math.abs(tempRadius), paint);
-
-                } else {//When hand is far
-                    x = (int) (centerX / (double) XOffset);
-                    y = (int) (centerY / (double) YOffset);
-
-                    double tempRadius = ((optimalDist - currentDist) / (optimalDist)) * DefaultCursorRadius + DefaultCursorRadius;
-                    //double tempRadius = DefaultCursorRadius;
-
-                    canvas.drawCircle(x, y, (int) Math.abs(tempRadius), far);
-                    canvas.drawCircle(x, y, DefaultCursorRadius, paint);
-                }
-
-            }
-        }
-    }
-
-    public class DrawingLoadingView extends View {//Added by ahinsutime
-
-
-        public DrawingLoadingView(Context context) {
-            super(context);
-        }
-
-        @Override
-        public void onDraw(Canvas canvas) {
-            Paint paint = new Paint();
-
-            paint.setColor(Color.BLUE);
-            paint.setAlpha(50);
-
-            DisplayMetrics dm = getApplicationContext().getResources().getDisplayMetrics();
-            int width = dm.widthPixels;
-            int height = dm.heightPixels;
-
-            canvas.drawCircle(width/2, height/2, height/2 ,paint);
         }
     }
 
@@ -1304,7 +1205,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         //Imgproc.rectangle(mRgba, boundRect.tl(), boundRect.br(), CONTOUR_COLOR_BLACK, 2, 8, 0);
         PrevBoundRect = boundRect;
 
-
         long downTime = SystemClock.uptimeMillis();
         long eventTime = SystemClock.uptimeMillis() + 100;
         float tx = (float) mappedX;
@@ -1313,7 +1213,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
         double horizontal = boundRect.br().x-boundRect.tl().x;
         double vertical = boundRect.br().y-boundRect.tl().y;
-
         currentArea = horizontal*vertical / 10000;
 
         DisplayMetrics dm = getApplicationContext().getResources().getDisplayMetrics();
