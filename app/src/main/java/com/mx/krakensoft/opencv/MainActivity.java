@@ -1018,11 +1018,9 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
             }
         }
 
-
         //DisplayMetrics dm = getApplicationContext().getResources().getDisplayMetrics();
         //int width = dm.widthPixels;
         //int height = dm.heightPixels;
-
 
         MatOfPoint e = new MatOfPoint();
         e.fromList(listPo);
@@ -1060,7 +1058,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         }
         centerX = centerX / listPos.size();//Added by ahinsutime
         centerY = centerY / listPos.size();//Added by ahinsutime
-        
+
         int defectsTotal = (int) convexDefect.total();
         Log.d(TAG, "Defect total " + defectsTotal);
 
@@ -1070,7 +1068,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         mHandler.post(mUpdateFingerCountResults);
         //mHandler.postDelayed(mUpdateFingerCountResults,500);
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////Use this!!
-
 
         for (Point p : listPoDefect) {
             Imgproc.circle(mRgba, p, 6, new Scalar(0, 0, 255));
