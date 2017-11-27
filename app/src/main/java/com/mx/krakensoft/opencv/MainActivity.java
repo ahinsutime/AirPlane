@@ -95,7 +95,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
     private double mappedX = 0;
     private double mappedY = 0;
 
-
     int DefaultCursorRadius = 50;
     int ncols;
     int nrows;
@@ -106,7 +105,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
     public DrawingView DV;//Added by ahinsutime
     public DrawingHandView DHV;//Added by ahinsutime
     public RelativeLayout BL;//Added by ahinsutime
-    public DrawingClickView DCV;//Added by ahinsutime
 
     // public DrawingLoadingView DLV;
 
@@ -179,7 +177,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
             if(tracking==false){
 
                 DHV.setVisibility(DHV.VISIBLE);//Added by ahinsutime
-                //DCV.setVisibility(DCV.GONE);
                 DV.setVisibility(DV.GONE);
                 BL.setVisibility(BL.GONE);
                 DV.invalidate();//Added by ahinsutime
@@ -246,7 +243,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
             }
             else {
 
-                //DCV.setVisibility(DCV.VISIBLE);
                 DV.setVisibility(DV.VISIBLE);
                 BL.setVisibility(BL.VISIBLE);
                 DHV.setVisibility(BL.GONE);;//Added by ahinsutime
@@ -304,14 +300,10 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
                 //keyButton1.dispatchTouchEvent(motionEvent);
                 if (pressed) {
-                    //DCV.setVisibility(1);
-                    //DCV.invalidate();
                     DV.invalidate();
                     BL.dispatchTouchEvent(motionEvent);
                     Log.d(TAG, "Simulated Touch Pressed=" + pressed);
                 } else {
-                    //DCV.setVisibility(0);
-                    //DCV.invalidate();
                     DV.invalidate();
                     Log.d(TAG, "Simulated Touch Released=" + pressed);
                     long downTime = SystemClock.uptimeMillis();
@@ -409,10 +401,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         RL.addView(DHV);//Added by ahinsutime
         DHV.bringToFront();//Added by ahinsutime
         BL = (RelativeLayout) findViewById(R.id.buttons);
-        //DCV = new DrawingClickView(this);//Added by ahinsutime
-        //RL.addView(DCV);
-        //DCV.bringToFront();
-
         //mHandler.post(mUpdateFingerCountResults);
 
         //mOpenCvCameraView.bringToFront();
@@ -815,30 +803,30 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
             Paint far = new Paint();
             Paint near = new Paint();
             Paint click = new Paint();
-            Paint mapping = new Paint();
+            Paint innerMapping = new Paint();
+            Paint outerMapping = new Paint();
             Paint ref = new Paint();
-            mapping.setStyle(Paint.Style.STROKE);
+            innerMapping.setStyle(Paint.Style.STROKE);
+            outerMapping.setStyle(Paint.Style.STROKE);
 
             paint.setColor(Color.BLUE);
             far.setColor(Color.YELLOW);
             near.setColor(Color.RED);
             click.setColor(Color.WHITE);
-            mapping.setColor(Color.GREEN);
+            innerMapping.setColor(Color.BLACK);
+            outerMapping.setColor(Color.RED);
             ref.setColor(Color.BLACK);
 
             paint.setAlpha(50);
             far.setAlpha(50);
             near.setAlpha(50);
-            mapping.setStrokeWidth(10);
+            innerMapping.setStrokeWidth(10);
+            outerMapping.setStrokeWidth(10);
 
 
             double optimalDist = optimalArea/10000;
             double currentDist = currentArea/10000;
 
-
-           // DisplayMetrics dm = getApplicationContext().getResources().getDisplayMetrics();
-            //int width = dm.widthPixels;
-            //int height = dm.heightPixels;
 
             int width = canvas.getWidth();
             int height = canvas.getHeight();
@@ -846,8 +834,8 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
             float mapY = height * 2/4;
 
 
-            canvas.drawRect(width/2-mapX/2,height/2-mapY/2,width/2+mapX/2,height/2+mapY/2, mapping);
-            canvas.drawRect(width/2-mapX/2,height/2-mapY/2,width/2+mapX/2,height/2+mapY/2, mapping);
+            canvas.drawRect(width/2-mapX/2,height/2-mapY/2,width/2+mapX/2,height/2+mapY/2, innerMapping);
+            canvas.drawRect(10,10,width-10,height-10, outerMapping);
 
 
             x = (int) (centerX / XOffset);
@@ -897,9 +885,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                 }
                 canvas.drawCircle((int) (centerX / XOffset), (int) (centerY / YOffset),DefaultCursorRadius,ref);
             }
-
-
-
         }
     }
 
@@ -934,82 +919,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
         }
     }
-
-    public class DrawingClickView extends View {//Added by ahinsutime
-        int x = 0, y = 0;
-        int tempX = 0, tempY = 0;
-
-    public DrawingClickView(Context context) {
-        super(context);
-    }
-
-    @Override
-    public void onDraw(Canvas canvas) {
-        if(pressed) {
-            Log.d(TAG, "Inside DrawingView.onDraw");
-            Paint paint = new Paint();
-            Paint far = new Paint();
-            Paint near = new Paint();
-
-            paint.setColor(Color.WHITE);
-            far.setColor(Color.YELLOW);
-            near.setColor(Color.RED);
-
-            //paint.setAlpha(50);
-            far.setAlpha(50);
-            near.setAlpha(50);
-
-
-            double optimalDist = optimalArea/10000;
-            double currentDist = currentArea/10000;
-
-
-
-            if (optimalDist <= currentDist) {//When hand is near
-
-                x = (int) (centerX / XOffset);
-                y = (int) (centerY / YOffset);
-
-                DisplayMetrics dm = getApplicationContext().getResources().getDisplayMetrics();
-                int width = dm.widthPixels;
-                int height = dm.heightPixels;
-
-                double mapX =width/2;
-                double mapY = height/2;
-
-                if (y>height/2) {
-                    y = height/2 + (int) (Math.abs(y - height / 2) * height / mapY);
-                }
-                else{
-                    y = height/2 - (int) (Math.abs(y - height / 2) * height / mapY);
-                }
-
-                if (x>width/2){
-                    x = width/2 + (int) (Math.abs(x - width / 2) * width / mapX);
-                }
-                else{
-                    x = width/2 - (int) (Math.abs(x - width / 2) * width / mapX);
-                }
-
-                double tempRadius = (1 - (currentDist - optimalDist) / (optimalDist)) * DefaultCursorRadius;
-
-                canvas.drawCircle(x, y, DefaultCursorRadius, near);
-                canvas.drawCircle(x, y, (int) Math.abs(tempRadius), paint);
-
-            } else {//When hand is far
-                x = (int) (centerX / (double) XOffset);
-                y = (int) (centerY / (double) YOffset);
-
-                double tempRadius = ((optimalDist - currentDist) / (optimalDist)) * DefaultCursorRadius + DefaultCursorRadius;
-                //double tempRadius = DefaultCursorRadius;
-
-                canvas.drawCircle(x, y, (int) Math.abs(tempRadius), far);
-                canvas.drawCircle(x, y, DefaultCursorRadius, paint);
-            }
-
-        }
-    }
-}
 
     public Mat onCameraFrame(CvCameraViewFrame inputFrame) {
 
@@ -1074,11 +983,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                         (int) boundRect.br().y + "] Col start [" +
                         (int) boundRect.tl().x + "] Col end [" +
                         (int) boundRect.br().x + "]");
-
-
-
-
-
 
 
         int rectHeightThresh = 0;
@@ -1153,8 +1057,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
         listPos = listPo;//Added by ahinsutime
 
-        //PrevCenterX = centerX;
-        //PrevCenterY = centerY;
         centerX = 0;
         centerY = 0;
         for (int j = 0; j < listPos.size(); j++) {//Added by ahinsutime
@@ -1294,15 +1196,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
             optimalArea = 4000;
             currentArea = 4000;
         }
-
-/*
-        if(currentArea<((width/2.2)*(height/2.2)) &&  currentArea>(width/20*height/20) && horizontal<=width/2.5 && flickerDist<300){
-            tracking = true;
-        }
-        else{
-            tracking = false;
-        }
-*/
 
         if(numberOfFingers>=5 && horizontal*vertical<mRgba.rows()/2*mRgba.cols()/2) {
             //optimalArea = horizontal*vertical;
