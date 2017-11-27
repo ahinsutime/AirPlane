@@ -101,10 +101,13 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
     private double centerY = 0;//Added by ahinsutime
     private double PrevCenterX = 0;//Added by ahinsutime
     private double PrevCenterY = 0;//Added by ahinsutime
+<<<<<<< HEAD
     private double mappedX = 0;
-    private Spinner spinner;
     private double mappedY = 0;
+=======
+    private Spinner spinner;
     private boolean globalLayBoolean = false;
+>>>>>>> 00df1472028b9f901ee2d10865792c1fcfd8b0a6
 
     int DefaultCursorRadius = 50;
     int ncols;
@@ -116,9 +119,12 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
     public DrawingView DV;//Added by ahinsutime
     public DrawingHandView DHV;//Added by ahinsutime
     public RelativeLayout BL;//Added by ahinsutime
+<<<<<<< HEAD
+=======
     public RelativeLayout BL2;
     public RelativeLayout BL3;
     public DrawingClickView DCV;//Added by ahinsutime
+>>>>>>> 00df1472028b9f901ee2d10865792c1fcfd8b0a6
 
     // public DrawingLoadingView DLV;
 
@@ -322,10 +328,16 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
                 //keyButton1.dispatchTouchEvent(motionEvent);
                 if (pressed) {
+<<<<<<< HEAD
                     DV.invalidate();
+                    BL.dispatchTouchEvent(motionEvent);
+=======
+                    DCV.setVisibility(1);
+                    DCV.invalidate();
                     //  BL.dispatchTouchEvent(motionEvent);
                     if (globalLayBoolean)
                         globalLayout.dispatchTouchEvent(motionEvent);
+>>>>>>> 00df1472028b9f901ee2d10865792c1fcfd8b0a6
                     Log.d(TAG, "Simulated Touch Pressed=" + pressed);
                 } else {
                     DV.invalidate();
@@ -425,10 +437,18 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         DHV.setId(18);//Added by ahinsutime
         RL.addView(DHV);//Added by ahinsutime
         DHV.bringToFront();//Added by ahinsutime
+<<<<<<< HEAD
+        BL = (RelativeLayout) findViewById(R.id.buttons);
+=======
         BL = (RelativeLayout) findViewById(R.id.buttons_keyboard);
         BL2 = (RelativeLayout) findViewById(R.id.buttons_discrete);
         BL3 = (RelativeLayout) findViewById(R.id.buttons_shape);
         globalLayout = (RelativeLayout) findViewById(R.id.dflt_lay);
+        DCV = new DrawingClickView(this);//Added by ahinsutime
+        RL.addView(DCV);
+        DCV.bringToFront();
+
+>>>>>>> 00df1472028b9f901ee2d10865792c1fcfd8b0a6
         //mHandler.post(mUpdateFingerCountResults);
   /*spinner for selecting user design */
         spinner = (Spinner) findViewById(R.id.spinner);
@@ -942,7 +962,13 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
             if(optimalDist<=currentDist){//When hand is near
 
+<<<<<<< HEAD
+               double tempRadius = (1-(currentDist - optimalDist)/(optimalDist)) * DefaultCursorRadius;
+=======
+                x = (int) (centerX / XOffset);
+                y = (int) (centerY / YOffset);
                 double tempRadius = (1 - (currentDist - optimalDist) / (optimalDist)) * DefaultCursorRadius;
+>>>>>>> 00df1472028b9f901ee2d10865792c1fcfd8b0a6
 
                 //Log.d(TAG, "(near)tempRadius=" + tempRadius);
                 Log.d(TAG, "optimalDist=" + optimalDist+" currentDist="+currentDist);
@@ -1000,6 +1026,8 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         }
     }
 
+<<<<<<< HEAD
+=======
     public class DrawingClickView extends View {//Added by ahinsutime
         int x = 0, y = 0;
         int tempX = 0, tempY = 0;
@@ -1075,6 +1103,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         }
     }
 
+>>>>>>> 00df1472028b9f901ee2d10865792c1fcfd8b0a6
     public Mat onCameraFrame(CvCameraViewFrame inputFrame) {
 
         mRgba = inputFrame.rgba();
@@ -1242,6 +1271,18 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                 maxY = (int) listPo.get(i).y;
             }
         }
+<<<<<<< HEAD
+=======
+        //Point tempPoint = new Point(AX, maxY);
+        //boundRect.br() = tempPoint;
+        /*
+        boundRect.br().y = maxY;
+        Point br = boundRect.br();
+        br.x = boundRect.br().x;
+        br.y = maxY;
+        */
+>>>>>>> 00df1472028b9f901ee2d10865792c1fcfd8b0a6
+
         double tlDelX, tlDelY, brDelX, brDelY, tlDel, brDel;
         double temptlX=0, temptlY=0, tempbrX=0, tempbrY=0;
         tlDelX = boundRect.tl().x-PrevBoundRect.tl().x;

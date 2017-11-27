@@ -101,9 +101,18 @@
             android:id="@+id/buttons_keyboard"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+<<<<<<< HEAD
+
+            android:gravity="center"
+            android:layout_centerInParent="true">
+            //android:layout_alignParentBottom="true"
+            //android:layout_alignParentStart="true"
+            //android:background="#000000">
+=======
             android:visibility="invisible"
             android:layout_alignParentBottom="true"
             android:layout_alignParentStart="true">
+>>>>>>> 00df1472028b9f901ee2d10865792c1fcfd8b0a6
 
             <Button
                 android:id="@+id/button6"
