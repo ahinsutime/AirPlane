@@ -169,15 +169,17 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
     double flickerDist = 0;
     double optimalArea = 4000;
     double currentArea = 4000;
-    Point InitialP1 = new Point(0, 0);
-    Point InitialP2 = new Point(1, 1);
-    long mPauseTime = 0;
-    long mTimeNow = 0;
-    boolean Detecting = true;
+    Point InitialP1 = new Point(0,0);
+    Point InitialP2 = new Point(1,1);
+    long mPauseTime=0;
+    long mTimeNow=0;
+    boolean Detecting=true;
 
     Rect PrevBoundRect = new Rect(InitialP1, InitialP2);
 
     MotionEvent motionEvent;
+
+
 
 
     final Runnable mUpdateFingerCountResults = new Runnable() {
@@ -186,13 +188,11 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
             DisplayMetrics dm = getApplicationContext().getResources().getDisplayMetrics();
             int width = dm.widthPixels;
             int height = dm.heightPixels;
-            if (tracking == false) {
+            if(tracking==false){
 
                 DHV.setVisibility(DHV.VISIBLE);//Added by ahinsutime
                 DCV.setVisibility(DCV.GONE);
                 DV.setVisibility(DV.GONE);
-             /*   if (globalLayBoolean)
-                    globalLayout.invalidate(); */
                 BL.setVisibility(BL.GONE);
                 DV.invalidate();//Added by ahinsutime
                 DHV.invalidate();//Added by ahinsutime
@@ -261,8 +261,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                 DCV.setVisibility(DCV.VISIBLE);
                 DV.setVisibility(DV.VISIBLE);
                 BL.setVisibility(BL.VISIBLE);
-                DHV.setVisibility(BL.GONE);
-                ;//Added by ahinsutime
+                DHV.setVisibility(BL.GONE);;//Added by ahinsutime
                 keyButton1.setVisibility(keyButton1.VISIBLE);
                 keyButton2.setVisibility(keyButton2.VISIBLE);
                 keyButton3.setVisibility(keyButton3.VISIBLE);
@@ -284,7 +283,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                 updateNumberOfFingers();
                 DV.invalidate();//Added by ahinsutime
                 DHV.invalidate();//Added by ahinsutime
-                //    BL.invalidate();//Added by ahinsutime
+             //   BL.invalidate();//Added by ahinsutime
                 if (globalLayBoolean)
                     globalLayout.invalidate();
 
@@ -316,37 +315,38 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                 PrevCenterX = centerX;
                 PrevCenterY = centerY;
 
-                //keyButton1.dispatchTouchEvent(motionEvent);
-                if (pressed) {
-                    DCV.setVisibility(1);
-                    DCV.invalidate();
-                    if (globalLayBoolean)
-                        globalLayout.dispatchTouchEvent(motionEvent);
-                    //  BL.dispatchTouchEvent(motionEvent);
-                    Log.d(TAG, "Simulated Touch Pressed=" + pressed);
-                } else {
-                    DCV.setVisibility(0);
-                    DCV.invalidate();
-                    Log.d(TAG, "Simulated Touch Released=" + pressed);
-                    long downTime = SystemClock.uptimeMillis();
-                    long eventTime = SystemClock.uptimeMillis() + 100;
-                    float tx = (float) centerX + (float) XOffset;
-                    float ty = (float) centerY + (float) YOffset;
-                    int metaState = 0;
-
-                    motionEvent = MotionEvent.obtain(
-                            downTime,
-                            eventTime,
-                            MotionEvent.ACTION_UP,
-                            tx,
-                            ty,
-                            metaState
-                    );
-                    if (globalLayBoolean)
-                        globalLayout.dispatchTouchEvent(motionEvent);
-                }
+            //keyButton1.dispatchTouchEvent(motionEvent);
+            if(pressed) {
+                DCV.setVisibility(1);
+                DCV.invalidate();
+                if (globalLayBoolean)
+                    globalLayout.dispatchTouchEvent(motionEvent);
+                //  BL.dispatchTouchEvent(motionEvent);
+                Log.d(TAG, "Simulated Touch Pressed="+pressed);
             }
-        }
+            else {
+                DCV.setVisibility(0);
+                DCV.invalidate();
+                Log.d(TAG, "Simulated Touch Released=" + pressed);
+                long downTime = SystemClock.uptimeMillis();
+                long eventTime = SystemClock.uptimeMillis() + 100;
+                float tx = (float) centerX + (float) XOffset;
+                float ty = (float) centerY + (float) YOffset;
+                int metaState = 0;
+
+                motionEvent = MotionEvent.obtain(
+                        downTime,
+                        eventTime,
+                        MotionEvent.ACTION_UP,
+                        tx,
+                        ty,
+                        metaState
+                );
+                if (globalLayBoolean)
+                    globalLayout.dispatchTouchEvent(motionEvent);
+              //  BL.dispatchTouchEvent(motionEvent);
+            }
+
     };
 
     private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
@@ -488,8 +488,8 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         keyButton7.setVisibility(keyButton7.GONE);
         keyButton8.setVisibility(keyButton8.GONE);
         keyButton9.setVisibility(keyButton9.GONE);
-        patternView = (PatternView) findViewById(R.id.patternView);
-        buttons = new HashMap<>();
+                patternView = (PatternView) findViewById(R.id.patternView);
+                buttons = new HashMap<>();
         if (!flag) {
             keyButton1.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                 @Override
@@ -896,20 +896,18 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
             paint.setAlpha(50);
             far.setAlpha(50);
             near.setAlpha(50);
-            //canvas.drawRect(x-100,y-100,x+100,y+100, paint); // 사각형그림
-            //canvas.drawText("글씨", 50, 50, paint); // 글자 출력
 
-            double optimalDist = optimalArea / 10000;
-            double currentDist = currentArea / 10000;
+            double optimalDist = optimalArea/10000;
+            double currentDist = currentArea/10000;
 
-            if (optimalDist <= currentDist) {//When hand is near
+            if(optimalDist<=currentDist){//When hand is near
 
                 x = (int) (centerX / XOffset);
                 y = (int) (centerY / YOffset);
-                double tempRadius = (1 - (currentDist - optimalDist) / (optimalDist)) * DefaultCursorRadius;
+               double tempRadius = (1-(currentDist - optimalDist)/(optimalDist)) * DefaultCursorRadius;
 
                 //Log.d(TAG, "(near)tempRadius=" + tempRadius);
-                Log.d(TAG, "optimalDist=" + optimalDist + " currentDist=" + currentDist);
+                Log.d(TAG, "optimalDist=" + optimalDist+" currentDist="+currentDist);
                 canvas.drawCircle(x, y, DefaultCursorRadius, near);
                 canvas.drawCircle(x, y, (int) Math.abs(tempRadius), paint);
             }
@@ -917,7 +915,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                 x = (int) (centerX / XOffset);
                 y = (int) (centerY / YOffset);
 
-                double tempRadius = ((optimalDist - currentDist) / (optimalDist)) * DefaultCursorRadius + DefaultCursorRadius;
+                double tempRadius = ((optimalDist - currentDist)/(optimalDist)) * DefaultCursorRadius + DefaultCursorRadius;
                 //double tempRadius = DefaultCursorRadius;
 
                 canvas.drawCircle(x, y, (int) Math.abs(tempRadius), far);
@@ -953,10 +951,10 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
             //int height = dm.heightPixels;
             int width = canvas.getWidth();
             int height = canvas.getHeight();
-            int rectSize = height / 4;
-            android.graphics.Rect InitialRect = new android.graphics.Rect(width / 2 - rectSize, height / 2 - rectSize, width / 2 + rectSize, height / 2 + rectSize);
+            int rectSize = height/4;
+            android.graphics.Rect InitialRect = new android.graphics.Rect(width/2-rectSize,height/2-rectSize, width/2+rectSize,height/2+rectSize);
             canvas.drawRect(InitialRect, paint);
-            canvas.drawText("Show your hand in this square for 2 seconds.", width / 5, height / 5, textPaint);
+            canvas.drawText("Show your hand in this square for 2 seconds.", width/5, height/5, textPaint);
 
         }
     }
@@ -986,8 +984,8 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
             near.setAlpha(50);
 
 
-            double optimalDist = optimalArea / 10000;
-            double currentDist = currentArea / 10000;
+            double optimalDist = optimalArea/10000;
+            double currentDist = currentArea/10000;
 
             if (optimalDist <= currentDist) {//When hand is near
 
@@ -1032,7 +1030,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
             int width = dm.widthPixels;
             int height = dm.heightPixels;
 
-            canvas.drawCircle(width / 2, height / 2, height / 2, paint);
+            canvas.drawCircle(width/2, height/2, height/2 ,paint);
         }
     }
 
@@ -1051,7 +1049,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         //Imgproc.medianBlur(mRgba, mRgba, 3);
 
         if (!mIsColorSelected) {
-            tracking = false;
+            tracking=false;
             mHandler.post(mUpdateFingerCountResults);
             return mRgba;
         }
@@ -1063,7 +1061,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
 
         if (contours.size() <= 0) {
-            tracking = false;
+            tracking=false;
             mHandler.post(mUpdateFingerCountResults);
             return mRgba;
         }
@@ -1087,7 +1085,9 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         Rect boundRect = Imgproc.boundingRect(new MatOfPoint(contours.get(boundPos).toArray()));
 
 
+
         //Imgproc.rectangle(mRgba, boundRect.tl(), boundRect.br(), CONTOUR_COLOR_WHITE, 2, 8, 0);
+
 
         Log.d(TAG,
                 " (Before)Row start [" +
@@ -1096,12 +1096,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                         (int) boundRect.tl().x + "] Col end [" +
                         (int) boundRect.br().x + "]");
 
-        Log.d(TAG,
-                " (After)Row start [" +
-                        (int) boundRect.tl().y + "] row end [" +
-                        (int) boundRect.br().y + "] Col start [" +
-                        (int) boundRect.tl().x + "] Col end [" +
-                        (int) boundRect.br().x + "]");
 
 
         int rectHeightThresh = 0;
@@ -1170,7 +1164,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
         Log.d(TAG, "hull: " + hull.toList());
         Log.d(TAG, "defects: " + convexDefect.toList());
-        if (tracking == true) {
+        if(tracking==true) {
             Imgproc.drawContours(mRgba, hullPoints, -1, CONTOUR_COLOR_GREEN, 3);
         }
 
@@ -1206,7 +1200,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         }
 
         int maxY = 0;
-        int AX = 0;
+        int AX =0;
         /*
         for (int i=0; i<listPoDefect.size(); i++){
             if(maxY<=listPoDefect.get(i).y){
@@ -1216,8 +1210,8 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         }
         */
 
-        for (int i = 0; i < listPo.size(); i++) {
-            if (maxY <= listPo.get(i).y) {
+        for (int i=0; i<listPo.size(); i++){
+            if(maxY<=listPo.get(i).y){
                 maxY = (int) listPo.get(i).y;
             }
         }
@@ -1232,53 +1226,61 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         */
 
         double tlDelX, tlDelY, brDelX, brDelY, tlDel, brDel;
-        double temptlX = 0, temptlY = 0, tempbrX = 0, tempbrY = 0;
-        tlDelX = boundRect.tl().x - PrevBoundRect.tl().x;
-        tlDelY = boundRect.tl().y - PrevBoundRect.tl().y;
-        tlDel = Math.sqrt(tlDelX * tlDelX + tlDelY * tlDelY);
+        double temptlX=0, temptlY=0, tempbrX=0, tempbrY=0;
+        tlDelX = boundRect.tl().x-PrevBoundRect.tl().x;
+        tlDelY = boundRect.tl().y-PrevBoundRect.tl().y;
+        tlDel = Math.sqrt(tlDelX*tlDelX+tlDelY*tlDelY);
 
-        brDelX = boundRect.br().x - PrevBoundRect.br().x;
-        brDelY = maxY - PrevBoundRect.br().y;
-        brDel = Math.sqrt(brDelX * brDelX + brDelY * brDelY);
+        brDelX = boundRect.br().x-PrevBoundRect.br().x;
+        brDelY = maxY-PrevBoundRect.br().y;
+        brDel = Math.sqrt(brDelX*brDelX+brDelY*brDelY);
 
 
-        if (PrevBoundRect.tl() == InitialP1 || PrevBoundRect.br() == InitialP2) {
+        if (PrevBoundRect.tl()==InitialP1 || PrevBoundRect.br()==InitialP2){
 
-        } else if (Math.abs(tlDel) > 200) {
-            temptlX = PrevBoundRect.tl().x + tlDelX / 5;
-            temptlY = PrevBoundRect.tl().y + tlDelY / 5;
-        } else if (Math.abs(tlDel) <= 200 && Math.abs(tlDel) > 100) {
-            temptlX = PrevBoundRect.tl().x + tlDelX / 4;
-            temptlY = PrevBoundRect.tl().y + tlDelY / 4;
-        } else if (Math.abs(tlDel) <= 100 && Math.abs(tlDel) > 50) {
-            temptlX = PrevBoundRect.tl().x + tlDelX / 3;
-            temptlY = PrevBoundRect.tl().y + tlDelY / 3;
-        } else {
-            temptlX = PrevBoundRect.tl().x + tlDelX / 2;
-            temptlY = PrevBoundRect.tl().y + tlDelY / 2;
+        }
+        else if(Math.abs(tlDel)>200){
+            temptlX=PrevBoundRect.tl().x+tlDelX/5;
+            temptlY=PrevBoundRect.tl().y+tlDelY/5;
+        }
+        else if(Math.abs(tlDel)<=200 && Math.abs(tlDel)>100){
+            temptlX=PrevBoundRect.tl().x+tlDelX/4;
+            temptlY=PrevBoundRect.tl().y+tlDelY/4;
+        }
+        else if(Math.abs(tlDel)<=100 && Math.abs(tlDel)>50){
+            temptlX=PrevBoundRect.tl().x+tlDelX/3;
+            temptlY=PrevBoundRect.tl().y+tlDelY/3;
+        }
+        else{
+            temptlX=PrevBoundRect.tl().x+tlDelX/2;
+            temptlY=PrevBoundRect.tl().y+tlDelY/2;
         }
 
 
-        if (PrevBoundRect.tl() == InitialP1 || PrevBoundRect.br() == InitialP2) {
-        } else if (Math.abs(brDel) > 200) {
-            tempbrX = PrevBoundRect.br().x + brDelX / 5;
-            tempbrY = PrevBoundRect.br().y + brDelY / 5;
-        } else if (Math.abs(brDel) <= 200 && Math.abs(brDel) > 100) {
-            tempbrX = PrevBoundRect.br().x + brDelX / 4;
-            tempbrY = PrevBoundRect.br().y + brDelY / 4;
-        } else if (Math.abs(brDel) <= 100 && Math.abs(brDel) > 50) {
-            tempbrX = PrevBoundRect.br().x + brDelX / 3;
-            tempbrY = PrevBoundRect.br().y + brDelY / 3;
-        } else {
+        if (PrevBoundRect.tl()==InitialP1 || PrevBoundRect.br()==InitialP2){
+        }
+        else if(Math.abs(brDel)>200){
+            tempbrX=PrevBoundRect.br().x+brDelX/5;
+            tempbrY=PrevBoundRect.br().y+brDelY/5;
+        }
+        else if(Math.abs(brDel)<=200 && Math.abs(brDel)>100){
+            tempbrX=PrevBoundRect.br().x+brDelX/4;
+            tempbrY=PrevBoundRect.br().y+brDelY/4;
+        }
+        else if(Math.abs(brDel)<=100 && Math.abs(brDel)>50){
+            tempbrX=PrevBoundRect.br().x+brDelX/3;
+            tempbrY=PrevBoundRect.br().y+brDelY/3;
+        }
+        else{
 
-            tempbrX = PrevBoundRect.br().x + brDelX / 2;
-            tempbrY = PrevBoundRect.br().y + brDelY / 2;
+            tempbrX=PrevBoundRect.br().x+brDelX/2;
+            tempbrY=PrevBoundRect.br().y+brDelY/2;
         }
 
 
         Rect tempRect = new Rect(new Point(temptlX, temptlY), new Point(tempbrX, tempbrY));
         boundRect = tempRect;
-        if (tracking == true) {
+        if(tracking==true) {
             Imgproc.rectangle(mRgba, boundRect.tl(), boundRect.br(), CONTOUR_COLOR_BLACK, 2, 8, 0);
         }
 
@@ -1297,12 +1299,12 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         double horizontal = boundRect.br().x-boundRect.tl().x;
         double vertical = boundRect.br().y-boundRect.tl().y;
 
-        currentArea = horizontal * vertical;
+        currentArea = horizontal*vertical;
 
         DisplayMetrics dm = getApplicationContext().getResources().getDisplayMetrics();
         int width = dm.widthPixels;
         int height = dm.heightPixels;
-        if (currentArea > ((width / 2) * (height / 2)) || currentArea < (width / 20 * height / 20) || horizontal >= width / 2 || horizontal <= 20 || vertical <= 20) {
+        if(currentArea>((width/2)*(height/2)) ||  currentArea<(width/20*height/20) || horizontal>=width/2 || horizontal<=20 || vertical <= 20){
             tracking = false;
             optimalArea = 4000;
             currentArea = 4000;
@@ -1317,11 +1319,11 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         }
 */
 
-        if (numberOfFingers >= 5 && horizontal * vertical < mRgba.rows() / 2 * mRgba.cols() / 2) {
+        if(numberOfFingers>=5 && horizontal*vertical<mRgba.rows()/2*mRgba.cols()/2) {
             //optimalArea = horizontal*vertical;
         }
 
-        if (numberOfFingers < 5 && vertical * 3 < horizontal && pressed == false) {//For when start touching
+        if(numberOfFingers<5 && vertical*3<horizontal && pressed==false) {//For when start touching
 
             motionEvent = MotionEvent.obtain(
                     downTime,
@@ -1332,7 +1334,8 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                     metaState
             );
             pressed = true;
-        } else if (numberOfFingers < 5 && vertical * 2.5 < horizontal && pressed == true) {//For dragging
+        }
+        else if(numberOfFingers<5 && vertical*2.5<horizontal && pressed==true){//For dragging
             motionEvent = MotionEvent.obtain(
                     downTime,
                     eventTime,
