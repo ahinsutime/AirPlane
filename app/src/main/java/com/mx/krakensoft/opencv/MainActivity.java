@@ -10,8 +10,6 @@ import java.util.Scanner;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicBoolean;
-
-
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase.CvCameraViewFrame;
 import org.opencv.android.CameraBridgeViewBase.CvCameraViewListener2;
@@ -31,10 +29,8 @@ import org.opencv.core.RotatedRect;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.imgproc.Moments;
-
 import com.mx.krakensoft.opencv.imageProcessing.ColorBlobDetector;
 import com.mx.krakensoft.opencv.patternview.PatternView;
-
 import android.app.Activity;
 import android.graphics.SumPathEffect;
 import android.hardware.Camera;
@@ -59,9 +55,7 @@ import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import org.opencv.core.Size;
-
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -72,8 +66,6 @@ import android.os.Bundle;
 import android.util.AttributeSet;
 import android.view.View;
 import android.os.SystemClock;
-
-
 import static org.opencv.core.Core.flip;
 import static org.opencv.core.Core.sqrt;
 
@@ -117,7 +109,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
     public RelativeLayout BL2;
     public RelativeLayout BL3;
 
-
     private static final String TAG = "HandPose::MainActivity";
     public static final int JAVA_DETECTOR = 0;
     public static final int NATIVE_DETECTOR = 1;
@@ -158,21 +149,15 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
     final Handler mHandler = new Handler();
 
     int numberOfFingers = 0;
-
     boolean pressed = false;
-    boolean flicker = false;
     boolean tracking = false;
     double flickerDist = 0;
     double optimalArea = 4000;
     double currentArea = 4000;
     Point InitialP1 = new Point(0,0);
     Point InitialP2 = new Point(1,1);
-    long mPauseTime=0;
-    long mTimeNow=0;
-    boolean Detecting=true;
     Rect PrevBoundRect = new Rect(InitialP1, InitialP2);
     MotionEvent motionEvent;
-
 
     final Runnable mUpdateFingerCountResults = new Runnable() {
         public void run() {
@@ -188,10 +173,8 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                     globalLayout.setVisibility(globalLayout.GONE);
                     globalLayout.invalidate();
                 }
-                //   BL.setVisibility(BL.GONE);
                 DV.invalidate();//Added by ahinsutime
                 DHV.invalidate();//Added by ahinsutime
-                //   BL.invalidate();//Added by ahinsutime
                 keyButton1.setVisibility(keyButton1.GONE);
                 keyButton2.setVisibility(keyButton2.GONE);
                 keyButton3.setVisibility(keyButton3.GONE);
@@ -252,8 +235,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
             else {
 
                 DV.setVisibility(DV.VISIBLE);
-                //        BL.setVisibility(BL.VISIBLE);
-
                 DHV.setVisibility(BL.GONE);;//Added by ahinsutime
                 keyButton1.setVisibility(keyButton1.VISIBLE);
                 keyButton2.setVisibility(keyButton2.VISIBLE);
@@ -279,8 +260,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                 DHV.invalidate();//Added by ahinsutime
                 if (globalLayBoolean)
                     globalLayout.invalidate();
-                //BL.invalidate();//Added by ahinsutime
-
 
                 flickerDist = Math.sqrt((PrevCenterX - centerX) * (PrevCenterX - centerX) + (PrevCenterY - centerY) * (PrevCenterY - centerY));
 
@@ -405,7 +384,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         });
         minTresholdSeekbar.setProgress(8700);
 
-
         RL = (RelativeLayout) findViewById(R.id.main_relative_view);//Added by ahinsutime
         DV = new DrawingView(this);//Added by ahinsutime
         RL.addView(DV);//Added by ahinsutime
@@ -417,7 +395,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         BL2 = (RelativeLayout) findViewById(R.id.buttons_discrete);
         BL3 = (RelativeLayout) findViewById(R.id.buttons_shape);
         globalLayout = (RelativeLayout) findViewById(R.id.dflt_lay);
-        //mHandler.post(mUpdateFingerCountResults);
+
   /*spinner for selecting user design */
         spinner = (Spinner) findViewById(R.id.spinner);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -449,7 +427,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
             public void onNothingSelected(AdapterView<?> parentView) {
                 // your code here
             }
-
         });
 
         //mOpenCvCameraView.bringToFront();
@@ -747,7 +724,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         mRgba = new Mat();
         mIntermediateMat = new Mat();
 
-
         Camera.Size resolution = mOpenCvCameraView.getResolution();
         String caption = "Resolution " + Integer.valueOf(resolution.width).toString() + "x" + Integer.valueOf(resolution.height).toString();
         Toast.makeText(this, caption, Toast.LENGTH_SHORT).show();
@@ -922,7 +898,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
                 double tempRadius = (1 - (currentDist - optimalDist) / (optimalDist)) * DefaultCursorRadius;
 
-                //Log.d(TAG, "(near)tempRadius=" + tempRadius);
                 Log.d(TAG, "optimalDist=" + optimalDist+" currentDist="+currentDist);
                 canvas.drawCircle(x, y, DefaultCursorRadius, near);
                 canvas.drawCircle(x, y, (int) Math.abs(tempRadius), paint);
@@ -972,7 +947,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
             android.graphics.Rect InitialRect = new android.graphics.Rect(width/2-rectSize,height/2-rectSize, width/2+rectSize,height/2+rectSize);
             canvas.drawRect(InitialRect, paint);
             canvas.drawText("Show your hand in this square for 2 seconds.", width/5, height/5, textPaint);
-
         }
     }
 
@@ -986,9 +960,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
         iThreshold = minTresholdSeekbar.getProgress();
 
-        //Imgproc.blur(mRgba, mRgba, new Size(5,5));
         Imgproc.GaussianBlur(mRgba, mRgba, new org.opencv.core.Size(3, 3), 1, 1);
-        //Imgproc.medianBlur(mRgba, mRgba, 3);
 
         if (!mIsColorSelected) {
             tracking=false;
@@ -1023,7 +995,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         }
 
         Rect boundRect = Imgproc.boundingRect(new MatOfPoint(contours.get(boundPos).toArray()));
-
         //Imgproc.rectangle(mRgba, boundRect.tl(), boundRect.br(), CONTOUR_COLOR_WHITE, 2, 8, 0);
 
         Log.d(TAG,
@@ -1048,7 +1019,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
         Log.d(TAG,
                 " A [" + a + "] br y - tl y = [" + (boundRect.br().y - boundRect.tl().y) + "]");
-
 
         //Imgproc.rectangle(mRgba, boundRect.tl(), new Point(boundRect.br().x, a), CONTOUR_COLOR_BLUE, 2, 8, 0);
 
@@ -1079,10 +1049,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                 iterator.remove();
             }
         }
-
-        //DisplayMetrics dm = getApplicationContext().getResources().getDisplayMetrics();
-        //int width = dm.widthPixels;
-        //int height = dm.heightPixels;
 
         MatOfPoint e = new MatOfPoint();
         e.fromList(listPo);
@@ -1128,8 +1094,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         if (this.numberOfFingers > 5) this.numberOfFingers = 5;
 
         mHandler.post(mUpdateFingerCountResults);
-        //mHandler.postDelayed(mUpdateFingerCountResults,500);
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////Use this!!
 
         for (Point p : listPoDefect) {
             Imgproc.circle(mRgba, p, 6, new Scalar(0, 0, 255));
@@ -1153,9 +1117,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         brDelY = maxY-PrevBoundRect.br().y;
         brDel = Math.sqrt(brDelX*brDelX+brDelY*brDelY);
 
-
         if (PrevBoundRect.tl()==InitialP1 || PrevBoundRect.br()==InitialP2){
-
         }
         else if(Math.abs(tlDel)>200){
             temptlX=PrevBoundRect.tl().x+tlDelX/5;
@@ -1174,7 +1136,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
             temptlY=PrevBoundRect.tl().y+tlDelY/2;
         }
 
-
         if (PrevBoundRect.tl()==InitialP1 || PrevBoundRect.br()==InitialP2){
         }
         else if(Math.abs(brDel)>200){
@@ -1190,11 +1151,9 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
             tempbrY=PrevBoundRect.br().y+brDelY/3;
         }
         else{
-
             tempbrX=PrevBoundRect.br().x+brDelX/2;
             tempbrY=PrevBoundRect.br().y+brDelY/2;
         }
-
 
         Rect tempRect = new Rect(new Point(temptlX, temptlY), new Point(tempbrX, tempbrY));
         boundRect = tempRect;
@@ -1225,7 +1184,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         }
 
         if(numberOfFingers<5 && vertical*1.8<horizontal && pressed==false) {//For when start touching
-
             motionEvent = MotionEvent.obtain(
                     downTime,
                     eventTime,
@@ -1250,14 +1208,12 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         else{
             pressed = false;
         }
-
         return mRgba;
     }
 
     public void updateNumberOfFingers() {
         numberOfFingersText.setText(String.valueOf(this.numberOfFingers));
     }
-
 
     private Point getPointOfView(View view) {
         int[] location = new int[2];
