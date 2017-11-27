@@ -92,6 +92,8 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
     private double centerY = 0;//Added by ahinsutime
     private double PrevCenterX = 0;//Added by ahinsutime
     private double PrevCenterY = 0;//Added by ahinsutime
+    private double mappedX = 0;
+    private double mappedY = 0;
 
 
     int DefaultCursorRadius = 50;
@@ -813,23 +815,65 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
             Paint far = new Paint();
             Paint near = new Paint();
             Paint click = new Paint();
+            Paint mapping = new Paint();
+            Paint ref = new Paint();
+            mapping.setStyle(Paint.Style.STROKE);
 
             paint.setColor(Color.BLUE);
             far.setColor(Color.YELLOW);
             near.setColor(Color.RED);
             click.setColor(Color.WHITE);
+            mapping.setColor(Color.GREEN);
+            ref.setColor(Color.BLACK);
 
             paint.setAlpha(50);
             far.setAlpha(50);
             near.setAlpha(50);
+            mapping.setStrokeWidth(10);
+
 
             double optimalDist = optimalArea/10000;
             double currentDist = currentArea/10000;
 
+
+           // DisplayMetrics dm = getApplicationContext().getResources().getDisplayMetrics();
+            //int width = dm.widthPixels;
+            //int height = dm.heightPixels;
+
+            int width = canvas.getWidth();
+            int height = canvas.getHeight();
+            float mapX =width * 2/4;
+            float mapY = height * 2/4;
+
+
+            canvas.drawRect(width/2-mapX/2,height/2-mapY/2,width/2+mapX/2,height/2+mapY/2, mapping);
+            canvas.drawRect(width/2-mapX/2,height/2-mapY/2,width/2+mapX/2,height/2+mapY/2, mapping);
+
+
+            x = (int) (centerX / XOffset);
+            y = (int) (centerY / YOffset);
+
+
+
+            if (y>height/2) {
+                y = height/2 + (int) (Math.abs(y - height / 2) * height / mapY);
+            }
+            else if (y<=height/2){
+                y = height/2 - (int) (Math.abs(y - height / 2) * height / mapY);
+            }
+
+            if (x>width/2){
+                x = width/2 + (int) (Math.abs(x - width / 2) * width / mapX);
+            }
+            else if(x<=width/2){
+                x = width/2 - (int) (Math.abs(x - width / 2) * width / mapX);
+            }
+            mappedX = x;
+            mappedY = y;
+
+
             if(optimalDist<=currentDist){//When hand is near
 
-                x = (int) (centerX / XOffset);
-                y = (int) (centerY / YOffset);
                double tempRadius = (1-(currentDist - optimalDist)/(optimalDist)) * DefaultCursorRadius;
 
                 //Log.d(TAG, "(near)tempRadius=" + tempRadius);
@@ -839,10 +883,9 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                 if(pressed){
                     canvas.drawCircle(x, y, (int) Math.abs(tempRadius), click);
                 }
+                canvas.drawCircle((int) (centerX / XOffset), (int) (centerY / YOffset),DefaultCursorRadius,ref);
             }
             else{//When hand is far
-                x = (int) (centerX / XOffset);
-                y = (int) (centerY / YOffset);
 
                 double tempRadius = ((optimalDist - currentDist)/(optimalDist)) * DefaultCursorRadius + DefaultCursorRadius;
                 //double tempRadius = DefaultCursorRadius;
@@ -852,6 +895,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                 if(pressed){
                     canvas.drawCircle(x, y, DefaultCursorRadius, click);
                 }
+                canvas.drawCircle((int) (centerX / XOffset), (int) (centerY / YOffset),DefaultCursorRadius,ref);
             }
 
 
@@ -919,10 +963,33 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
             double optimalDist = optimalArea/10000;
             double currentDist = currentArea/10000;
 
+
+
             if (optimalDist <= currentDist) {//When hand is near
 
                 x = (int) (centerX / XOffset);
                 y = (int) (centerY / YOffset);
+
+                DisplayMetrics dm = getApplicationContext().getResources().getDisplayMetrics();
+                int width = dm.widthPixels;
+                int height = dm.heightPixels;
+
+                double mapX =width/2;
+                double mapY = height/2;
+
+                if (y>height/2) {
+                    y = height/2 + (int) (Math.abs(y - height / 2) * height / mapY);
+                }
+                else{
+                    y = height/2 - (int) (Math.abs(y - height / 2) * height / mapY);
+                }
+
+                if (x>width/2){
+                    x = width/2 + (int) (Math.abs(x - width / 2) * width / mapX);
+                }
+                else{
+                    x = width/2 - (int) (Math.abs(x - width / 2) * width / mapX);
+                }
 
                 double tempRadius = (1 - (currentDist - optimalDist) / (optimalDist)) * DefaultCursorRadius;
 
@@ -1208,8 +1275,10 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         long eventTime = SystemClock.uptimeMillis() + 100;
         //float tx = (float)centerX + XOffset;
         //float ty = (float)centerY + YOffset;
-        float tx = (float) (centerX / XOffset);
-        float ty = (float) (centerY / YOffset);
+        //float tx = (float) (centerX / XOffset);
+        //float ty = (float) (centerY / YOffset);
+        float tx = (float) mappedX;
+        float ty = (float) mappedY;
         int metaState = 0;
 
         double horizontal = boundRect.br().x-boundRect.tl().x;
