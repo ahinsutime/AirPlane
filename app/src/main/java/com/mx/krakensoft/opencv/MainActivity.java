@@ -89,6 +89,8 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
     private Button keyButtonBackspace;
     private Button keyButtonEnter;
     private Button keyButtonReset;
+    private Button keyButtonQuit;
+    private Button keyButtonStart;
     private RelativeLayout globalLayout;
     private Map<String, ButtonCoordinates> buttons;
     private EditText customEdit;
@@ -422,6 +424,9 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         keyButtonEnter = (Button) findViewById(R.id.buttonEnter);
         keyButtonReset = (Button) findViewById(R.id.buttonReset);
 
+        keyButtonQuit = (Button) findViewById(R.id.buttonQuit);
+        keyButtonStart = (Button) findViewById(R.id.buttonStart);
+
         patternView = (PatternView) findViewById(R.id.patternView);
 
         buttons = new HashMap<>();
@@ -502,6 +507,19 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                 @Override
                 public void onGlobalLayout() {
                     addButtonCoordinates(keyButtonReset);
+                }
+            });
+
+            keyButtonQuit.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    addButtonCoordinates(keyButtonQuit);
+                }
+            });
+            keyButtonStart.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    addButtonCoordinates(keyButtonStart);
                 }
             });
             flag = true;
@@ -763,6 +781,45 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                     //case MotionEvent.ACTION_UP   :
                     default:
                         keyButtonReset.setTextColor(Color.BLACK);
+                        break;
+                }
+                return false;
+            }
+        });
+
+
+        keyButtonQuit.setOnTouchListener(new OnTouchListener() {
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {//Added by ahinsutime
+                    case MotionEvent.ACTION_DOWN:
+                        keyButtonQuit.setTextColor(Color.BLUE);
+
+                        System.exit(0);
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+                        keyButtonQuit.setTextColor(Color.BLUE);
+                        break;
+                    //case MotionEvent.ACTION_UP   :
+                    default:
+                        keyButtonQuit.setTextColor(Color.BLACK);
+                        break;
+                }
+                return false;
+            }
+        });
+
+        keyButtonStart.setOnTouchListener(new OnTouchListener() {
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {//Added by ahinsutime
+                    case MotionEvent.ACTION_DOWN:
+                        keyButtonStart.setTextColor(Color.BLUE);
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+                        keyButtonStart.setTextColor(Color.BLUE);
+                        break;
+                    //case MotionEvent.ACTION_UP   :
+                    default:
+                        keyButtonStart.setTextColor(Color.BLACK);
                         break;
                 }
                 return false;
