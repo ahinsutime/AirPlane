@@ -91,10 +91,14 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
     private Button keyButtonReset;
     private Button keyButtonQuit;
     private Button keyButtonStart;
+    private Button keyButtonResetTracking;
     private RelativeLayout globalLayout;
     private Map<String, ButtonCoordinates> buttons;
     private EditText customEdit;
+    //private EditText evalEdit;
+    private TextView evalText;
     private PatternView patternView;
+    private int randomNumber = 0;
     private double centerX = 0;//Added by ahinsutime
     private double centerY = 0;//Added by ahinsutime
     private double PrevCenterX = 0;//Added by ahinsutime
@@ -223,7 +227,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                 timer.schedule(adTast, 2000);
             }
             else {
-                //mOpenCvCameraView.setVisibility(mOpenCvCameraView.GONE);
                 //mOpenCvCameraView.setAlpha(0);
                 DV.setVisibility(DV.VISIBLE);
                 DHV.setVisibility(BL.GONE);;//Added by ahinsutime
@@ -383,7 +386,13 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                     case "1":
                         globalLayout = BL;
                         globalLayout.setVisibility(View.VISIBLE);
+
+                        randomNumber = randomIntGenerator(5);
+                        //evalEdit.setText("Enter this number: "+randomNumber);
+                        evalText.setText("Enter this number: "+randomNumber);
+
                         globalLayBoolean = true;
+
                         break;
                     case "2":
                         globalLayout = BL2;
@@ -407,6 +416,8 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
         mOpenCvCameraView.setAlpha(1);//Added by ahinsutime
         customEdit = (EditText) findViewById(R.id.customEdit);
+        //evalEdit = (EditText) findViewById(R.id.TestCaseEdit);
+        evalText = (TextView) findViewById(R.id.TestCaseText);
         disableSoftInputFromAppearing(customEdit);
         customEdit.setText("");
 
@@ -423,6 +434,8 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         keyButtonBackspace = (Button) findViewById(R.id.buttonBackspace);
         keyButtonEnter = (Button) findViewById(R.id.buttonEnter);
         keyButtonReset = (Button) findViewById(R.id.buttonReset);
+        keyButtonResetTracking = (Button) findViewById(R.id.buttonTracking);
+
 
         keyButtonQuit = (Button) findViewById(R.id.buttonQuit);
         keyButtonStart = (Button) findViewById(R.id.buttonStart);
@@ -520,6 +533,12 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                 @Override
                 public void onGlobalLayout() {
                     addButtonCoordinates(keyButtonStart);
+                }
+            });
+            keyButtonResetTracking.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    addButtonCoordinates(keyButtonResetTracking);
                 }
             });
             flag = true;
@@ -748,7 +767,12 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                     case MotionEvent.ACTION_DOWN:
                         keyButtonEnter.setTextColor(Color.BLUE);
                         if(customEdit.getText().toString().length()>0) {
+                            if(Integer.parseInt(customEdit.getText().toString())==randomNumber){
+                                customEdit.setText("");
+                            }
+                            else{
 
+                            }
                         }
                         break;
                     case MotionEvent.ACTION_MOVE:
@@ -826,6 +850,24 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
             }
         });
 
+        keyButtonResetTracking.setOnTouchListener(new OnTouchListener() {
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {//Added by ahinsutime
+                    case MotionEvent.ACTION_DOWN:
+                        keyButtonResetTracking.setTextColor(Color.BLUE);
+                        tracking=false;
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+                        keyButtonResetTracking.setTextColor(Color.BLUE);
+                        break;
+                    //case MotionEvent.ACTION_UP   :
+                    default:
+                        keyButtonResetTracking.setTextColor(Color.BLACK);
+                        break;
+                }
+                return false;
+            }
+        });
     }
 
     public void addButtonCoordinates(Button b) {
@@ -1362,6 +1404,12 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         int[] location = new int[2];
         view.getLocationInWindow(location);
         return new Point(location[0], location[1]);
+    }
+
+    public int randomIntGenerator(int digits) {
+        int output = (int) (Math.random() * Math.pow(10,digits));
+
+        return output;
     }
 
     public static void disableSoftInputFromAppearing(EditText editText) {
