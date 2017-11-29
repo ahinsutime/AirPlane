@@ -1228,21 +1228,25 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         int height = dm.heightPixels;
 
         Iterator<Point> iterator = listPo.iterator();
-        while (iterator.hasNext()) {
-            Point data = iterator.next();
 
-            //data.getClass().
-            if(centerY/YOffset < height/2) {
+        if(centerY/YOffset < height/2) {
+            while (iterator.hasNext()) {
+                Point data = iterator.next();
+
                 if (data.y > (mRgba.size().height - 200)) {
                     iterator.remove();
                 }
             }
-            else{
+        }
+        else{
+            while (iterator.hasNext()) {
+                Point data = iterator.next();
                 if (data.y > (mRgba.size().height - 30)) {
                     iterator.remove();
                 }
             }
         }
+
 
         MatOfPoint e = new MatOfPoint();
         e.fromList(listPo);
@@ -1371,7 +1375,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         currentArea = (horizontal/XOffset)*(vertical/YOffset) / 10000;
 
 
-        if(currentArea>((width/2.5)*(height/2.5)/10000) ||  currentArea<(width/20*height/20 /10000) || horizontal/XOffset>=width/1.5 || horizontal/XOffset<=30 || vertical/YOffset <= 30){
+        if(currentArea>((width/2.5)*(height/2.5)/10000) ||  currentArea<(width/20*height/20 /10000) || horizontal>=width/1.5 || horizontal<=30 || vertical/YOffset <= 30){
             tracking = false;
             optimalArea = 4000;
             currentArea = 4000;
