@@ -1229,11 +1229,11 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
         Iterator<Point> iterator = listPo.iterator();
 
-        if(centerY/YOffset < height/2) {
+        if(centerY/YOffset < height/2.5) {
             while (iterator.hasNext()) {
                 Point data = iterator.next();
 
-                if (data.y > (mRgba.size().height - 200)) {
+                if (data.y > (mRgba.size().height - 300)) {
                     iterator.remove();
                 }
             }
@@ -1372,10 +1372,10 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
         double horizontal = boundRect.br().x-boundRect.tl().x;
         double vertical = boundRect.br().y-boundRect.tl().y;
-        currentArea = (horizontal/XOffset)*(vertical/YOffset) / 10000;
+        currentArea = (horizontal)*(vertical) / 10000;
 
 
-        if(currentArea>((width/2.5)*(height/2.5)/10000) ||  currentArea<(width/20*height/20 /10000) || horizontal>=width/1.5 || horizontal<=30 || vertical/YOffset <= 30){
+        if(currentArea>((width/2.5)*(height/2.5)/10000) ||  currentArea<(width/20*height/20 /10000) || horizontal<=30 || vertical <= 30){
             tracking = false;
             optimalArea = 4000;
             currentArea = 4000;
