@@ -166,7 +166,8 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
             int width = dm.widthPixels;
             int height = dm.heightPixels;
             if(tracking==false){
-
+                //mOpenCvCameraView.setVisibility(mOpenCvCameraView.VISIBLE);
+                //mOpenCvCameraView.setAlpha(1);
                 DHV.setVisibility(DHV.VISIBLE);//Added by ahinsutime
                 DV.setVisibility(DV.GONE);
                 if (globalLayBoolean) {
@@ -233,7 +234,8 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                 timer.schedule(adTast, 2000);
             }
             else {
-
+                //mOpenCvCameraView.setVisibility(mOpenCvCameraView.GONE);
+                //mOpenCvCameraView.setAlpha(0);
                 DV.setVisibility(DV.VISIBLE);
                 DHV.setVisibility(BL.GONE);;//Added by ahinsutime
                 keyButton1.setVisibility(keyButton1.VISIBLE);
@@ -258,8 +260,10 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                 updateNumberOfFingers();
                 DV.invalidate();//Added by ahinsutime
                 DHV.invalidate();//Added by ahinsutime
-                if (globalLayBoolean)
+                if (globalLayBoolean) {
+                    globalLayout.setVisibility(globalLayout.VISIBLE);
                     globalLayout.invalidate();
+                }
 
                 flickerDist = Math.sqrt((PrevCenterX - centerX) * (PrevCenterX - centerX) + (PrevCenterY - centerY) * (PrevCenterY - centerY));
 
@@ -349,7 +353,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        //Log.i(TAG, "called onCreate");
+
         super.onCreate(savedInstanceState);
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -420,16 +424,15 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                         globalLayBoolean = true;
                         break;
                 }
-
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parentView) {
                 // your code here
+                // Maybe we can put entering info of participant before actual evaluation begin
             }
         });
 
-        //mOpenCvCameraView.bringToFront();
         mOpenCvCameraView.setAlpha(1);//Added by ahinsutime
         customEdit = (EditText) findViewById(R.id.customEdit);
         disableSoftInputFromAppearing(customEdit);
@@ -869,27 +872,29 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
             int width = canvas.getWidth();
             int height = canvas.getHeight();
-            float mapX =width * 2/4;
-            float mapY = height * 2/4;
+            float mapX =width * 2/4;//For draw
+            float mapY = height * 2/4;//For draw
+            float mapCenterX = width/2;//For calculation
+            float mapCenterY = height*2/4;//For calculation
 
-            canvas.drawRect(width/2-mapX/2,height/2-mapY/2,width/2+mapX/2,height/2+mapY/2, innerMapping);
+            canvas.drawRect(mapCenterX-mapX/2,mapCenterY-mapY/2,mapCenterX+mapX/2,mapCenterY+mapY/2, innerMapping);
             canvas.drawRect(10,10,width-10,height-10, outerMapping);
 
             x = (int) (centerX / XOffset);
             y = (int) (centerY / YOffset);
 
-            if (y>height/2) {
-                y = height/2 + (int) (Math.abs(y - height / 2) * height / mapY);
+            if (y>mapCenterY) {
+                y = (int) mapCenterY + (int) (Math.abs(y - mapCenterY) * height / (mapY/2));
             }
-            else if (y<=height/2){
-                y = height/2 - (int) (Math.abs(y - height / 2) * height / mapY);
+            else if (y<=mapCenterY){
+                y = (int) mapCenterY - (int) (Math.abs(y - mapCenterY) * height / (mapY/2));
             }
 
-            if (x>width/2){
-                x = width/2 + (int) (Math.abs(x - width / 2) * width / mapX);
+            if (x>mapCenterX){
+                x = (int) mapCenterX + (int) (Math.abs(x - mapCenterX) * width / mapX);
             }
-            else if(x<=width/2){
-                x = width/2 - (int) (Math.abs(x - width / 2) * width / mapX);
+            else if(x<=mapCenterX){
+                x = (int) mapCenterX - (int) (Math.abs(x - mapCenterX) * width / mapX);
             }
             mappedX = x;
             mappedY = y;
@@ -909,7 +914,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
             else{//When hand is far
 
                 double tempRadius = ((optimalDist - currentDist)/(optimalDist)) * DefaultCursorRadius + DefaultCursorRadius;
-                //double tempRadius = DefaultCursorRadius;
 
                 canvas.drawCircle(x, y, (int) Math.abs(tempRadius), far);
                 canvas.drawCircle(x, y, DefaultCursorRadius, paint);
@@ -1177,13 +1181,13 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         DisplayMetrics dm = getApplicationContext().getResources().getDisplayMetrics();
         int width = dm.widthPixels;
         int height = dm.heightPixels;
-        if(currentArea>((width/2)*(height/2)/10000) ||  currentArea<(width/20*height/20 /10000) || horizontal>=width/2 || horizontal<=20 || vertical <= 20){
+        if(currentArea>((width/2)*(height/2)/10000) ||  currentArea<(width/20*height/20 /10000) || horizontal>=width/2 || horizontal<=50 || vertical <= 50){
             tracking = false;
             optimalArea = 4000;
             currentArea = 4000;
         }
 
-        if(numberOfFingers<5 && vertical*1.8<horizontal && pressed==false) {//For when start touching
+        if(numberOfFingers<5 && vertical*1.9<horizontal && pressed==false) {//For when start touching
             motionEvent = MotionEvent.obtain(
                     downTime,
                     eventTime,
