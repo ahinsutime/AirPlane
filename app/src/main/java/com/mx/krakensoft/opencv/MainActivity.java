@@ -211,7 +211,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                         );
                         mOpenCvCameraView.dispatchTouchEvent(motionEvent);
 
-                        if (currentArea < ((width / 2) * (height / 2) / 10000) && currentArea > (width / 20 * height / 20) /10000) {
+                        if (currentArea < ((width / 2.5) * (height / 2.5) / 10000) && currentArea > (width / 20 * height / 20) /10000) {
                             tracking = true;
                             optimalArea = currentArea;
                         } else {
@@ -1223,13 +1223,24 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
             listPo.add(contours.get(boundPos).toList().get(hull.toList().get(j)));
         }
 
+        DisplayMetrics dm = getApplicationContext().getResources().getDisplayMetrics();
+        int width = dm.widthPixels;
+        int height = dm.heightPixels;
+
         Iterator<Point> iterator = listPo.iterator();
         while (iterator.hasNext()) {
             Point data = iterator.next();
 
             //data.getClass().
-            if (data.y > (mRgba.size().height - 200)) {
-                iterator.remove();
+            if(centerY/YOffset < height/2) {
+                if (data.y > (mRgba.size().height - 200)) {
+                    iterator.remove();
+                }
+            }
+            else{
+                if (data.y > (mRgba.size().height - 30)) {
+                    iterator.remove();
+                }
             }
         }
 
@@ -1357,12 +1368,10 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
         double horizontal = boundRect.br().x-boundRect.tl().x;
         double vertical = boundRect.br().y-boundRect.tl().y;
-        currentArea = horizontal*vertical / 10000;
+        currentArea = (horizontal/XOffset)*(vertical/YOffset) / 10000;
 
-        DisplayMetrics dm = getApplicationContext().getResources().getDisplayMetrics();
-        int width = dm.widthPixels;
-        int height = dm.heightPixels;
-        if(currentArea>((width/2)*(height/2)/10000) ||  currentArea<(width/20*height/20 /10000) || horizontal>=width/2 || horizontal<=50 || vertical <= 50){
+
+        if(currentArea>((width/2.5)*(height/2.5)/10000) ||  currentArea<(width/20*height/20 /10000) || horizontal/XOffset>=width/1.5 || horizontal/XOffset<=30 || vertical/YOffset <= 30){
             tracking = false;
             optimalArea = 4000;
             currentArea = 4000;
