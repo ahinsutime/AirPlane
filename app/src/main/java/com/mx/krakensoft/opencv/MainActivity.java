@@ -92,13 +92,20 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
     private Button keyButtonQuit;
     private Button keyButtonStart;
     private Button keyButtonResetTracking;
+    private Button keyButtonReject;
+    private Button keyButtonAccept;
+    private Button keyButtonRefresh;
+
+
     private RelativeLayout globalLayout;
     private Map<String, ButtonCoordinates> buttons;
     private EditText customEdit;
     //private EditText evalEdit;
-    private TextView evalText;
+    private TextView keyboardText;
+    private TextView discreteText;
     private PatternView patternView;
     private int randomNumber = 0;
+    private boolean randomDiscrete = false;
     private double centerX = 0;//Added by ahinsutime
     private double centerY = 0;//Added by ahinsutime
     private double PrevCenterX = 0;//Added by ahinsutime
@@ -389,7 +396,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
                         randomNumber = randomIntGenerator(5);
                         //evalEdit.setText("Enter this number: "+randomNumber);
-                        evalText.setText("Enter this number: "+randomNumber);
+                        keyboardText.setText("Enter this number: "+randomNumber);
 
                         globalLayBoolean = true;
 
@@ -397,6 +404,14 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                     case "2":
                         globalLayout = BL2;
                         globalLayout.setVisibility(View.VISIBLE);
+                        randomDiscrete = randomCallGenerator();
+                        if (randomDiscrete==false){
+                            discreteText.setText("Follow the instruction:"+" Decline");
+                        }
+                        else{
+                            discreteText.setText("Follow the instruction:"+" Accept");
+                        }
+
                         globalLayBoolean = true;
                         break;
                     case "3":
@@ -417,7 +432,8 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         mOpenCvCameraView.setAlpha(1);//Added by ahinsutime
         customEdit = (EditText) findViewById(R.id.customEdit);
         //evalEdit = (EditText) findViewById(R.id.TestCaseEdit);
-        evalText = (TextView) findViewById(R.id.TestCaseText);
+        keyboardText = (TextView) findViewById(R.id.TestCaseKeyboard);
+        discreteText = (TextView) findViewById(R.id.TestCaseDiscrete);
         disableSoftInputFromAppearing(customEdit);
         customEdit.setText("");
 
@@ -435,10 +451,11 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         keyButtonEnter = (Button) findViewById(R.id.buttonEnter);
         keyButtonReset = (Button) findViewById(R.id.buttonReset);
         keyButtonResetTracking = (Button) findViewById(R.id.buttonTracking);
-
-
         keyButtonQuit = (Button) findViewById(R.id.buttonQuit);
         keyButtonStart = (Button) findViewById(R.id.buttonStart);
+        keyButtonReject = (Button) findViewById(R.id.rejButton);
+        keyButtonAccept = (Button) findViewById(R.id.accButton);
+        keyButtonRefresh = (Button) findViewById(R.id.buttonRefresh);
 
         patternView = (PatternView) findViewById(R.id.patternView);
 
@@ -539,6 +556,24 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                 @Override
                 public void onGlobalLayout() {
                     addButtonCoordinates(keyButtonResetTracking);
+                }
+            });
+            keyButtonReject.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    addButtonCoordinates(keyButtonReject);
+                }
+            });
+            keyButtonResetTracking.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    addButtonCoordinates(keyButtonReject);
+                }
+            });
+            keyButtonRefresh.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    addButtonCoordinates(keyButtonRefresh);
                 }
             });
             flag = true;
@@ -868,6 +903,80 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                 return false;
             }
         });
+
+
+        keyButtonReject.setOnTouchListener(new OnTouchListener() {
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {//Added by ahinsutime
+                    case MotionEvent.ACTION_DOWN:
+                        keyButtonReject.setTextColor(Color.BLUE);
+                        if(randomDiscrete==false){
+                            keyButtonReject.setBackgroundColor(Color.BLUE);
+                        }
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+                        keyButtonReject.setTextColor(Color.BLUE);
+                        break;
+                    //case MotionEvent.ACTION_UP   :
+                    default:
+                        keyButtonReject.setBackgroundColor(Color.RED);
+                        keyButtonReject.setTextColor(Color.WHITE);
+                        break;
+                }
+                return false;
+            }
+        });
+
+        keyButtonAccept.setOnTouchListener(new OnTouchListener() {
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {//Added by ahinsutime
+                    case MotionEvent.ACTION_DOWN:
+                        keyButtonAccept.setTextColor(Color.BLUE);
+                        if(randomDiscrete==true){
+                            keyButtonAccept.setBackgroundColor(Color.BLUE);
+                        }
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+                        keyButtonAccept.setTextColor(Color.BLUE);
+                        break;
+                    //case MotionEvent.ACTION_UP   :
+                    default:
+                        keyButtonAccept.setBackgroundColor(Color.GREEN);
+                        keyButtonAccept.setTextColor(Color.WHITE);
+                        break;
+                }
+                return false;
+            }
+        });
+
+        keyButtonRefresh.setOnTouchListener(new OnTouchListener() {
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {//Added by ahinsutime
+                    case MotionEvent.ACTION_DOWN:
+                        keyButtonRefresh.setTextColor(Color.BLUE);
+                        randomDiscrete = randomCallGenerator();
+                        randomNumber = randomIntGenerator(5);
+                        keyboardText.setText("Enter this number: "+randomNumber);
+                        if (randomDiscrete==false){
+                            discreteText.setText("Follow the instruction:"+" Decline");
+                        }
+                        else{
+                            discreteText.setText("Follow the instruction:"+" Accept");
+                        }
+                        //mHandler.post(mUpdateFingerCountResults);
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+                        keyButtonRefresh.setTextColor(Color.BLUE);
+                        break;
+                    //case MotionEvent.ACTION_UP   :
+                    default:
+                        keyButtonRefresh.setTextColor(Color.BLACK);
+                        break;
+                }
+                return false;
+            }
+        });
+
     }
 
     public void addButtonCoordinates(Button b) {
@@ -1229,11 +1338,19 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
         Iterator<Point> iterator = listPo.iterator();
 
-        if(centerY/YOffset < height/2.5) {
+        if(centerY/YOffset < height / 3) {
             while (iterator.hasNext()) {
                 Point data = iterator.next();
 
-                if (data.y > (mRgba.size().height - 300)) {
+                if (data.y > (mRgba.size().height - 200)) {
+                    iterator.remove();
+                }
+            }
+        }
+        else if ((centerY/YOffset >= height / 3) && (centerY/YOffset < height *2/3)) {
+            while (iterator.hasNext()) {
+                Point data = iterator.next();
+                if (data.y > (mRgba.size().height - 100)) {
                     iterator.remove();
                 }
             }
@@ -1423,6 +1540,16 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         int output = (int) (Math.random() * Math.pow(10,digits));
 
         return output;
+    }
+
+    public boolean randomCallGenerator() {
+        double output = Math.abs((Math.random())) *(1.0);
+        if(output>0.5){
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 
     public static void disableSoftInputFromAppearing(EditText editText) {

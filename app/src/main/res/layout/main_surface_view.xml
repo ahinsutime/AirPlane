@@ -250,7 +250,7 @@
                 android:layout_alignEnd="@+id/button9" />
 
             <TextView
-                android:id="@+id/TestCaseText"
+                android:id="@+id/TestCaseKeyboard"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_above="@+id/button6"
@@ -298,22 +298,41 @@
 
             <Button
                 android:id="@+id/rejButton"
+                android:background="#FF0000"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignBaseline="@+id/accButton"
                 android:layout_alignBottom="@+id/accButton"
-                android:layout_marginStart="87dp"
+                android:layout_marginStart="100dp"
                 android:layout_toEndOf="@+id/accButton"
+                android:textColor="#FFFFFF"
                 android:text="Reject" />
 
             <Button
                 android:id="@+id/accButton"
+                android:background="#008000"
+                android:layout_centerInParent="true"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Accept"
+                android:textColor="#FFFFFF"
                 android:layout_centerVertical="true"
                 android:layout_alignParentStart="true"
-                android:layout_marginStart="44dp" />
+                android:layout_marginStart="100dp" />
+
+            <TextView
+                android:id="@+id/TestCaseDiscrete"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/accButton"
+                android:layout_marginLeft="100dp"
+                android:layout_marginBottom="50dp"
+                android:text="Follow the instruction:"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textSize="25dp"
+                android:textColor="#0000FF"
+                android:layout_alignParentStart="true"
+                android:layout_alignLeft="@+id/accButton" />
 
 
         </RelativeLayout>
@@ -323,14 +342,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAlignment="center"
+            android:textSize="20dp"
             android:background="#fff"
-            android:layout_marginEnd="71dp"
+            android:layout_marginTop="0dp"
             android:entries="@array/mode_arrays"
             android:prompt="@string/mode_prompt"
             android:layout_alignBaseline="@+id/buttons_keyboard"
             android:layout_alignBottom="@+id/buttons_keyboard"
             android:layout_alignParentEnd="true" />
-
 
         <Button
             android:id="@+id/buttonQuit"
@@ -362,7 +381,100 @@
             android:layout_marginTop="180dp"
             android:layout_marginRight="10dp"/>
 
+        <Button
+            android:id="@+id/buttonRefresh"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_alignParentEnd="true"
+            android:text="Refresh"
+            android:layout_marginTop="220dp"
+            android:layout_marginRight="10dp"/>
+
+
+
+    <!--
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="100dp" >
+            <SlidingDrawer
+                android:id="@+id/slidingDrawer1"
+                android:layout_width="200dp"
+                android:layout_height="54dp"
+                android:background="#00ff0000"
+                android:content="@+id/content"
+                android:handle="@+id/handle"
+                android:orientation="horizontal" >
+                <Button
+                    android:id="@+id/handle"
+                    android:layout_width="54dp"
+                    android:layout_height="54dp"
+                    android:background="#800000"
+                    android:text="Accept"
+                    android:textSize="40dp"
+                    android:src="#808080" />
+                <TextView
+                    android:id="@+id/content"
+                    android:background="#FF0000"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:text="Hanging On"
+                    android:textSize="20dp"
+                     />
+            </SlidingDrawer>
+            <ImageView
+                android:id="@+id/imageView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="#008000" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginLeft="300dp"
+            android:layout_marginTop="100dp" >
+        <SlidingDrawer
+            android:id="@+id/slidingDrawer2"
+
+            android:layout_width="200dp"
+            android:layout_height="54dp"
+            android:background="#00ff0000"
+            android:content="@+id/content2"
+            android:handle="@+id/handle2"
+            android:orientation="horizontal" >
+            <Button
+                android:id="@+id/handle2"
+                android:layout_width="100dp"
+                android:layout_height="54dp"
+                android:background="#800000"
+                android:text="Decline"
+                android:textSize="20dp"
+                android:gravity="center_vertical"
+                android:src="#808080" />
+            <TextView
+                android:id="@+id/content2"
+                android:background="#FF0000"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:text="Hanging Off"
+                android:textSize="20dp"
+                />
+        </SlidingDrawer>
+        <ImageView
+            android:id="@+id/imageView3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="#008000" />
+        </FrameLayout>
+        -->
 
     </RelativeLayout>
+
 
 </RelativeLayout>
