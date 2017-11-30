@@ -964,6 +964,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                         else{
                             discreteText.setText("Follow the instruction:"+" Accept");
                         }
+                        patternView.clearPattern();
                         //mHandler.post(mUpdateFingerCountResults);
                         break;
                     case MotionEvent.ACTION_MOVE:
