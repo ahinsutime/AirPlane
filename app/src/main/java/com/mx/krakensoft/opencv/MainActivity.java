@@ -421,6 +421,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
   /*spinner for selecting user design */
         spinner = (Spinner) findViewById(R.id.spinner);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                 // if (globalLayBoolean)
@@ -430,7 +431,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                         globalLayout = BL;
                         globalLayout.setVisibility(View.VISIBLE);
 
-                        randomNumber = randomIntGenerator(5);
+                        randomNumber = randomIntGenerator(4);
                         //evalEdit.setText("Enter this number: "+randomNumber);
                         keyboardText.setText("Enter this number: "+randomNumber);
 
@@ -999,6 +1000,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                         else{
                             discreteText.setText("Follow the instruction:"+" Accept");
                         }
+                        patternView.clearPattern();
                         //mHandler.post(mUpdateFingerCountResults);
                         break;
                     case MotionEvent.ACTION_MOVE:
@@ -1378,7 +1380,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
             while (iterator.hasNext()) {
                 Point data = iterator.next();
 
-                if (data.y > (mRgba.size().height - 200)) {
+                if (data.y > (mRgba.size().height - 300)) {
                     iterator.remove();
                 }
             }
