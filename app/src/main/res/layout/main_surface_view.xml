@@ -5,11 +5,117 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
+
+    <RelativeLayout
+        android:id="@+id/user_info_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#fff"
+        android:visibility="visible">
+
+        <RadioButton
+            android:id="@+id/radio_right_hand"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignStart="@+id/textView9"
+            android:layout_centerVertical="true"
+            android:text="Right-Handed"
+            android:onClick="onRadioButtonClickedHand" />
+
+        <TextView
+            android:id="@+id/textView8"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="43dp"
+            android:layout_marginTop="145dp"
+            android:text="Gender:"
+            android:textColor="#000"
+            android:textSize="18sp" />
+
+        <Button
+            android:id="@+id/UserInfoButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginBottom="40dp"
+            android:layout_marginEnd="50dp"
+            android:text="Submit" />
+
+        <TextView
+            android:id="@+id/textView9"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/textView8"
+            android:layout_marginStart="228dp"
+            android:layout_toEndOf="@+id/textView8"
+            android:text="Handedness:"
+            android:textColor="#000"
+            android:textSize="18sp" />
+
+        <RadioButton
+            android:id="@+id/radio_left_hand"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignStart="@+id/radio_right_hand"
+            android:layout_below="@+id/radio_right_hand"
+            android:text="Left-Handed"
+            android:onClick="onRadioButtonClickedHand" />
+
+        <EditText
+            android:id="@+id/user_name_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="34dp"
+            android:layout_marginTop="35dp"
+            android:ems="10"
+            android:inputType="textPersonName"
+            android:text="Your name" />
+
+        <EditText
+            android:id="@+id/user_age_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginEnd="98dp"
+            android:layout_marginTop="34dp"
+            android:ems="10"
+            android:inputType="number"
+            android:text="Your age" />
+
+        <RadioButton
+            android:id="@+id/radio_female"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignStart="@+id/radio_male"
+            android:layout_below="@+id/radio_male"
+            android:text="Female"
+            android:onClick="onRadioButtonClickedGender" />
+
+        <RadioButton
+            android:id="@+id/radio_male"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="37dp"
+            android:text="Male"
+            android:onClick="onRadioButtonClickedGender" />
+
+    </RelativeLayout>
+
     <RelativeLayout
         android:id="@+id/main_relative_view"
+
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:screenOrientation="sensor"
+        android:visibility="invisible"
         android:layout_weight="1">
 
         <RelativeLayout
@@ -291,10 +397,10 @@
             android:id="@+id/buttons_discrete"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_alignParentTop="true"
             android:visibility="invisible"
-            android:layout_alignParentStart="true"
-            android:layout_marginTop="12dp">
+            android:layout_alignBaseline="@+id/buttons_keyboard"
+            android:layout_alignBottom="@+id/buttons_keyboard"
+            android:layout_alignParentStart="true">
 
             <Button
                 android:id="@+id/rejButton"
@@ -333,6 +439,16 @@
                 android:textColor="#0000FF"
                 android:layout_alignParentStart="true"
                 android:layout_alignLeft="@+id/accButton" />
+
+            <RadioButton
+                android:id="@+id/radioButton3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/accButton"
+                android:layout_alignStart="@+id/accButton"
+                android:layout_marginBottom="35dp"
+                android:layout_marginStart="40dp"
+                android:text="RadioButton" />
 
 
         </RelativeLayout>
@@ -392,87 +508,86 @@
             android:layout_marginRight="10dp"/>
 
 
+        <!--
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="100dp" >
+                <SlidingDrawer
+                    android:id="@+id/slidingDrawer1"
+                    android:layout_width="200dp"
+                    android:layout_height="54dp"
+                    android:background="#00ff0000"
+                    android:content="@+id/content"
+                    android:handle="@+id/handle"
+                    android:orientation="horizontal" >
+                    <Button
+                        android:id="@+id/handle"
+                        android:layout_width="54dp"
+                        android:layout_height="54dp"
+                        android:background="#800000"
+                        android:text="Accept"
+                        android:textSize="40dp"
+                        android:src="#808080" />
+                    <TextView
+                        android:id="@+id/content"
+                        android:background="#FF0000"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_horizontal"
+                        android:text="Hanging On"
+                        android:textSize="20dp"
+                         />
+                </SlidingDrawer>
+                <ImageView
+                    android:id="@+id/imageView2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="#008000" />
+            </FrameLayout>
 
-    <!--
-        <FrameLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="100dp" >
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginLeft="300dp"
+                android:layout_marginTop="100dp" >
             <SlidingDrawer
-                android:id="@+id/slidingDrawer1"
+                android:id="@+id/slidingDrawer2"
+
                 android:layout_width="200dp"
                 android:layout_height="54dp"
                 android:background="#00ff0000"
-                android:content="@+id/content"
-                android:handle="@+id/handle"
+                android:content="@+id/content2"
+                android:handle="@+id/handle2"
                 android:orientation="horizontal" >
                 <Button
-                    android:id="@+id/handle"
-                    android:layout_width="54dp"
+                    android:id="@+id/handle2"
+                    android:layout_width="100dp"
                     android:layout_height="54dp"
                     android:background="#800000"
-                    android:text="Accept"
-                    android:textSize="40dp"
+                    android:text="Decline"
+                    android:textSize="20dp"
+                    android:gravity="center_vertical"
                     android:src="#808080" />
                 <TextView
-                    android:id="@+id/content"
+                    android:id="@+id/content2"
                     android:background="#FF0000"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="center_horizontal"
-                    android:text="Hanging On"
+                    android:gravity="center_vertical"
+                    android:text="Hanging Off"
                     android:textSize="20dp"
-                     />
+                    />
             </SlidingDrawer>
             <ImageView
-                android:id="@+id/imageView2"
+                android:id="@+id/imageView3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="#008000" />
-        </FrameLayout>
-
-        <FrameLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginLeft="300dp"
-            android:layout_marginTop="100dp" >
-        <SlidingDrawer
-            android:id="@+id/slidingDrawer2"
-
-            android:layout_width="200dp"
-            android:layout_height="54dp"
-            android:background="#00ff0000"
-            android:content="@+id/content2"
-            android:handle="@+id/handle2"
-            android:orientation="horizontal" >
-            <Button
-                android:id="@+id/handle2"
-                android:layout_width="100dp"
-                android:layout_height="54dp"
-                android:background="#800000"
-                android:text="Decline"
-                android:textSize="20dp"
-                android:gravity="center_vertical"
-                android:src="#808080" />
-            <TextView
-                android:id="@+id/content2"
-                android:background="#FF0000"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:text="Hanging Off"
-                android:textSize="20dp"
-                />
-        </SlidingDrawer>
-        <ImageView
-            android:id="@+id/imageView3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="#008000" />
-        </FrameLayout>
-        -->
+            </FrameLayout>
+            -->
 
     </RelativeLayout>
 

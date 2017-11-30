@@ -50,6 +50,7 @@ import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.Spinner;
@@ -75,6 +76,16 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         System.loadLibrary("opencv_java3");
     }
 
+    /*user info variables*/
+    private String userName;
+    private String userAge;
+    private int userGender;
+    private int userHand;
+
+    private Button userInfoSubmit;
+    private EditText iuserName;
+    private EditText iuserAge;
+    private RelativeLayout userInfoLayout;
     /*simplified keyboard buttons */
     private Button keyButton1;
     private Button keyButton2;
@@ -369,7 +380,10 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
             }
         });
         minTresholdSeekbar.setProgress(8700);
-
+        userInfoLayout = (RelativeLayout) findViewById(R.id.user_info_view);
+        userInfoSubmit = (Button) findViewById(R.id.UserInfoButton);
+        iuserName = (EditText) findViewById(R.id.user_name_text);
+        iuserAge = (EditText) findViewById(R.id.user_age_text);
         RL = (RelativeLayout) findViewById(R.id.main_relative_view);//Added by ahinsutime
         DV = new DrawingView(this);//Added by ahinsutime
         RL.addView(DV);//Added by ahinsutime
@@ -381,7 +395,29 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         BL2 = (RelativeLayout) findViewById(R.id.buttons_discrete);
         BL3 = (RelativeLayout) findViewById(R.id.buttons_shape);
         globalLayout = (RelativeLayout) findViewById(R.id.dflt_lay);
+        /*user info submission button */
+        iuserAge.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                iuserAge.setText("");
+            }
+        });
+        userInfoSubmit.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                // Code here executes on main thread after user presses button
+                // gender and handedness info are saved in int userGender and int userHand
+                userName = iuserName.getText().toString();
+                userAge = iuserAge.getText().toString();
+                Log.d("USERINFO", "name:" + userName + "\n" +
+                        "age:" + userAge + "\n" +
+                        "gender:" + userGender + "\n" +
+                        "handedness:" + userHand);
+                // save it after completion of test
+                userInfoLayout.setVisibility(userInfoLayout.INVISIBLE);
+                RL.setVisibility(RL.VISIBLE);
 
+            }
+        });
   /*spinner for selecting user design */
         spinner = (Spinner) findViewById(R.id.spinner);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -1561,4 +1597,36 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
             editText.setFocusable(true);
         }
     }
+
+    /* 1 - female, 0 - male */
+    public void onRadioButtonClickedGender(View view) {
+        boolean checked = ((RadioButton) view).isChecked();
+        switch (view.getId()) {
+            case R.id.radio_female:
+                if (checked)
+                    userGender = 1;
+                break;
+            case R.id.radio_male:
+                if (checked)
+                    userGender = 0;
+                break;
+        }
+    }
+        /* 1 - right, 0 - left */
+
+    public void onRadioButtonClickedHand(View view) {
+        boolean checked = ((RadioButton) view).isChecked();
+        switch (view.getId()) {
+            case R.id.radio_right_hand:
+                if (checked)
+                    userHand = 1;
+                break;
+            case R.id.radio_left_hand:
+                if (checked)
+                    userHand = 0;
+                break;
+        }
+    }
+
+
 }
