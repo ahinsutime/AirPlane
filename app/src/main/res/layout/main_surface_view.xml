@@ -342,14 +342,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAlignment="center"
-            android:textSize="20dp"
+            android:textSize="50dp"
+
             android:background="#fff"
-            android:layout_marginTop="0dp"
             android:entries="@array/mode_arrays"
-            android:prompt="@string/mode_prompt"
-            android:layout_alignBaseline="@+id/buttons_keyboard"
-            android:layout_alignBottom="@+id/buttons_keyboard"
-            android:layout_alignParentEnd="true" />
+            android:prompt="@string/mode_prompt" />
 
         <Button
             android:id="@+id/buttonQuit"
@@ -385,12 +382,10 @@
             android:id="@+id/buttonRefresh"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:layout_alignParentEnd="true"
             android:text="Refresh"
+            android:layout_alignParentEnd="true"
             android:layout_marginTop="220dp"
             android:layout_marginRight="10dp"/>
-
 
 
     <!--

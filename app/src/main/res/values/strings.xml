@@ -2,13 +2,13 @@
     <string name="app_name">OpenCV</string>
     <string name="min_treshold">Min threshold </string>
     <string name="max_treshold">Max threshold </string>
-    <string name="mode_prompt">Choose the mode</string>
+    <string name="mode_prompt">  Choose the mode </string>
 
     <string-array name="mode_arrays">
-        <item>Choose the test</item>
-        <item>Keyboard</item>
-        <item>Phone Call</item>
-        <item>Lock Screen</item>
+        <item><font size="20">Choose the test (click here) </font></item>
+        <item><font size="20">Keyboard</font></item>
+        <item><font size="20">Phone Call</font></item>
+        <item><font size="20">Lock Screen</font></item>
     </string-array>
 
 </resources>
