@@ -49,6 +49,8 @@ import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -142,6 +144,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
     public RelativeLayout BL2;
     public RelativeLayout BL3;
     public TextView PatternTV;
+    public TextView CorrectnessTV;
 
     private static final String TAG = "HandPose::MainActivity";
     public static final int JAVA_DETECTOR = 0;
@@ -192,9 +195,12 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
     Point InitialP2 = new Point(1,1);
     Rect PrevBoundRect = new Rect(InitialP1, InitialP2);
     MotionEvent motionEvent;
+    boolean correctness = false;
 
     final Runnable mUpdateFingerCountResults = new Runnable() {
         public void run() {
+
+
 
             DisplayMetrics dm = getApplicationContext().getResources().getDisplayMetrics();
             int width = dm.widthPixels;
@@ -400,8 +406,10 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         BL2 = (RelativeLayout) findViewById(R.id.buttons_discrete);
         BL3 = (RelativeLayout) findViewById(R.id.buttons_shape);
         PatternTV = (TextView) findViewById(R.id.PatternText);
+        CorrectnessTV = (TextView) findViewById(R.id.CorrectnessText);
 
-        globalLayout = (RelativeLayout) findViewById(R.id.dflt_lay);
+
+                globalLayout = (RelativeLayout) findViewById(R.id.dflt_lay);
         /*user info submission button */
         iuserAge.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -918,6 +926,8 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                 switch (event.getAction()) {//Added by ahinsutime
                     case MotionEvent.ACTION_DOWN:
                         keyButtonStart.setTextColor(Color.BLUE);
+                        fadeAnimation(CorrectnessTV,true);
+
                         break;
                     case MotionEvent.ACTION_MOVE:
                         keyButtonStart.setTextColor(Color.BLUE);
@@ -1008,6 +1018,10 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                         patternView.clearPattern();
                         PatternTV.setText("Draw your pattern and click the save button");
                         PatternTV.setTextColor(Color.parseColor("#FFFF00"));
+
+
+
+                        fadeAnimation(CorrectnessTV,false);
                         break;
                     case MotionEvent.ACTION_MOVE:
                         keyButtonRefresh.setTextColor(Color.BLUE);
@@ -1724,5 +1738,57 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         return sum / array.length;
     }
 
+    public void fadeAnimation(final View tv, final boolean isfadeOut) {
+
+        final Animation animationFadeOut, animationFadeIn;
+
+
+        animationFadeOut = AnimationUtils.loadAnimation(this, R.anim.fadeout);
+        animationFadeIn = AnimationUtils.loadAnimation(this, R.anim.fadein);
+
+        mHandler.postDelayed(new Runnable() {
+
+            @Override
+
+            public void run() {
+
+                // TODO Auto-generated method stub
+
+                if (isfadeOut) {
+                    //tv.setAlpha(1f);
+                    tv.startAnimation(animationFadeOut);
+                }
+                else {
+                    tv.setAlpha(1f);
+                    tv.startAnimation(animationFadeIn);
+                }
+
+
+
+
+            }
+        }, 0);
+
+        mHandler.postDelayed(new Runnable() {
+
+            @Override
+
+            public void run() {
+
+                // TODO Auto-generated method stub
+
+
+                if(isfadeOut){
+                    tv.setAlpha(0f);
+                }
+                else{
+                    tv.setAlpha(1f);
+                }
+
+            }
+        }, 3000);
+    }
+
 
 }
+
