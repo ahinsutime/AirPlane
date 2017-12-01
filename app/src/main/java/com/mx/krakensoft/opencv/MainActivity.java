@@ -141,6 +141,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
     public RelativeLayout BL;//Added by ahinsutime
     public RelativeLayout BL2;
     public RelativeLayout BL3;
+    public TextView PatternTV;
 
     private static final String TAG = "HandPose::MainActivity";
     public static final int JAVA_DETECTOR = 0;
@@ -328,7 +329,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
             switch (status) {
                 case LoaderCallbackInterface.SUCCESS: {
                     //Log.i(TAG, "OpenCV loaded successfully");
-
                     mOpenCvCameraView.enableView();
                     mOpenCvCameraView.setOnTouchListener(MainActivity.this);
                     // 640x480
@@ -399,6 +399,8 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         BL = (RelativeLayout) findViewById(R.id.buttons_keyboard);
         BL2 = (RelativeLayout) findViewById(R.id.buttons_discrete);
         BL3 = (RelativeLayout) findViewById(R.id.buttons_shape);
+        PatternTV = (TextView) findViewById(R.id.PatternText);
+
         globalLayout = (RelativeLayout) findViewById(R.id.dflt_lay);
         /*user info submission button */
         iuserAge.setOnClickListener(new View.OnClickListener() {
@@ -460,6 +462,8 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                         globalLayout = BL3;
                         globalLayout.setVisibility(View.VISIBLE);
                         globalLayBoolean = true;
+                        PatternTV.setVisibility(PatternTV.VISIBLE);
+
                         break;
                 }
             }
@@ -1002,6 +1006,8 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                         }
 
                         patternView.clearPattern();
+                        PatternTV.setText("Draw your pattern and click the save button");
+                        PatternTV.setTextColor(Color.parseColor("#FFFF00"));
                         break;
                     case MotionEvent.ACTION_MOVE:
                         keyButtonRefresh.setTextColor(Color.BLUE);
@@ -1020,7 +1026,10 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                     case MotionEvent.ACTION_DOWN:
                         if((patternView.getPattern().size())>0) {
                             //keyButtonSavePattern.setTextColor(Color.BLUE);
+                            PatternTV.setText("Draw your pattern again and click confirm");
+                            PatternTV.setTextColor(Color.parseColor("#00BFFF"));
                             evalPattern = patternView.getPattern();
+                            patternView.clearPattern();
                             break;
                         }
                     case MotionEvent.ACTION_MOVE:
@@ -1042,7 +1051,10 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                         keyButtonConfirmPattern.setTextColor(Color.BLUE);
                         List tempPattern = patternView.getPattern();
                         if(tempPattern.equals(evalPattern)){
+                            PatternTV.setText("Draw your pattern and click the save button");
+                            PatternTV.setTextColor(Color.parseColor("#FFFF00"));
                             //keyButtonConfirmPattern.setBackgroundColor(Color.BLUE);
+                            patternView.clearPattern();
                         }
                         break;
                     case MotionEvent.ACTION_MOVE:
