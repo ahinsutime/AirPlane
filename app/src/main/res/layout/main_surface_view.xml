@@ -217,6 +217,7 @@
                 android:layout_above="@+id/button3"
                 android:layout_toEndOf="@+id/button2"
                 android:layout_centerInParent="true"
+                android:background="@drawable/round_button3"
                 android:text="6" />
 
             <Button
@@ -227,6 +228,7 @@
                 android:layout_alignBottom="@+id/button2"
                 android:layout_toEndOf="@+id/button2"
                 android:layout_centerInParent="true"
+                android:background="@drawable/round_button3"
                 android:text="3" />
 
             <Button
@@ -237,6 +239,7 @@
                 android:layout_alignBottom="@+id/button2"
                 android:layout_toEndOf="@+id/button3"
                 android:layout_centerInParent="true"
+                android:background="@drawable/round_button3"
                 android:text="0" />
 
             <Button
@@ -247,6 +250,7 @@
                 android:layout_alignBottom="@+id/button1"
                 android:layout_toEndOf="@+id/button1"
                 android:layout_centerInParent="true"
+                android:background="@drawable/round_button3"
                 android:text="2" />
 
             <Button
@@ -256,9 +260,10 @@
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentStart="true"
                 android:gravity="center"
-                android:layout_marginBottom="100dp"
-                android:layout_marginStart="90dp"
+                android:layout_marginBottom="80dp"
+                android:layout_marginStart="60dp"
                 android:layout_centerInParent="true"
+                android:background="@drawable/round_button3"
                 android:text="1" />
 
             <Button
@@ -269,6 +274,7 @@
                 android:layout_alignBottom="@+id/button6"
                 android:layout_toEndOf="@+id/button7"
                 android:layout_centerInParent="true"
+                android:background="@drawable/round_button3"
                 android:text="5" />
 
             <Button
@@ -279,6 +285,7 @@
                 android:layout_alignBottom="@+id/button7"
                 android:layout_toEndOf="@+id/button7"
                 android:layout_centerInParent="true"
+                android:background="@drawable/round_button3"
                 android:text="8" />
 
             <Button
@@ -288,6 +295,7 @@
                 android:layout_above="@+id/button6"
                 android:layout_toEndOf="@+id/button5"
                 android:layout_centerInParent="true"
+                android:background="@drawable/round_button3"
                 android:text="9" />
 
             <Button
@@ -297,6 +305,7 @@
                 android:layout_alignBaseline="@+id/button7"
                 android:layout_toEndOf="@+id/button9"
                 android:layout_centerInParent="true"
+                android:background="@drawable/round_button3"
                 android:text="Backspace" />
 
             <Button
@@ -306,6 +315,7 @@
                 android:layout_alignBaseline="@+id/button7"
                 android:layout_toEndOf="@+id/buttonBackspace"
                 android:layout_centerInParent="true"
+                android:background="@drawable/round_button3"
                 android:text="Reset" />
 
             <Button
@@ -315,6 +325,7 @@
                 android:layout_alignBaseline="@+id/button4"
                 android:layout_toEndOf="@+id/button6"
                 android:layout_centerInParent="true"
+                android:background="@drawable/round_button3"
                 android:text="Enter" />
 
 
@@ -326,6 +337,7 @@
                 android:layout_above="@+id/button5"
                 android:layout_alignStart="@+id/button4"
                 android:layout_centerInParent="true"
+                android:background="@drawable/round_button3"
                 />
 
             <Button
@@ -336,6 +348,7 @@
                 android:layout_alignBottom="@+id/button6"
                 android:layout_alignStart="@+id/button1"
                 android:layout_centerInParent="true"
+                android:background="@drawable/round_button3"
                 android:text="4" />
 
             <EditText
@@ -359,10 +372,11 @@
                 android:layout_height="wrap_content"
                 android:layout_above="@+id/button6"
                 android:layout_marginLeft="20dp"
-                android:layout_marginBottom="50dp"
+                android:layout_marginBottom="60dp"
                 android:text="Enter this number:"
                 android:textAppearance="?android:attr/textAppearanceLarge"
-                android:textSize="17dp"
+                android:textSize="20dp"
+                android:textColor="#808000"
                 android:layout_alignParentStart="true"
                 android:layout_alignLeft="@id/button1"
                 android:layout_alignEnd="@+id/button9"/>
@@ -385,28 +399,30 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
-                opencv:gridColumns="4"
-                opencv:gridRows="5" />
+                opencv:gridColumns="3"
+                opencv:gridRows="3" />
 
             <Button
                 android:id="@+id/savePatternButton"
-                android:background="#FF0000"
+                android:background="@drawable/round_button_pattern_save"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="70dp"
+                android:layout_marginLeft="50dp"
                 android:layout_marginTop="100dp"
                 android:textColor="#FFFF00"
+
                 android:text="Save Pattern" />
 
             <Button
                 android:id="@+id/confirmPatternButton"
-                android:background="#FF0000"
+                android:background="@drawable/round_button_pattern_confirm"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/savePatternButton"
-                android:layout_marginLeft="70dp"
+                android:layout_marginLeft="50dp"
                 android:layout_marginTop="80dp"
                 android:textColor="#008000"
+
                 android:text="Confirm Pattern" />
 
         </RelativeLayout>
@@ -423,7 +439,7 @@
 
             <Button
                 android:id="@+id/rejButton"
-                android:background="#FF0000"
+                android:background="@drawable/round_button_call_decline"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignBaseline="@+id/accButton"
@@ -435,7 +451,7 @@
 
             <Button
                 android:id="@+id/accButton"
-                android:background="#008000"
+                android:background="@drawable/round_button_call_accept"
                 android:layout_centerInParent="true"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -479,6 +495,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:layout_alignParentEnd="true"
+            android:background="@drawable/round_button6"
             android:text="Quit"
             android:layout_marginTop="100dp"
             android:layout_marginRight="10dp"/>
@@ -489,8 +506,9 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:layout_alignParentEnd="true"
+            android:background="@drawable/round_button6"
             android:text="Start"
-            android:layout_marginTop="140dp"
+            android:layout_marginTop="150dp"
             android:layout_marginRight="10dp"/>
 
         <Button
@@ -499,8 +517,9 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:layout_alignParentEnd="true"
+            android:background="@drawable/round_button6"
             android:text="Restart Tracking"
-            android:layout_marginTop="180dp"
+            android:layout_marginTop="200dp"
             android:layout_marginRight="10dp"/>
 
         <Button
@@ -509,7 +528,8 @@
             android:layout_height="wrap_content"
             android:text="Refresh"
             android:layout_alignParentEnd="true"
-            android:layout_marginTop="220dp"
+            android:background="@drawable/round_button6"
+            android:layout_marginTop="250dp"
             android:layout_marginRight="10dp"/>
 
 

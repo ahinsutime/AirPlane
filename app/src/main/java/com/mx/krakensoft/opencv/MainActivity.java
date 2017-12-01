@@ -503,6 +503,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
         patternView = (PatternView) findViewById(R.id.patternView);
 
+
         buttons = new HashMap<>();
         if (!flag) {
             keyButton1.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -943,21 +944,20 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
             }
         });
 
-
         keyButtonReject.setOnTouchListener(new OnTouchListener() {
             public boolean onTouch(View v, MotionEvent event) {
                 switch (event.getAction()) {//Added by ahinsutime
                     case MotionEvent.ACTION_DOWN:
                         keyButtonReject.setTextColor(Color.BLUE);
                         if(randomDiscrete==false){
-                            keyButtonReject.setBackgroundColor(Color.BLUE);
+                            //keyButtonReject.setBackgroundColor(Color.BLUE);
                         }
                         break;
                     case MotionEvent.ACTION_MOVE:
                         keyButtonReject.setTextColor(Color.BLUE);
                         break;
                     default:
-                        keyButtonReject.setBackgroundColor(Color.RED);
+                        //keyButtonReject.setBackgroundColor(Color.parseColor("#FF0000"));
                         keyButtonReject.setTextColor(Color.WHITE);
                         break;
                 }
@@ -971,14 +971,14 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                     case MotionEvent.ACTION_DOWN:
                         keyButtonAccept.setTextColor(Color.BLUE);
                         if(randomDiscrete==true){
-                            keyButtonAccept.setBackgroundColor(Color.BLUE);
+                            //keyButtonAccept.setBackgroundColor(Color.BLUE);
                         }
                         break;
                     case MotionEvent.ACTION_MOVE:
                         keyButtonAccept.setTextColor(Color.BLUE);
                         break;
                     default:
-                        keyButtonAccept.setBackgroundColor(Color.GREEN);
+                        //keyButtonAccept.setBackgroundColor(Color.parseColor("#008000"));
                         keyButtonAccept.setTextColor(Color.WHITE);
                         break;
                 }
@@ -1000,6 +1000,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                         else{
                             discreteText.setText("Follow the instruction:"+" Accept");
                         }
+
                         patternView.clearPattern();
                         break;
                     case MotionEvent.ACTION_MOVE:
@@ -1017,9 +1018,11 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
             public boolean onTouch(View v, MotionEvent event) {
                 switch (event.getAction()) {//Added by ahinsutime
                     case MotionEvent.ACTION_DOWN:
-                        keyButtonSavePattern.setTextColor(Color.BLUE);
-                        evalPattern = patternView.getPattern();
-                        break;
+                        if((patternView.getPattern().size())>0) {
+                            //keyButtonSavePattern.setTextColor(Color.BLUE);
+                            evalPattern = patternView.getPattern();
+                            break;
+                        }
                     case MotionEvent.ACTION_MOVE:
                         keyButtonSavePattern.setTextColor(Color.BLUE);
                         break;
@@ -1039,7 +1042,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                         keyButtonConfirmPattern.setTextColor(Color.BLUE);
                         List tempPattern = patternView.getPattern();
                         if(tempPattern.equals(evalPattern)){
-                            keyButtonConfirmPattern.setBackgroundColor(Color.BLUE);
+                            //keyButtonConfirmPattern.setBackgroundColor(Color.BLUE);
                         }
                         break;
                     case MotionEvent.ACTION_MOVE:
@@ -1047,7 +1050,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                         break;
                     default:
                         keyButtonConfirmPattern.setTextColor(Color.GREEN);
-                        keyButtonConfirmPattern.setBackgroundColor(Color.YELLOW);
+                        //keyButtonConfirmPattern.setBackgroundColor(Color.YELLOW);
                         break;
                 }
                 return false;
@@ -1417,6 +1420,16 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
         Iterator<Point> iterator = listPo.iterator();
 
+        /*
+        while (iterator.hasNext()) {
+            Point data = iterator.next();
+
+            if (data.y > centerY + (mRgba.size().height-centerY)*0.4) {
+                iterator.remove();
+            }
+        }
+        */
+
         if(centerY/YOffset < height / 3) {
             while (iterator.hasNext()) {
                 Point data = iterator.next();
@@ -1429,7 +1442,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         else if ((centerY/YOffset >= height / 3) && (centerY/YOffset < height *2/3)) {
             while (iterator.hasNext()) {
                 Point data = iterator.next();
-                if (data.y > (mRgba.size().height - 100)) {
+                if (data.y > (mRgba.size().height - 120)) {
                     iterator.remove();
                 }
             }
@@ -1442,6 +1455,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                 }
             }
         }
+
 
 
         MatOfPoint e = new MatOfPoint();
@@ -1669,6 +1683,33 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                     userHand = 0;
                 break;
         }
+    }
+
+    public static double standardDeviation(double[] array, int option) {
+        if (array.length < 2) return Double.NaN;
+
+        double sum = 0.0;
+        double sd = 0.0;
+        double diff;
+        double meanValue = mean(array);
+
+        for (int i = 0; i < array.length; i++) {
+            diff = array[i] - meanValue;
+            sum += diff * diff;
+        }
+        sd = Math.sqrt(sum / (array.length - option));
+
+        return sd;
+    }
+
+
+    public static double mean(double[] array) {  // 산술 평균 구하기
+        double sum = 0.0;
+
+        for (int i = 0; i < array.length; i++)
+            sum += array[i];
+
+        return sum / array.length;
     }
 
 
