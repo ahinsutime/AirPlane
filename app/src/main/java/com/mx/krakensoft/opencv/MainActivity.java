@@ -10,6 +10,8 @@ import java.util.Scanner;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.regex.Pattern;
+
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase.CvCameraViewFrame;
 import org.opencv.android.CameraBridgeViewBase.CvCameraViewListener2;
@@ -106,6 +108,8 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
     private Button keyButtonReject;
     private Button keyButtonAccept;
     private Button keyButtonRefresh;
+    private Button keyButtonSavePattern;
+    private Button keyButtonConfirmPattern;
 
 
     private RelativeLayout globalLayout;
@@ -125,6 +129,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
     private Spinner spinner;
     private double mappedY = 0;
     private boolean globalLayBoolean = false;
+    private List evalPattern;
 
     int DefaultCursorRadius = 50;
 
@@ -493,6 +498,8 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         keyButtonReject = (Button) findViewById(R.id.rejButton);
         keyButtonAccept = (Button) findViewById(R.id.accButton);
         keyButtonRefresh = (Button) findViewById(R.id.buttonRefresh);
+        keyButtonSavePattern = (Button) findViewById(R.id.savePatternButton);
+        keyButtonConfirmPattern = (Button) findViewById(R.id.confirmPatternButton);
 
         patternView = (PatternView) findViewById(R.id.patternView);
 
@@ -613,6 +620,18 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                     addButtonCoordinates(keyButtonRefresh);
                 }
             });
+            keyButtonSavePattern.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    addButtonCoordinates(keyButtonSavePattern);
+                }
+            });
+            keyButtonConfirmPattern.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    addButtonCoordinates(keyButtonConfirmPattern);
+                }
+            });
             flag = true;
         }
         keyButton1.setOnTouchListener(new OnTouchListener() {
@@ -626,7 +645,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                     case MotionEvent.ACTION_MOVE:
                         customEdit.setSelection(customEdit.getText().length());
                         break;
-                    //case MotionEvent.ACTION_UP   :
                     default:
                         keyButton1.setTextColor(Color.BLACK);
                         break;
@@ -645,7 +663,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                     case MotionEvent.ACTION_MOVE:
                         keyButton2.setTextColor(Color.BLUE);
                         break;
-                    //case MotionEvent.ACTION_UP   :
                     default:
                         keyButton2.setTextColor(Color.BLACK);
                         break;
@@ -664,7 +681,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                     case MotionEvent.ACTION_MOVE:
                         keyButton3.setTextColor(Color.BLUE);
                         break;
-                    //case MotionEvent.ACTION_UP   :
                     default:
                         keyButton3.setTextColor(Color.BLACK);
                         break;
@@ -683,7 +699,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                     case MotionEvent.ACTION_MOVE:
                         keyButton4.setTextColor(Color.BLUE);
                         break;
-                    //case MotionEvent.ACTION_UP   :
                     default:
                         keyButton4.setTextColor(Color.BLACK);
                         break;
@@ -703,7 +718,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                     case MotionEvent.ACTION_MOVE:
                         keyButton5.setTextColor(Color.BLUE);
                         break;
-                    //case MotionEvent.ACTION_UP   :
                     default:
                         keyButton5.setTextColor(Color.BLACK);
                         break;
@@ -722,7 +736,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                     case MotionEvent.ACTION_MOVE:
                         keyButton6.setTextColor(Color.BLUE);
                         break;
-                    //case MotionEvent.ACTION_UP   :
                     default:
                         keyButton6.setTextColor(Color.BLACK);
                         break;
@@ -741,7 +754,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                     case MotionEvent.ACTION_MOVE:
                         keyButton7.setTextColor(Color.BLUE);
                         break;
-                    //case MotionEvent.ACTION_UP   :
                     default:
                         keyButton7.setTextColor(Color.BLACK);
                         break;
@@ -760,7 +772,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                     case MotionEvent.ACTION_MOVE:
                         keyButton8.setTextColor(Color.BLUE);
                         break;
-                    //case MotionEvent.ACTION_UP   :
                     default:
                         keyButton8.setTextColor(Color.BLACK);
                         break;
@@ -779,7 +790,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                     case MotionEvent.ACTION_MOVE:
                         keyButton9.setTextColor(Color.BLUE);
                         break;
-                    //case MotionEvent.ACTION_UP   :
                     default:
                         keyButton9.setTextColor(Color.BLACK);
                         break;
@@ -799,7 +809,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                     case MotionEvent.ACTION_MOVE:
                         keyButton0.setTextColor(Color.BLUE);
                         break;
-                    //case MotionEvent.ACTION_UP   :
                     default:
                         keyButton0.setTextColor(Color.BLACK);
                         break;
@@ -807,7 +816,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                 return false;
             }
         });
-
 
         keyButtonBackspace.setOnTouchListener(new OnTouchListener() {
             public boolean onTouch(View v, MotionEvent event) {
@@ -824,7 +832,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                     case MotionEvent.ACTION_MOVE:
                         keyButtonBackspace.setTextColor(Color.BLUE);
                         break;
-                    //case MotionEvent.ACTION_UP   :
                     default:
                         keyButtonBackspace.setTextColor(Color.BLACK);
                         break;
@@ -850,7 +857,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                     case MotionEvent.ACTION_MOVE:
                         keyButtonEnter.setTextColor(Color.BLUE);
                         break;
-                    //case MotionEvent.ACTION_UP   :
                     default:
                         keyButtonEnter.setTextColor(Color.BLACK);
                         break;
@@ -874,7 +880,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                     case MotionEvent.ACTION_MOVE:
                         keyButtonReset.setTextColor(Color.BLUE);
                         break;
-                    //case MotionEvent.ACTION_UP   :
                     default:
                         keyButtonReset.setTextColor(Color.BLACK);
                         break;
@@ -890,12 +895,11 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                     case MotionEvent.ACTION_DOWN:
                         keyButtonQuit.setTextColor(Color.BLUE);
 
-                        System.exit(0);
+                        onDestroy();
                         break;
                     case MotionEvent.ACTION_MOVE:
                         keyButtonQuit.setTextColor(Color.BLUE);
                         break;
-                    //case MotionEvent.ACTION_UP   :
                     default:
                         keyButtonQuit.setTextColor(Color.BLACK);
                         break;
@@ -913,7 +917,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                     case MotionEvent.ACTION_MOVE:
                         keyButtonStart.setTextColor(Color.BLUE);
                         break;
-                    //case MotionEvent.ACTION_UP   :
                     default:
                         keyButtonStart.setTextColor(Color.BLACK);
                         break;
@@ -932,7 +935,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                     case MotionEvent.ACTION_MOVE:
                         keyButtonResetTracking.setTextColor(Color.BLUE);
                         break;
-                    //case MotionEvent.ACTION_UP   :
                     default:
                         keyButtonResetTracking.setTextColor(Color.BLACK);
                         break;
@@ -954,7 +956,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                     case MotionEvent.ACTION_MOVE:
                         keyButtonReject.setTextColor(Color.BLUE);
                         break;
-                    //case MotionEvent.ACTION_UP   :
                     default:
                         keyButtonReject.setBackgroundColor(Color.RED);
                         keyButtonReject.setTextColor(Color.WHITE);
@@ -976,7 +977,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                     case MotionEvent.ACTION_MOVE:
                         keyButtonAccept.setTextColor(Color.BLUE);
                         break;
-                    //case MotionEvent.ACTION_UP   :
                     default:
                         keyButtonAccept.setBackgroundColor(Color.GREEN);
                         keyButtonAccept.setTextColor(Color.WHITE);
@@ -994,21 +994,60 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                         randomDiscrete = randomCallGenerator();
                         randomNumber = randomIntGenerator(5);
                         keyboardText.setText("Enter this number: "+randomNumber);
-                        if (randomDiscrete==false){
+                        if (!randomDiscrete){
                             discreteText.setText("Follow the instruction:"+" Decline");
                         }
                         else{
                             discreteText.setText("Follow the instruction:"+" Accept");
                         }
                         patternView.clearPattern();
-                        //mHandler.post(mUpdateFingerCountResults);
                         break;
                     case MotionEvent.ACTION_MOVE:
                         keyButtonRefresh.setTextColor(Color.BLUE);
                         break;
-                    //case MotionEvent.ACTION_UP   :
                     default:
                         keyButtonRefresh.setTextColor(Color.BLACK);
+                        break;
+                }
+                return false;
+            }
+        });
+
+        keyButtonSavePattern.setOnTouchListener(new OnTouchListener() {
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {//Added by ahinsutime
+                    case MotionEvent.ACTION_DOWN:
+                        keyButtonSavePattern.setTextColor(Color.BLUE);
+                        evalPattern = patternView.getPattern();
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+                        keyButtonSavePattern.setTextColor(Color.BLUE);
+                        break;
+
+                    default:
+                        keyButtonSavePattern.setTextColor(Color.WHITE);
+                        break;
+                }
+                return false;
+            }
+        });
+
+        keyButtonConfirmPattern.setOnTouchListener(new OnTouchListener() {
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {//Added by ahinsutime
+                    case MotionEvent.ACTION_DOWN:
+                        keyButtonConfirmPattern.setTextColor(Color.BLUE);
+                        List tempPattern = patternView.getPattern();
+                        if(tempPattern.equals(evalPattern)){
+                            keyButtonConfirmPattern.setBackgroundColor(Color.BLUE);
+                        }
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+                        keyButtonConfirmPattern.setTextColor(Color.BLUE);
+                        break;
+                    default:
+                        keyButtonConfirmPattern.setTextColor(Color.GREEN);
+                        keyButtonConfirmPattern.setBackgroundColor(Color.YELLOW);
                         break;
                 }
                 return false;
@@ -1046,6 +1085,8 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
     public void onDestroy() {
         super.onDestroy();
         mOpenCvCameraView.disableView();
+        int pid = android.os.Process.myPid();
+        android.os.Process.killProcess(pid);
     }
 
     public void onCameraViewStarted(int width, int height) {

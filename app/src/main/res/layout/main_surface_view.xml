@@ -388,6 +388,27 @@
                 opencv:gridColumns="4"
                 opencv:gridRows="5" />
 
+            <Button
+                android:id="@+id/savePatternButton"
+                android:background="#FF0000"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="70dp"
+                android:layout_marginTop="100dp"
+                android:textColor="#FFFF00"
+                android:text="Save Pattern" />
+
+            <Button
+                android:id="@+id/confirmPatternButton"
+                android:background="#FF0000"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/savePatternButton"
+                android:layout_marginLeft="70dp"
+                android:layout_marginTop="80dp"
+                android:textColor="#008000"
+                android:text="Confirm Pattern" />
+
         </RelativeLayout>
 
 
