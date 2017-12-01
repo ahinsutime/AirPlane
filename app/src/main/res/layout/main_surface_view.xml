@@ -376,13 +376,10 @@
                 android:text="Enter this number:"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:textSize="20dp"
-                android:textColor="#808000"
+                android:textColor="#FFFF00"
                 android:layout_alignParentStart="true"
                 android:layout_alignLeft="@id/button1"
                 android:layout_alignEnd="@+id/button9"/>
-
-
-
 
         </RelativeLayout>
 
@@ -475,7 +472,6 @@
                 android:layout_alignParentStart="true"
                 android:layout_alignLeft="@+id/accButton" />
 
-
         </RelativeLayout>
 
         <Spinner
@@ -531,7 +527,6 @@
             android:background="@drawable/round_button6"
             android:layout_marginTop="250dp"
             android:layout_marginRight="10dp"/>
-
 
     <!--
         <FrameLayout
@@ -615,6 +610,5 @@
         -->
 
     </RelativeLayout>
-
 
 </RelativeLayout>
