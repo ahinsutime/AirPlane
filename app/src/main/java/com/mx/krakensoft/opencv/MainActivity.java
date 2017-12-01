@@ -407,9 +407,9 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         BL3 = (RelativeLayout) findViewById(R.id.buttons_shape);
         PatternTV = (TextView) findViewById(R.id.PatternText);
         CorrectnessTV = (TextView) findViewById(R.id.CorrectnessText);
+        CorrectnessTV.setAlpha(0f);
 
-
-                globalLayout = (RelativeLayout) findViewById(R.id.dflt_lay);
+        globalLayout = (RelativeLayout) findViewById(R.id.dflt_lay);
         /*user info submission button */
         iuserAge.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -861,9 +861,16 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                         if(customEdit.getText().toString().length()>0) {
                             if(Integer.parseInt(customEdit.getText().toString())==randomNumber){
                                 customEdit.setText("");
+                                CorrectnessTV.setText("Correct Answer");
+                                CorrectnessTV.setTextColor(Color.BLUE);
+                                fadeAnimation(CorrectnessTV,false);
+                                fadeAnimation(CorrectnessTV,true);
                             }
                             else{
-
+                                CorrectnessTV.setText("Wrong Answer");
+                                CorrectnessTV.setTextColor(Color.RED);
+                                fadeAnimation(CorrectnessTV,false);
+                                fadeAnimation(CorrectnessTV,true);
                             }
                         }
                         break;
@@ -926,7 +933,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                 switch (event.getAction()) {//Added by ahinsutime
                     case MotionEvent.ACTION_DOWN:
                         keyButtonStart.setTextColor(Color.BLUE);
-                        fadeAnimation(CorrectnessTV,true);
+                        //fadeAnimation(CorrectnessTV,true);
 
                         break;
                     case MotionEvent.ACTION_MOVE:
@@ -965,6 +972,16 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                         keyButtonReject.setTextColor(Color.BLUE);
                         if(randomDiscrete==false){
                             //keyButtonReject.setBackgroundColor(Color.BLUE);
+                            CorrectnessTV.setText("Correct Answer");
+                            CorrectnessTV.setTextColor(Color.BLUE);
+                            fadeAnimation(CorrectnessTV,false);
+                            fadeAnimation(CorrectnessTV,true);
+                        }
+                        else{
+                            CorrectnessTV.setText("Wrong Answer");
+                            CorrectnessTV.setTextColor(Color.RED);
+                            fadeAnimation(CorrectnessTV,false);
+                            fadeAnimation(CorrectnessTV,true);
                         }
                         break;
                     case MotionEvent.ACTION_MOVE:
@@ -986,6 +1003,16 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                         keyButtonAccept.setTextColor(Color.BLUE);
                         if(randomDiscrete==true){
                             //keyButtonAccept.setBackgroundColor(Color.BLUE);
+                            CorrectnessTV.setText("Correct Answer");
+                            CorrectnessTV.setTextColor(Color.BLUE);
+                            fadeAnimation(CorrectnessTV,false);
+                            fadeAnimation(CorrectnessTV,true);
+                        }
+                        else{
+                            CorrectnessTV.setText("Wrong Answer");
+                            CorrectnessTV.setTextColor(Color.RED);
+                            fadeAnimation(CorrectnessTV,false);
+                            fadeAnimation(CorrectnessTV,true);
                         }
                         break;
                     case MotionEvent.ACTION_MOVE:
@@ -1021,7 +1048,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
 
 
-                        fadeAnimation(CorrectnessTV,false);
+                        //fadeAnimation(CorrectnessTV,false);
                         break;
                     case MotionEvent.ACTION_MOVE:
                         keyButtonRefresh.setTextColor(Color.BLUE);
@@ -1068,7 +1095,17 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                             PatternTV.setText("Draw your pattern and click the save button");
                             PatternTV.setTextColor(Color.parseColor("#FFFF00"));
                             //keyButtonConfirmPattern.setBackgroundColor(Color.BLUE);
+                            CorrectnessTV.setText("Correct Answer");
+                            CorrectnessTV.setTextColor(Color.BLUE);
+                            fadeAnimation(CorrectnessTV,false);
+                            fadeAnimation(CorrectnessTV,true);
                             patternView.clearPattern();
+                        }
+                        else{
+                            CorrectnessTV.setText("Wrong Answer");
+                            CorrectnessTV.setTextColor(Color.RED);
+                            fadeAnimation(CorrectnessTV,false);
+                            fadeAnimation(CorrectnessTV,true);
                         }
                         break;
                     case MotionEvent.ACTION_MOVE:
@@ -1786,7 +1823,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                 }
 
             }
-        }, 3000);
+        }, 1500);
     }
 
 

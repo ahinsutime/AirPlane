@@ -10,7 +10,7 @@
 
         android:toAlpha="0"
 
-        android:duration="3000"
+        android:duration="1500"
 
         />
 
