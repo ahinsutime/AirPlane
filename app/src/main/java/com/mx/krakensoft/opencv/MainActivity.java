@@ -89,6 +89,10 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
     private Button userInfoSubmit;
     private EditText iuserName;
     private EditText iuserAge;
+    private RadioButton keyButtonLeftHanded;
+    private RadioButton keyButtonRightHanded;
+    private RadioButton keyButtonFemale;
+    private RadioButton keyButtonMale;
     private RelativeLayout userInfoLayout;
     /*simplified keyboard buttons */
     private Button keyButton1;
@@ -114,10 +118,12 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
     private Button keyButtonConfirmPattern;
 
 
+
+
     private RelativeLayout globalLayout;
     private Map<String, ButtonCoordinates> buttons;
     private EditText customEdit;
-    //private EditText evalEdit;
+
     private TextView keyboardText;
     private TextView discreteText;
     private PatternView patternView;
@@ -147,6 +153,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
     public TextView CorrectnessTV;
     public TextView HoldHandTV;
 
+
     private static final String TAG = "HandPose::MainActivity";
     public static final int JAVA_DETECTOR = 0;
     public static final int NATIVE_DETECTOR = 1;
@@ -168,6 +175,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
     private SeekBar maxTresholdSeekbar = null;
     private TextView minTresholdSeekbarText = null;
     private TextView numberOfFingersText = null;
+
 
     double iThreshold = 0;
 
@@ -210,6 +218,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
             int width = dm.widthPixels;
             int height = dm.heightPixels;
             if(tracking==false){
+
                 //mOpenCvCameraView.setVisibility(mOpenCvCameraView.VISIBLE);
                 //mOpenCvCameraView.setAlpha(1);
                 DHV.setVisibility(DHV.VISIBLE);//Added by ahinsutime
@@ -255,6 +264,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                                 now = SystemClock.elapsedRealtime();
                                 fadeAnimation(HoldHandTV,false, 1500);
                                 fadeAnimation(HoldHandTV,true, 1500);
+
                             }
 
                             optimalArea = currentArea;
@@ -275,6 +285,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
             }
             else {
+
                 mPauseTime = SystemClock.elapsedRealtime();
                 if((mPauseTime-now)>3000){
                     now=0;
@@ -432,6 +443,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         CorrectnessTV.setAlpha(0f);
         HoldHandTV = (TextView) findViewById(R.id.HoldHand);
         HoldHandTV.setAlpha(0f);
+
 
         globalLayout = (RelativeLayout) findViewById(R.id.dflt_lay);
         /*user info submission button */
@@ -958,7 +970,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                     case MotionEvent.ACTION_DOWN:
                         keyButtonStart.setTextColor(Color.BLUE);
                         //fadeAnimation(CorrectnessTV,true);
-
                         break;
                     case MotionEvent.ACTION_MOVE:
                         keyButtonStart.setTextColor(Color.BLUE);
