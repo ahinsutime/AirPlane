@@ -431,6 +431,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         userInfoSubmit = (Button) findViewById(R.id.UserInfoButton);
         iuserName = (EditText) findViewById(R.id.user_name_text);
         iuserAge = (EditText) findViewById(R.id.user_age_text);
+
         RL = (RelativeLayout) findViewById(R.id.main_relative_view);//Added by ahinsutime
         DV = new DrawingView(this);//Added by ahinsutime
         RL.addView(DV);//Added by ahinsutime
@@ -457,12 +458,14 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
         globalLayout = (RelativeLayout) findViewById(R.id.dflt_lay);
         /*user info submission button */
+        /*
         iuserAge.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 iuserAge.setText("");
             }
         });
+        */
         userInfoSubmit.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // Code here executes on main thread after user presses button
@@ -547,6 +550,8 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         keyboardText = (TextView) findViewById(R.id.TestCaseKeyboard);
         discreteText = (TextView) findViewById(R.id.TestCaseDiscrete);
         disableSoftInputFromAppearing(customEdit);
+        //disableSoftInputFromAppearing_number(iuserAge);
+        //disableSoftInputFromAppearing_text(iuserName);
         customEdit.setText("");
 
         keyButton1 = (Button) findViewById(R.id.button1);
@@ -703,6 +708,9 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                     addButtonCoordinates(keyButtonConfirmPattern);
                 }
             });
+
+
+
             flag = true;
         }
         keyButton1.setOnTouchListener(new OnTouchListener() {
@@ -1773,19 +1781,37 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         }
     }
 
+
     public static void disableSoftInputFromAppearing(EditText editText) {
         if (Build.VERSION.SDK_INT >= 11) {
-            //editText.setRawInputType(InputType.TYPE_CLASS_NUMBER);
-
+            editText.setRawInputType(InputType.TYPE_CLASS_NUMBER);
             editText.setTextIsSelectable(true);
-
-
         } else {
-            //editText.setRawInputType(InputType.TYPE_NULL);
-            //editText.setRawInputType(InputType.TYPE_CLASS_NUMBER);
+            editText.setRawInputType(InputType.TYPE_NULL);
             editText.setFocusable(true);
         }
     }
+
+    public static void disableSoftInputFromAppearing_number(EditText editText) {
+        if (Build.VERSION.SDK_INT >= 11) {
+            editText.setRawInputType(InputType.TYPE_CLASS_NUMBER);
+            editText.setTextIsSelectable(true);
+        } else {
+            editText.setRawInputType(InputType.TYPE_NULL);
+            editText.setFocusable(true);
+        }
+    }
+
+    public static void disableSoftInputFromAppearing_text(EditText editText) {
+        if (Build.VERSION.SDK_INT >= 11) {
+            editText.setRawInputType(InputType.TYPE_CLASS_TEXT);
+            editText.setTextIsSelectable(true);
+        } else {
+            editText.setRawInputType(InputType.TYPE_NULL);
+            editText.setFocusable(true);
+        }
+    }
+
 
     /* 1 - female, 0 - male */
     public void onRadioButtonClickedGender(View view) {
@@ -1846,35 +1872,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
         return sum / array.size();
     }
-    /*
-    public static double standardDeviation(double[] array, int option) {
-        if (array.length < 2) return Double.NaN;
-
-        double sum = 0.0;
-        double sd = 0.0;
-        double diff;
-        double meanValue = mean(array);
-
-        for (int i = 0; i < array.length; i++) {
-            diff = array[i] - meanValue;
-            sum += diff * diff;
-        }
-        sd = Math.sqrt(sum / (array.length - option));
-
-        return sd;
-    }
-
-
-    public static double mean(double[] array) {  // 산술 평균 구하기
-        double sum = 0.0;
-
-        for (int i = 0; i < array.length; i++)
-            sum += array[i];
-
-        return sum / array.length;
-    }
-    */
-
 
 
 
