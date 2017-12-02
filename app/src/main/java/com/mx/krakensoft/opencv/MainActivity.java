@@ -1483,16 +1483,24 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
         Iterator<Point> iterator = listPo.iterator();
 
-        /*
+
+        //List<double> distArray;
+
+        double sigma = standardDeviation(listPo, centerX, centerY, 1);
+        sigma=sigma*sigma;
+
         while (iterator.hasNext()) {
             Point data = iterator.next();
-
-            if (data.y > centerY + (mRgba.size().height-centerY)*0.4) {
+            double dist = Math.pow(data.x-centerX,2)+Math.pow(data.y-centerY,2);
+            if (dist>4.0*sigma && Math.sqrt(dist)>300) {
                 iterator.remove();
             }
         }
-        */
 
+
+
+
+        /*
         if(centerY/YOffset < height / 3) {
             while (iterator.hasNext()) {
                 Point data = iterator.next();
@@ -1518,7 +1526,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                 }
             }
         }
-
+        */
 
 
         MatOfPoint e = new MatOfPoint();
@@ -1748,6 +1756,36 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         }
     }
 
+
+
+
+    public static double standardDeviation(List<Point> array, double centerX, double centerY, int option) {
+        if (array.size() < 2) return Double.NaN;
+
+        double sum = 0.0;
+        double sd = 0.0;
+        double diff;
+        double meanValue = mean(array, centerX, centerY);
+
+        for (int i = 0; i < array.size(); i++) {
+            diff = Math.sqrt(Math.pow(array.get(i).x-centerX, 2)+Math.pow(array.get(i).y-centerX, 2)) - meanValue;
+            sum += diff * diff;
+        }
+        sd = Math.sqrt(sum / (array.size() - option));
+
+        return sd;
+    }
+
+
+    public static double mean(List<Point> array, double centerX, double centerY) {  // 산술 평균 구하기
+        double sum = 0.0;
+
+        for (int i = 0; i < array.size(); i++)
+            sum += Math.sqrt(Math.pow(array.get(i).x-centerX, 2)+Math.pow(array.get(i).y-centerX, 2));
+
+        return sum / array.size();
+    }
+    /*
     public static double standardDeviation(double[] array, int option) {
         if (array.length < 2) return Double.NaN;
 
@@ -1774,6 +1812,11 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
         return sum / array.length;
     }
+    */
+
+
+
+
 
     public void fadeAnimation(final View tv, final boolean isfadeOut) {
 
