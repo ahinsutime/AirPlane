@@ -1,5 +1,8 @@
 package com.mx.krakensoft.opencv;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -444,6 +447,13 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         HoldHandTV = (TextView) findViewById(R.id.HoldHand);
         HoldHandTV.setAlpha(0f);
 
+        //String dirPath = getFilesDir().getAbsolutePath();
+        final String dirPath = "/HCI";
+        File file = new File(dirPath);
+        if( !file.exists() ) {
+             file.mkdirs();
+                Toast.makeText(this, "Success", Toast.LENGTH_SHORT).show();
+        }
 
         globalLayout = (RelativeLayout) findViewById(R.id.dflt_lay);
         /*user info submission button */
@@ -464,6 +474,18 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                         "gender:" + userGender + "\n" +
                         "handedness:" + userHand);
                 // save it after completion of test
+                File savefile = new File(dirPath+"/"+userName+".txt");
+                try{
+                    FileOutputStream fos = new FileOutputStream(savefile);
+                    String info ="name:" + userName + "\n" +
+                            "age:" + userAge + "\n" +
+                            "gender:" + userGender + "\n" +
+                            "handedness:" + userHand;
+                    fos.write(info.getBytes());
+                    fos.close();
+                    //Toast.makeText(this, "Save Success", Toast.LENGTH_SHORT).show();
+                    } catch(IOException e){}
+
                 userInfoLayout.setVisibility(userInfoLayout.INVISIBLE);
                 RL.setVisibility(RL.VISIBLE);
 
@@ -1753,10 +1775,14 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
     public static void disableSoftInputFromAppearing(EditText editText) {
         if (Build.VERSION.SDK_INT >= 11) {
-            editText.setRawInputType(InputType.TYPE_CLASS_TEXT);
+            //editText.setRawInputType(InputType.TYPE_CLASS_NUMBER);
+
             editText.setTextIsSelectable(true);
+
+
         } else {
-            editText.setRawInputType(InputType.TYPE_NULL);
+            //editText.setRawInputType(InputType.TYPE_NULL);
+            //editText.setRawInputType(InputType.TYPE_CLASS_NUMBER);
             editText.setFocusable(true);
         }
     }

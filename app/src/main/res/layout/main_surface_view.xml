@@ -622,7 +622,8 @@
             android:layout_marginTop="35dp"
             android:ems="10"
             android:inputType="textPersonName"
-            android:text="Your name" />
+
+            android:hint="Your name" />
 
         <EditText
             android:id="@+id/user_age_text"
@@ -633,8 +634,9 @@
             android:layout_marginEnd="98dp"
             android:layout_marginTop="34dp"
             android:ems="10"
-            android:inputType="number"
-            android:text="Your age" />
+
+            android:inputType="numberDecimal"
+            android:hint="Your age" />
 
         <RadioButton
             android:id="@+id/radio_female"
