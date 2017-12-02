@@ -145,6 +145,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
     public RelativeLayout BL3;
     public TextView PatternTV;
     public TextView CorrectnessTV;
+    public TextView HoldHandTV;
 
     private static final String TAG = "HandPose::MainActivity";
     public static final int JAVA_DETECTOR = 0;
@@ -196,6 +197,9 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
     Rect PrevBoundRect = new Rect(InitialP1, InitialP2);
     MotionEvent motionEvent;
     boolean correctness = false;
+    boolean transition = false;
+    long now=0;
+    long mPauseTime;
 
     final Runnable mUpdateFingerCountResults = new Runnable() {
         public void run() {
@@ -243,7 +247,18 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
                         if (currentArea < ((width / 2.5) * (height / 2.5) / 10000) && currentArea > (width / 20 * height / 20) /10000) {
                             tracking = true;
+
+                            if(now>0){
+
+                            }
+                            else{
+                                now = SystemClock.elapsedRealtime();
+                                fadeAnimation(HoldHandTV,false, 1500);
+                                fadeAnimation(HoldHandTV,true, 1500);
+                            }
+
                             optimalArea = currentArea;
+
                         } else {
                             tracking = false;
                             optimalArea = 4000;
@@ -255,11 +270,18 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
                 Timer timer = new Timer();
                 timer.schedule(adTast, 2000);
+
+
+
             }
             else {
+                mPauseTime = SystemClock.elapsedRealtime();
+                if((mPauseTime-now)>3000){
+                    now=0;
+                }
                 //mOpenCvCameraView.setAlpha(0);
                 DV.setVisibility(DV.VISIBLE);
-                DHV.setVisibility(BL.GONE);;//Added by ahinsutime
+                DHV.setVisibility(BL.GONE);//Added by ahinsutime
 
                 patternView.invalidate();
                 updateNumberOfFingers();
@@ -408,6 +430,8 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         PatternTV = (TextView) findViewById(R.id.PatternText);
         CorrectnessTV = (TextView) findViewById(R.id.CorrectnessText);
         CorrectnessTV.setAlpha(0f);
+        HoldHandTV = (TextView) findViewById(R.id.HoldHand);
+        HoldHandTV.setAlpha(0f);
 
         globalLayout = (RelativeLayout) findViewById(R.id.dflt_lay);
         /*user info submission button */
@@ -863,14 +887,14 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                                 customEdit.setText("");
                                 CorrectnessTV.setText("Correct Answer");
                                 CorrectnessTV.setTextColor(Color.BLUE);
-                                fadeAnimation(CorrectnessTV,false);
-                                fadeAnimation(CorrectnessTV,true);
+                                fadeAnimation(CorrectnessTV,false, 1500);
+                                fadeAnimation(CorrectnessTV,true, 1500);
                             }
                             else{
                                 CorrectnessTV.setText("Wrong Answer");
                                 CorrectnessTV.setTextColor(Color.RED);
-                                fadeAnimation(CorrectnessTV,false);
-                                fadeAnimation(CorrectnessTV,true);
+                                fadeAnimation(CorrectnessTV,false, 1500);
+                                fadeAnimation(CorrectnessTV,true, 1500);
                             }
                         }
                         break;
@@ -974,14 +998,14 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                             //keyButtonReject.setBackgroundColor(Color.BLUE);
                             CorrectnessTV.setText("Correct Answer");
                             CorrectnessTV.setTextColor(Color.BLUE);
-                            fadeAnimation(CorrectnessTV,false);
-                            fadeAnimation(CorrectnessTV,true);
+                            fadeAnimation(CorrectnessTV,false, 1500);
+                            fadeAnimation(CorrectnessTV,true, 1500);
                         }
                         else{
                             CorrectnessTV.setText("Wrong Answer");
                             CorrectnessTV.setTextColor(Color.RED);
-                            fadeAnimation(CorrectnessTV,false);
-                            fadeAnimation(CorrectnessTV,true);
+                            fadeAnimation(CorrectnessTV,false, 1500);
+                            fadeAnimation(CorrectnessTV,true, 1500);
                         }
                         break;
                     case MotionEvent.ACTION_MOVE:
@@ -1005,14 +1029,14 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                             //keyButtonAccept.setBackgroundColor(Color.BLUE);
                             CorrectnessTV.setText("Correct Answer");
                             CorrectnessTV.setTextColor(Color.BLUE);
-                            fadeAnimation(CorrectnessTV,false);
-                            fadeAnimation(CorrectnessTV,true);
+                            fadeAnimation(CorrectnessTV,false, 1500);
+                            fadeAnimation(CorrectnessTV,true, 1500);
                         }
                         else{
                             CorrectnessTV.setText("Wrong Answer");
                             CorrectnessTV.setTextColor(Color.RED);
-                            fadeAnimation(CorrectnessTV,false);
-                            fadeAnimation(CorrectnessTV,true);
+                            fadeAnimation(CorrectnessTV,false, 1500);
+                            fadeAnimation(CorrectnessTV,true, 1500);
                         }
                         break;
                     case MotionEvent.ACTION_MOVE:
@@ -1097,15 +1121,15 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                             //keyButtonConfirmPattern.setBackgroundColor(Color.BLUE);
                             CorrectnessTV.setText("Correct Answer");
                             CorrectnessTV.setTextColor(Color.BLUE);
-                            fadeAnimation(CorrectnessTV,false);
-                            fadeAnimation(CorrectnessTV,true);
+                            fadeAnimation(CorrectnessTV,false, 1500);
+                            fadeAnimation(CorrectnessTV,true,1500);
                             patternView.clearPattern();
                         }
                         else{
                             CorrectnessTV.setText("Wrong Answer");
                             CorrectnessTV.setTextColor(Color.RED);
-                            fadeAnimation(CorrectnessTV,false);
-                            fadeAnimation(CorrectnessTV,true);
+                            fadeAnimation(CorrectnessTV,false, 1500);
+                            fadeAnimation(CorrectnessTV,true, 1500);
                         }
                         break;
                     case MotionEvent.ACTION_MOVE:
@@ -1818,7 +1842,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
 
 
-    public void fadeAnimation(final View tv, final boolean isfadeOut) {
+    public void fadeAnimation(final View tv, final boolean isfadeOut, int duration) {
 
         final Animation animationFadeOut, animationFadeIn;
 
@@ -1842,10 +1866,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                     tv.setAlpha(1f);
                     tv.startAnimation(animationFadeIn);
                 }
-
-
-
-
             }
         }, 0);
 
@@ -1866,9 +1886,8 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                 }
 
             }
-        }, 1500);
+        }, duration);
     }
-
 
 }
 
