@@ -1,7 +1,9 @@
 package com.mx.krakensoft.opencv;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -41,6 +43,7 @@ import android.graphics.SumPathEffect;
 import android.hardware.Camera;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
@@ -448,47 +451,44 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         HoldHandTV = (TextView) findViewById(R.id.HoldHand);
         HoldHandTV.setAlpha(0f);
 
-        //String dirPath = getFilesDir().getAbsolutePath();
-        final String dirPath = "/HCI";
-        File file = new File(dirPath);
-        if( !file.exists() ) {
-             file.mkdirs();
-                Toast.makeText(this, "Success", Toast.LENGTH_SHORT).show();
+
+
+        final String dirPath = getApplicationContext().getFilesDir().getAbsolutePath();
+        File dir = new File("/data/Airplane");
+        if(!dir.exists()){
+            dir.mkdir();
+            dir.mkdirs();
         }
+        Log.d(TAG, "getApplicationContext().getFilesDir().getAbsolutePath()="+getApplicationContext().getFilesDir().getAbsolutePath());
+        final File savefile = new File(dirPath+"/strange.txt");
+
+        try{
+            BufferedWriter bw = new BufferedWriter(new FileWriter(savefile, true));
+            bw.write("Strange.\n");
+            bw.close();
+        } catch(IOException e){}
 
         globalLayout = (RelativeLayout) findViewById(R.id.dflt_lay);
         /*user info submission button */
-        /*
-        iuserAge.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                iuserAge.setText("");
-            }
-        });
-        */
+
         userInfoSubmit.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // Code here executes on main thread after user presses button
                 // gender and handedness info are saved in int userGender and int userHand
                 userName = iuserName.getText().toString();
                 userAge = iuserAge.getText().toString();
-                Log.d("USERINFO", "name:" + userName + "\n" +
+                String info ="name:" + userName + "\n" +
                         "age:" + userAge + "\n" +
                         "gender:" + userGender + "\n" +
-                        "handedness:" + userHand);
+                        "handedness:" + userHand;
                 // save it after completion of test
-                File savefile = new File(dirPath+"/"+userName+".txt");
+                /*
                 try{
-                    FileOutputStream fos = new FileOutputStream(savefile);
-                    String info ="name:" + userName + "\n" +
-                            "age:" + userAge + "\n" +
-                            "gender:" + userGender + "\n" +
-                            "handedness:" + userHand;
-                    fos.write(info.getBytes());
-                    fos.close();
-                    //Toast.makeText(this, "Save Success", Toast.LENGTH_SHORT).show();
+                    BufferedWriter bw = new BufferedWriter(new FileWriter(dirPath+userName+".txt", true));
+                    bw.write(info);
+                    bw.close();
                     } catch(IOException e){}
-
+                */
                 userInfoLayout.setVisibility(userInfoLayout.INVISIBLE);
                 RL.setVisibility(RL.VISIBLE);
 
