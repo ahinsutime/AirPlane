@@ -93,6 +93,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
     private String userAge;
     private int userGender;
     private int userHand;
+    private String userResult;
     final String username = "smussakhojayeva@gmail.com";
     final String password = "Abu!021165";
 
@@ -986,7 +987,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                 switch (event.getAction()) {//Added by ahinsutime
                     case MotionEvent.ACTION_DOWN:
                         keyButtonQuit.setTextColor(Color.BLUE);
-
+                        sendEmail(userResult);
                         onDestroy();
                         break;
                     case MotionEvent.ACTION_MOVE:
@@ -1934,6 +1935,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         Intent emailIntent = new Intent(Intent.ACTION_SENDTO);
         emailIntent.setData(Uri.parse("mailto:" + "smussakhojayeva@gmail.com"));
         emailIntent.putExtra(Intent.EXTRA_SUBJECT, "My email's subject");
+        emailIntent.putExtra(Intent.EXTRA_CC, "ahinsutime@gmail.com");
         emailIntent.putExtra(Intent.EXTRA_TEXT, info);
 
         try {
