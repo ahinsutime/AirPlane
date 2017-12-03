@@ -1199,6 +1199,8 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
 
                         patternView.clearPattern();
+                        PatternTV.setText("Draw your pattern and click the save button");
+                        PatternTV.setTextColor(Color.parseColor("#FFFF00"));
                         break;
 
                     case MotionEvent.ACTION_MOVE:
@@ -2031,7 +2033,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         } catch (android.content.ActivityNotFoundException ex) {
             Toast.makeText(MainActivity.this, "No email clients installed.", Toast.LENGTH_SHORT).show();
         }
-
     }
 }
 
