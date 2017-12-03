@@ -139,6 +139,10 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
     private PatternView patternView;
     private int randomNumber = 0;
     private int ResetTrackingNumber = 0;
+    private int BackspacePressedNumber = 0;
+    private int ResetPressedNumber = 0;
+    private int RefreshPressedNumber = 0;
+
     private boolean randomDiscrete = false;
     private double centerX = 0;//Added by ahinsutime
     private double centerY = 0;//Added by ahinsutime
@@ -926,6 +930,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                             editval = editval.substring(0, editval.length() - 1);
                             customEdit.setText(editval);
                             customEdit.setSelection(customEdit.getText().length());
+                            BackspacePressedNumber+=1;
                         }
                         break;
                     case MotionEvent.ACTION_MOVE:
@@ -989,6 +994,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                             String editval = "";
                             customEdit.setText(editval);
                             customEdit.setSelection(customEdit.getText().length());
+                            ResetPressedNumber+=1;
                         }
                         break;
                     case MotionEvent.ACTION_MOVE:
@@ -1201,6 +1207,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                         patternView.clearPattern();
                         PatternTV.setText("Draw your pattern and click the save button");
                         PatternTV.setTextColor(Color.parseColor("#FFFF00"));
+                        RefreshPressedNumber+=1;
                         break;
 
                     case MotionEvent.ACTION_MOVE:
@@ -2027,7 +2034,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         Log.d("MAILCHECK", info + "\nkeyboard: " + s + "\nphonecall: " + p);
         emailIntent.putExtra(Intent.EXTRA_TEXT, info + "\nkeyboard: " + s + "\nphonecall: " + p);
         */
-        emailIntent.putExtra(Intent.EXTRA_TEXT, info + "\nkeyboard: " + keyboardPerformance + "\nphonecall: " + phonecallPerformance+"\npattern: "+patternPerformance+"\nNumber of manual tracking reset: "+ResetTrackingNumber);
+        emailIntent.putExtra(Intent.EXTRA_TEXT, info + "\nkeyboard: " + keyboardPerformance + "\nNumber of backspace pressed: "+BackspacePressedNumber+"\nNumber of reset pressed: "+ResetPressedNumber+"\nphonecall: " + phonecallPerformance+"\npattern: "+patternPerformance+"\nNumber of refresh patter pressed:"+RefreshPressedNumber+"\nNumber of manual tracking reset: "+ResetTrackingNumber);
         try {
             startActivity(Intent.createChooser(emailIntent, "Send email using..."));
         } catch (android.content.ActivityNotFoundException ex) {
