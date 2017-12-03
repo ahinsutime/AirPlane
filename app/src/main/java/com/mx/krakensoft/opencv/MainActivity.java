@@ -93,9 +93,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
     private String userAge;
     private int userGender;
     private int userHand;
-    private String userResult;
     final String username = "smussakhojayeva@gmail.com";
-    final String password = "Abu!021165";
 
     private Button userInfoSubmit;
     private EditText iuserName;
@@ -219,6 +217,9 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
     boolean transition = false;
     long now=0;
     long mPauseTime;
+    long performanceStartTime;
+    List<Long> keyboardPerformance;
+    List<Long> phonecallPerformance;
 
     final Runnable mUpdateFingerCountResults = new Runnable() {
         public void run() {
@@ -456,7 +457,8 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         HoldHandTV = (TextView) findViewById(R.id.HoldHand);
         HoldHandTV.setAlpha(0f);
 
-
+        keyboardPerformance = new ArrayList<>();
+        phonecallPerformance = new ArrayList<>();
 /*
         final String dirPath = getApplicationContext().getFilesDir().getAbsolutePath();
         File dir = new File("/data/Airplane");
@@ -483,10 +485,10 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                 // gender and handedness info are saved in int userGender and int userHand
                 userName = iuserName.getText().toString();
                 userAge = iuserAge.getText().toString();
-                String info ="name:" + userName + "\n" +
+           /*     String info ="name:" + userName + "\n" +
                         "age:" + userAge + "\n" +
                         "gender:" + userGender + "\n" +
-                        "handedness:" + userHand;
+                        "handedness:" + userHand;*/
                 // save it after completion of test
                 /*
                 try{
@@ -497,7 +499,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                 */
                 userInfoLayout.setVisibility(userInfoLayout.INVISIBLE);
                 RL.setVisibility(RL.VISIBLE);
-                sendEmail(info);
+                //   sendEmail(info);
 
             }
         });
@@ -935,6 +937,9 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                             if(Integer.parseInt(customEdit.getText().toString())==randomNumber){
                                 customEdit.setText("");
                                 CorrectnessTV.setText("Correct Answer");
+                                long stopTime = System.currentTimeMillis();
+                                long elapsedTime = stopTime - performanceStartTime;
+                                keyboardPerformance.add(elapsedTime);
                                 CorrectnessTV.setTextColor(Color.BLUE);
                                 fadeAnimation(CorrectnessTV,false, 1500);
                                 fadeAnimation(CorrectnessTV,true, 1500);
@@ -987,11 +992,12 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                 switch (event.getAction()) {//Added by ahinsutime
                     case MotionEvent.ACTION_DOWN:
                         keyButtonQuit.setTextColor(Color.BLUE);
-                        sendEmail(userResult);
+                        sendEmail();
                         onDestroy();
                         break;
                     case MotionEvent.ACTION_MOVE:
                         keyButtonQuit.setTextColor(Color.BLUE);
+                        //   sendEmail();
                         break;
                     default:
                         keyButtonQuit.setTextColor(Color.BLACK);
@@ -1010,6 +1016,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                         break;
                     case MotionEvent.ACTION_MOVE:
                         keyButtonStart.setTextColor(Color.BLUE);
+                        performanceStartTime = System.currentTimeMillis();
                         break;
                     default:
                         keyButtonStart.setTextColor(Color.BLACK);
@@ -1045,6 +1052,9 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                         if(randomDiscrete==false){
                             //keyButtonReject.setBackgroundColor(Color.BLUE);
                             CorrectnessTV.setText("Correct Answer");
+                            long stopTime = System.currentTimeMillis();
+                            long elapsedTime = stopTime - performanceStartTime;
+                            phonecallPerformance.add(elapsedTime);
                             CorrectnessTV.setTextColor(Color.BLUE);
                             fadeAnimation(CorrectnessTV,false, 1500);
                             fadeAnimation(CorrectnessTV,true, 1500);
@@ -1076,6 +1086,9 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                         if(randomDiscrete==true){
                             //keyButtonAccept.setBackgroundColor(Color.BLUE);
                             CorrectnessTV.setText("Correct Answer");
+                            long stopTime = System.currentTimeMillis();
+                            long elapsedTime = stopTime - performanceStartTime;
+                            phonecallPerformance.add(elapsedTime);
                             CorrectnessTV.setTextColor(Color.BLUE);
                             fadeAnimation(CorrectnessTV,false, 1500);
                             fadeAnimation(CorrectnessTV,true, 1500);
@@ -1930,13 +1943,27 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         }, duration);
     }
 
-    private void sendEmail(String info) {
+    private void sendEmail() {
 
         Intent emailIntent = new Intent(Intent.ACTION_SENDTO);
         emailIntent.setData(Uri.parse("mailto:" + "smussakhojayeva@gmail.com"));
         emailIntent.putExtra(Intent.EXTRA_SUBJECT, "My email's subject");
-        emailIntent.putExtra(Intent.EXTRA_CC, "ahinsutime@gmail.com");
-        emailIntent.putExtra(Intent.EXTRA_TEXT, info);
+        String info = "name:" + userName + "\n" +
+                "age:" + userAge + "\n" +
+                "gender:" + userGender + "\n" +
+                "handedness:" + userHand;
+        String s = "[";
+        String p = "[";
+        for (long l : keyboardPerformance) {
+            s = s + l + " ";
+        }
+        s = s + "]";
+        for (long l : phonecallPerformance) {
+            p = p + l + " ";
+        }
+        p = p + "]";
+        Log.d("MAILCHECK", info + "\nkeyboard: " + s + "\nphonecall: " + p);
+        emailIntent.putExtra(Intent.EXTRA_TEXT, info + "\nkeyboard: " + s + "\nphonecall: " + p);
 
         try {
             startActivity(Intent.createChooser(emailIntent, "Send email using..."));
