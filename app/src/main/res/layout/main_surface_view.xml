@@ -311,12 +311,12 @@
 
             <Button
                 android:id="@+id/refreshPatternButton"
-                android:background="@drawable/round_button_pattern_save"
+                android:background="@drawable/round_button_pattern_refresh"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/refreshPatternButton"
+                android:layout_below="@id/savePatternButton"
                 android:layout_marginLeft="50dp"
-                android:layout_marginTop="18dp"
+                android:layout_marginTop="12dp"
                 android:textColor="#FFFF00"
 
                 android:text="Refresh Pattern" />

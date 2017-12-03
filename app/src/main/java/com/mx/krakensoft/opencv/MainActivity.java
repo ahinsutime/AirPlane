@@ -138,6 +138,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
     private TextView discreteText;
     private PatternView patternView;
     private int randomNumber = 0;
+    private int ResetTrackingNumber = 0;
     private boolean randomDiscrete = false;
     private double centerX = 0;//Added by ahinsutime
     private double centerY = 0;//Added by ahinsutime
@@ -1047,6 +1048,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                     case MotionEvent.ACTION_DOWN:
                         keyButtonResetTracking.setTextColor(Color.BLUE);
                         tracking=false;
+                        ResetTrackingNumber+=1;
                         break;
                     case MotionEvent.ACTION_MOVE:
                         keyButtonResetTracking.setTextColor(Color.BLUE);
@@ -1190,7 +1192,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
             }
         });
 
-        keyButtonSavePattern.setOnTouchListener(new OnTouchListener() {
+        keyButtonRefreshPattern.setOnTouchListener(new OnTouchListener() {
             public boolean onTouch(View v, MotionEvent event) {
                 switch (event.getAction()) {//Added by ahinsutime
                     case MotionEvent.ACTION_DOWN:
@@ -1200,11 +1202,11 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                         break;
 
                     case MotionEvent.ACTION_MOVE:
-                        keyButtonSavePattern.setTextColor(Color.BLUE);
+                        keyButtonRefreshPattern.setTextColor(Color.BLUE);
                         break;
 
                     default:
-                        keyButtonSavePattern.setTextColor(Color.WHITE);
+                        keyButtonRefreshPattern.setTextColor(Color.WHITE);
                         break;
                 }
                 return false;
@@ -2023,7 +2025,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         Log.d("MAILCHECK", info + "\nkeyboard: " + s + "\nphonecall: " + p);
         emailIntent.putExtra(Intent.EXTRA_TEXT, info + "\nkeyboard: " + s + "\nphonecall: " + p);
         */
-        emailIntent.putExtra(Intent.EXTRA_TEXT, info + "\nkeyboard: " + keyboardPerformance + "\nphonecall: " + phonecallPerformance+"\npattern: "+patternPerformance);
+        emailIntent.putExtra(Intent.EXTRA_TEXT, info + "\nkeyboard: " + keyboardPerformance + "\nphonecall: " + phonecallPerformance+"\npattern: "+patternPerformance+"\nNumber of manual tracking reset: "+ResetTrackingNumber);
         try {
             startActivity(Intent.createChooser(emailIntent, "Send email using..."));
         } catch (android.content.ActivityNotFoundException ex) {
