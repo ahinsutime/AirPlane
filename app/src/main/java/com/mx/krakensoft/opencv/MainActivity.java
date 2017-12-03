@@ -456,10 +456,11 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         final String dirPath = getApplicationContext().getFilesDir().getAbsolutePath();
         File dir = new File("/data/Airplane");
         if(!dir.exists()){
-            dir.mkdir();
+
             dir.mkdirs();
         }
         Log.d(TAG, "getApplicationContext().getFilesDir().getAbsolutePath()="+getApplicationContext().getFilesDir().getAbsolutePath());
+        Log.d(TAG, "dir.mkdirs()="+dir.mkdirs());
         final File savefile = new File(dirPath+"/strange.txt");
 
         try{
