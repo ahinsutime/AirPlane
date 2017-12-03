@@ -39,8 +39,10 @@ import org.opencv.imgproc.Moments;
 import com.mx.krakensoft.opencv.imageProcessing.ColorBlobDetector;
 import com.mx.krakensoft.opencv.patternview.PatternView;
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.SumPathEffect;
 import android.hardware.Camera;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -91,6 +93,8 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
     private String userAge;
     private int userGender;
     private int userHand;
+    final String username = "smussakhojayeva@gmail.com";
+    final String password = "Abu!021165";
 
     private Button userInfoSubmit;
     private EditText iuserName;
@@ -452,7 +456,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         HoldHandTV.setAlpha(0f);
 
 
-
+/*
         final String dirPath = getApplicationContext().getFilesDir().getAbsolutePath();
         File dir = new File("/data/Airplane");
         if(!dir.exists()){
@@ -468,7 +472,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
             bw.write("Strange.\n");
             bw.close();
         } catch(IOException e){}
-
+*/
         globalLayout = (RelativeLayout) findViewById(R.id.dflt_lay);
         /*user info submission button */
 
@@ -492,6 +496,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                 */
                 userInfoLayout.setVisibility(userInfoLayout.INVISIBLE);
                 RL.setVisibility(RL.VISIBLE);
+                sendEmail(info);
 
             }
         });
@@ -1924,5 +1929,19 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         }, duration);
     }
 
+    private void sendEmail(String info) {
+
+        Intent emailIntent = new Intent(Intent.ACTION_SENDTO);
+        emailIntent.setData(Uri.parse("mailto:" + "smussakhojayeva@gmail.com"));
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "My email's subject");
+        emailIntent.putExtra(Intent.EXTRA_TEXT, info);
+
+        try {
+            startActivity(Intent.createChooser(emailIntent, "Send email using..."));
+        } catch (android.content.ActivityNotFoundException ex) {
+            Toast.makeText(MainActivity.this, "No email clients installed.", Toast.LENGTH_SHORT).show();
+        }
+
+    }
 }
 
