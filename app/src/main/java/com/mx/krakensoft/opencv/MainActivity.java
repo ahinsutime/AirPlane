@@ -94,7 +94,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
     private int userGender;
     private int userHand;
     final String username = "smussakhojayeva@gmail.com";
-    final String password = "Abu!021165";
 
     private Button userInfoSubmit;
     private EditText iuserName;
