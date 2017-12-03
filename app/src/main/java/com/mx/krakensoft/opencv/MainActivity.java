@@ -124,6 +124,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
     private Button keyButtonAccept;
     private Button keyButtonRefresh;
     private Button keyButtonSavePattern;
+    private Button keyButtonRefreshPattern;
     private Button keyButtonConfirmPattern;
 
 
@@ -585,6 +586,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         keyButtonAccept = (Button) findViewById(R.id.accButton);
         keyButtonRefresh = (Button) findViewById(R.id.buttonRefresh);
         keyButtonSavePattern = (Button) findViewById(R.id.savePatternButton);
+        keyButtonRefreshPattern = (Button) findViewById(R.id.refreshPatternButton);
         keyButtonConfirmPattern = (Button) findViewById(R.id.confirmPatternButton);
 
         patternView = (PatternView) findViewById(R.id.patternView);
@@ -711,6 +713,12 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                 @Override
                 public void onGlobalLayout() {
                     addButtonCoordinates(keyButtonSavePattern);
+                }
+            });
+            keyButtonRefreshPattern.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    addButtonCoordinates(keyButtonRefreshPattern);
                 }
             });
             keyButtonConfirmPattern.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -942,8 +950,8 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                                 long stopTime = System.currentTimeMillis();
                                 long elapsedTime = stopTime - performanceStartTime;
 
-                                keyboardPerformance.add("Correct Answer: ");
-                                keyboardPerformance.add(String.valueOf(elapsedTime)+"\n");
+                                keyboardPerformance.add("Correct Answer (Keyboard):"+String.valueOf(randomNumber));
+                                keyboardPerformance.add("Elapsed Time: "+String.valueOf(elapsedTime)+"\n");
 
 
                                 CorrectnessTV.setTextColor(Color.BLUE);
@@ -1061,8 +1069,8 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                             CorrectnessTV.setText("Correct Answer");
                             long stopTime = System.currentTimeMillis();
                             long elapsedTime = stopTime - performanceStartTime;
-                            phonecallPerformance.add("Correct Answer (Discrete): ");
-                            phonecallPerformance.add(String.valueOf(elapsedTime));
+                            phonecallPerformance.add("Correct Answer (Discrete): "+"Reject");
+                            phonecallPerformance.add("Elapsed Time: "+String.valueOf(elapsedTime)+"\n");
                             CorrectnessTV.setTextColor(Color.BLUE);
                             fadeAnimation(CorrectnessTV,false, 1500);
                             fadeAnimation(CorrectnessTV,true, 1500);
@@ -1097,8 +1105,8 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                             CorrectnessTV.setText("Correct Answer");
                             long stopTime = System.currentTimeMillis();
                             long elapsedTime = stopTime - performanceStartTime;
-                            phonecallPerformance.add("Correct Answer (Discrete): ");
-                            phonecallPerformance.add(String.valueOf(elapsedTime));
+                            phonecallPerformance.add("Correct Answer (Discrete): "+"Accept");
+                            phonecallPerformance.add("Elapsed Time: "+String.valueOf(elapsedTime)+"\n");
 
                             CorrectnessTV.setTextColor(Color.BLUE);
                             fadeAnimation(CorrectnessTV,false, 1500);
@@ -1130,7 +1138,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                     case MotionEvent.ACTION_DOWN:
                         keyButtonRefresh.setTextColor(Color.BLUE);
                         randomDiscrete = randomCallGenerator();
-                        randomNumber = randomIntGenerator(5);
+                        randomNumber = randomIntGenerator(4);
                         keyboardText.setText("Enter this number: "+randomNumber);
                         if (!randomDiscrete){
                             discreteText.setText("Follow the instruction:"+" Decline");
@@ -1182,6 +1190,27 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
             }
         });
 
+        keyButtonSavePattern.setOnTouchListener(new OnTouchListener() {
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {//Added by ahinsutime
+                    case MotionEvent.ACTION_DOWN:
+
+
+                        patternView.clearPattern();
+                        break;
+
+                    case MotionEvent.ACTION_MOVE:
+                        keyButtonSavePattern.setTextColor(Color.BLUE);
+                        break;
+
+                    default:
+                        keyButtonSavePattern.setTextColor(Color.WHITE);
+                        break;
+                }
+                return false;
+            }
+        });
+
         keyButtonConfirmPattern.setOnTouchListener(new OnTouchListener() {
             public boolean onTouch(View v, MotionEvent event) {
                 switch (event.getAction()) {//Added by ahinsutime
@@ -1191,11 +1220,14 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                         if(tempPattern.equals(evalPattern)){
                             PatternTV.setText("Draw your pattern and click the save button");
                             PatternTV.setTextColor(Color.parseColor("#FFFF00"));
-
+                            String tempPatternTrail="";
+                            for(int i=0;i<evalPattern.size();i++){
+                                tempPatternTrail+=evalPattern.get(i).toString();
+                            }
                             long stopTime = System.currentTimeMillis();
                             long elapsedTime = stopTime - performanceStartTime;
-                            patternPerformance.add("Correct Answer (Pattern): ");
-                            patternPerformance.add(String.valueOf(elapsedTime));
+                            patternPerformance.add("Correct Answer (Pattern): "+tempPatternTrail);
+                            patternPerformance.add("Elapsed Time: "+String.valueOf(elapsedTime)+"\n");
 
                             //keyButtonConfirmPattern.setBackgroundColor(Color.BLUE);
                             CorrectnessTV.setText("Correct Answer");
@@ -1879,6 +1911,10 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
             case R.id.radio_left_hand:
                 if (checked)
                     userHand = 0;
+                break;
+            case R.id.radio_both_hand:
+                if (checked)
+                    userHand = 2;
                 break;
         }
     }
