@@ -218,8 +218,9 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
     long now=0;
     long mPauseTime;
     long performanceStartTime;
-    List<Long> keyboardPerformance;
-    List<Long> phonecallPerformance;
+    List<String> keyboardPerformance;
+    List<String> phonecallPerformance;
+    List<String> patternPerformance;
 
     final Runnable mUpdateFingerCountResults = new Runnable() {
         public void run() {
@@ -459,6 +460,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
         keyboardPerformance = new ArrayList<>();
         phonecallPerformance = new ArrayList<>();
+        patternPerformance = new ArrayList<>();
 /*
         final String dirPath = getApplicationContext().getFilesDir().getAbsolutePath();
         File dir = new File("/data/Airplane");
@@ -936,17 +938,22 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                         if(customEdit.getText().toString().length()>0) {
                             if(Integer.parseInt(customEdit.getText().toString())==randomNumber){
                                 customEdit.setText("");
-                                CorrectnessTV.setText("Correct Answer");
+                                CorrectnessTV.setText("Correct Answer (Keyboard): ");
                                 long stopTime = System.currentTimeMillis();
                                 long elapsedTime = stopTime - performanceStartTime;
-                                keyboardPerformance.add(elapsedTime);
+
+                                keyboardPerformance.add("Correct Answer: ");
+                                keyboardPerformance.add(String.valueOf(elapsedTime)+"\n");
+
+
                                 CorrectnessTV.setTextColor(Color.BLUE);
                                 fadeAnimation(CorrectnessTV,false, 1500);
                                 fadeAnimation(CorrectnessTV,true, 1500);
                             }
                             else{
-                                CorrectnessTV.setText("Wrong Answer");
+                                CorrectnessTV.setText("Wrong Answer (Keyboard)\n");
                                 CorrectnessTV.setTextColor(Color.RED);
+                                keyboardPerformance.add("Wrong Answer\n");
                                 fadeAnimation(CorrectnessTV,false, 1500);
                                 fadeAnimation(CorrectnessTV,true, 1500);
                             }
@@ -1054,12 +1061,14 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                             CorrectnessTV.setText("Correct Answer");
                             long stopTime = System.currentTimeMillis();
                             long elapsedTime = stopTime - performanceStartTime;
-                            phonecallPerformance.add(elapsedTime);
+                            phonecallPerformance.add("Correct Answer (Discrete): ");
+                            phonecallPerformance.add(String.valueOf(elapsedTime));
                             CorrectnessTV.setTextColor(Color.BLUE);
                             fadeAnimation(CorrectnessTV,false, 1500);
                             fadeAnimation(CorrectnessTV,true, 1500);
                         }
                         else{
+                            phonecallPerformance.add("Wrong Answer (Discrete)\n");
                             CorrectnessTV.setText("Wrong Answer");
                             CorrectnessTV.setTextColor(Color.RED);
                             fadeAnimation(CorrectnessTV,false, 1500);
@@ -1088,12 +1097,15 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                             CorrectnessTV.setText("Correct Answer");
                             long stopTime = System.currentTimeMillis();
                             long elapsedTime = stopTime - performanceStartTime;
-                            phonecallPerformance.add(elapsedTime);
+                            phonecallPerformance.add("Correct Answer (Discrete): ");
+                            phonecallPerformance.add(String.valueOf(elapsedTime));
+
                             CorrectnessTV.setTextColor(Color.BLUE);
                             fadeAnimation(CorrectnessTV,false, 1500);
                             fadeAnimation(CorrectnessTV,true, 1500);
                         }
                         else{
+                            phonecallPerformance.add("Wrong Answer (Discrete)\n");
                             CorrectnessTV.setText("Wrong Answer");
                             CorrectnessTV.setTextColor(Color.RED);
                             fadeAnimation(CorrectnessTV,false, 1500);
@@ -1179,14 +1191,22 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                         if(tempPattern.equals(evalPattern)){
                             PatternTV.setText("Draw your pattern and click the save button");
                             PatternTV.setTextColor(Color.parseColor("#FFFF00"));
+
+                            long stopTime = System.currentTimeMillis();
+                            long elapsedTime = stopTime - performanceStartTime;
+                            patternPerformance.add("Correct Answer (Pattern): ");
+                            patternPerformance.add(String.valueOf(elapsedTime));
+
                             //keyButtonConfirmPattern.setBackgroundColor(Color.BLUE);
                             CorrectnessTV.setText("Correct Answer");
                             CorrectnessTV.setTextColor(Color.BLUE);
                             fadeAnimation(CorrectnessTV,false, 1500);
                             fadeAnimation(CorrectnessTV,true,1500);
+
                             patternView.clearPattern();
                         }
                         else{
+                            patternPerformance.add("Wrong Answer (Pattern)\n");
                             CorrectnessTV.setText("Wrong Answer");
                             CorrectnessTV.setTextColor(Color.RED);
                             fadeAnimation(CorrectnessTV,false, 1500);
@@ -1947,11 +1967,13 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
         Intent emailIntent = new Intent(Intent.ACTION_SENDTO);
         emailIntent.setData(Uri.parse("mailto:" + "smussakhojayeva@gmail.com"));
+        emailIntent.putExtra(Intent.EXTRA_CC, "ahinsutime@gmail.com");
         emailIntent.putExtra(Intent.EXTRA_SUBJECT, "My email's subject");
         String info = "name:" + userName + "\n" +
                 "age:" + userAge + "\n" +
                 "gender:" + userGender + "\n" +
                 "handedness:" + userHand;
+        /*
         String s = "[";
         String p = "[";
         for (long l : keyboardPerformance) {
@@ -1964,7 +1986,8 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         p = p + "]";
         Log.d("MAILCHECK", info + "\nkeyboard: " + s + "\nphonecall: " + p);
         emailIntent.putExtra(Intent.EXTRA_TEXT, info + "\nkeyboard: " + s + "\nphonecall: " + p);
-
+        */
+        emailIntent.putExtra(Intent.EXTRA_TEXT, info + "\nkeyboard: " + keyboardPerformance + "\nphonecall: " + phonecallPerformance+"\npattern: "+patternPerformance);
         try {
             startActivity(Intent.createChooser(emailIntent, "Send email using..."));
         } catch (android.content.ActivityNotFoundException ex) {
