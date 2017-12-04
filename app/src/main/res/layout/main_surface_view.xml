@@ -424,6 +424,17 @@
             android:layout_marginRight="10dp"/>
 
         <Button
+            android:id="@+id/buttonTouchmode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_alignParentEnd="true"
+            android:background="@drawable/round_button6"
+            android:text="Touch Mode"
+            android:layout_marginTop="50dp"
+            android:layout_marginRight="10dp"/>
+
+        <Button
             android:id="@+id/buttonStart"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
