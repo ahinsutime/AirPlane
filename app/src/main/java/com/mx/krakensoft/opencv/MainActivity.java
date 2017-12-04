@@ -1539,9 +1539,16 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
         mRgba = inputFrame.rgba();
         mGray = inputFrame.gray();
+        if(userHand==0 || userHand==2){
+            flip(mRgba, mRgba, 1);//Added by ahinsutime
+            flip(mGray, mGray, 1);//Added by ahinsutime
+        }
+        else{
+            flip(mRgba, mRgba, 0);//Added by ahinsutime
+            flip(mGray, mGray, 0);//Added by ahinsutime
+        }
 
-        flip(mRgba, mRgba, 1);//Added by ahinsutime
-        flip(mGray, mGray, 1);//Added by ahinsutime
+
 
         iThreshold = minTresholdSeekbar.getProgress();
 
