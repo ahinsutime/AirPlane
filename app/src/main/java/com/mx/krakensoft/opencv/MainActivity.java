@@ -49,6 +49,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
+import android.support.v4.content.ContextCompat;
 import android.text.InputType;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -223,6 +224,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
     boolean correctness = false;
     boolean transition = false;
     int touchMode = -1;
+    int isStart = -1;
     long now=0;
     long mPauseTime;
     long performanceStartTime;
@@ -233,12 +235,11 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
     final Runnable mUpdateFingerCountResults = new Runnable() {
         public void run() {
 
-
             patternView.invalidate();
             DisplayMetrics dm = getApplicationContext().getResources().getDisplayMetrics();
             int width = dm.widthPixels;
             int height = dm.heightPixels;
-            if(tracking==false){
+            if(tracking==false && touchMode==-1){
 
                 //mOpenCvCameraView.setVisibility(mOpenCvCameraView.VISIBLE);
                 //mOpenCvCameraView.setAlpha(1);
@@ -351,7 +352,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                 if (pressed) {
                     DV.invalidate();
                     //  BL.dispatchTouchEvent(motionEvent);
-                    if (globalLayBoolean)
+                    if (globalLayBoolean && touchMode==-1)
                         globalLayout.dispatchTouchEvent(motionEvent);
 
                     Log.d(TAG, "Simulated Touch Pressed=" + pressed);
@@ -944,6 +945,9 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                                 keyboardPerformance.add("Correct Answer (Keyboard):"+String.valueOf(randomNumber));
                                 keyboardPerformance.add("Elapsed Time: "+String.valueOf(elapsedTime)+"\n");
 
+                                isStart*=-1;
+                                keyButtonStart.setBackgroundResource(R.drawable.round_button6);
+                                keyButtonStart.setText("Start Measure");
 
                                 CorrectnessTV.setTextColor(Color.BLUE);
                                 fadeAnimation(CorrectnessTV,false, 1500);
@@ -1018,6 +1022,17 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
             public boolean onTouch(View v, MotionEvent event) {
                 switch (event.getAction()) {//Added by ahinsutime
                     case MotionEvent.ACTION_DOWN:
+                        if(isStart==-1) {
+                            keyButtonStart.setBackgroundColor(Color.BLUE);
+                            isStart *= -1;
+                        }
+                        /*
+                        else{
+                            keyButtonStart.setBackgroundResource(R.drawable.round_button6);
+                            keyButtonStart.setText("Start Measure");
+                            isStart *= -1;
+                        }
+                        */
                         keyButtonStart.setTextColor(Color.BLUE);
                         //fadeAnimation(CorrectnessTV,true);
                         break;
@@ -1037,7 +1052,16 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
             public boolean onTouch(View v, MotionEvent event) {
                 switch (event.getAction()) {//Added by ahinsutime
                     case MotionEvent.ACTION_DOWN:
-                        keyButtonTouchmode.setTextColor(Color.BLUE);
+                        keyButtonTouchmode.setTextColor(Color.WHITE);
+                        if(touchMode==-1) {
+                            keyButtonTouchmode.setBackgroundColor(Color.BLUE);
+                        }
+                        else{
+
+                            keyButtonTouchmode.setBackgroundResource(R.drawable.round_button6);
+                            keyButtonTouchmode.setText("Touch Mode");
+                        }
+
                         //fadeAnimation(CorrectnessTV,true);
                         touchMode *= -1;
                         break;
@@ -1080,6 +1104,10 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                         if(randomDiscrete==false){
                             //keyButtonReject.setBackgroundColor(Color.BLUE);
                             CorrectnessTV.setText("Correct Answer");
+                            isStart *= -1;
+                            keyButtonStart.setBackgroundResource(R.drawable.round_button6);
+                            keyButtonStart.setText("Start Measure");
+
                             long stopTime = System.currentTimeMillis();
                             long elapsedTime = stopTime - performanceStartTime;
                             phonecallPerformance.add("Correct Answer (Discrete): "+"Reject");
@@ -1116,6 +1144,10 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                         if(randomDiscrete==true){
                             //keyButtonAccept.setBackgroundColor(Color.BLUE);
                             CorrectnessTV.setText("Correct Answer");
+                            isStart *= -1;
+                            keyButtonStart.setBackgroundResource(R.drawable.round_button6);
+                            keyButtonStart.setText("Start Measure");
+
                             long stopTime = System.currentTimeMillis();
                             long elapsedTime = stopTime - performanceStartTime;
                             phonecallPerformance.add("Correct Answer (Discrete): "+"Accept");
@@ -1163,8 +1195,9 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                         patternView.clearPattern();
                         PatternTV.setText("Draw your pattern and click the save button");
                         PatternTV.setTextColor(Color.parseColor("#FFFF00"));
-
-
+                        isStart = -1;
+                        keyButtonStart.setBackgroundResource(R.drawable.round_button6);
+                        keyButtonStart.setText("Start Measure");
 
                         //fadeAnimation(CorrectnessTV,false);
                         break;
@@ -1244,8 +1277,11 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                             long elapsedTime = stopTime - performanceStartTime;
                             patternPerformance.add("Correct Answer (Pattern): "+tempPatternTrail);
                             patternPerformance.add("Elapsed Time: "+String.valueOf(elapsedTime)+"\n");
+                            isStart *= -1;
+                            keyButtonStart.setBackgroundResource(R.drawable.round_button6);
+                            keyButtonStart.setText("Start Measure");
 
-                            //keyButtonConfirmPattern.setBackgroundColor(Color.BLUE);
+
                             CorrectnessTV.setText("Correct Answer");
                             CorrectnessTV.setTextColor(Color.BLUE);
                             fadeAnimation(CorrectnessTV,false, 1500);
@@ -1998,7 +2034,10 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         Log.d("MAILCHECK", info + "\nkeyboard: " + s + "\nphonecall: " + p);
         emailIntent.putExtra(Intent.EXTRA_TEXT, info + "\nkeyboard: " + s + "\nphonecall: " + p);
         */
-        emailIntent.putExtra(Intent.EXTRA_TEXT, info + "\nkeyboard: " + keyboardPerformance + "\nNumber of backspace pressed: "+BackspacePressedNumber+"\nNumber of reset pressed: "+ResetPressedNumber+"\nphonecall: " + phonecallPerformance+"\npattern: "+patternPerformance+"\nNumber of refresh patter pressed:"+RefreshPressedNumber+"\nNumber of manual tracking reset: "+ResetTrackingNumber);
+        emailIntent.putExtra(Intent.EXTRA_TEXT, info + "\nkeyboard: " + keyboardPerformance + "\nNumber of backspace pressed: "
+                +BackspacePressedNumber+"\nNumber of reset pressed: "+ResetPressedNumber+"\nphonecall: " + phonecallPerformance+
+                "\npattern: "+patternPerformance+"\nNumber of refresh patter pressed:"+RefreshPressedNumber+
+                "\nNumber of manual tracking reset: "+ResetTrackingNumber+"\nTouchMode: "+touchMode);
         try {
             startActivity(Intent.createChooser(emailIntent, "Send email using..."));
         } catch (android.content.ActivityNotFoundException ex) {
